@@ -1,0 +1,84 @@
+<!--pages/store/quote/quote.wxml-->
+<view class="quote-container">
+  <block wx:if="{{order}}">
+    <!-- 订单信息 -->
+    <view class="order-section glass-card">
+      <view class="section-title">订单信息</view>
+
+      <view class="info-row">
+        <text class="label">订单号</text>
+        <text class="value">{{order.orderNumber}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">起点</text>
+        <text class="value">{{order.origin}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">终点</text>
+        <text class="value">{{order.destination}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">货物</text>
+        <text class="value">{{order.goodsName}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">重量</text>
+        <text class="value">{{order.weight}}吨</text>
+      </view>
+    </view>
+
+    <!-- 报价表单 -->
+    <view class="form-section glass-card">
+      <view class="section-title">报价信息</view>
+
+      <view class="form-item">
+        <text class="label">报价（元）</text>
+        <input
+          class="input-field"
+          type="digit"
+          placeholder="请输入报价"
+          value="{{price}}"
+          bindinput="onPriceInput"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">预计完成时间</text>
+        <picker
+          class="picker"
+          mode="date"
+          value="{{estimatedTime}}"
+          bindchange="onTimeChange"
+        >
+          <view class="picker-text">
+            {{estimatedTime || '请选择预计完成时间'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">备注</text>
+        <textarea
+          class="textarea-field"
+          placeholder="请输入备注信息（选填）"
+          value="{{notes}}"
+          bindinput="onNotesInput"
+          maxlength="200"
+        ></textarea>
+      </view>
+
+      <button class="submit-btn glass-btn-cta" bindtap="handleSubmit">
+        提交报价
+      </button>
+    </view>
+  </block>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text>加载中...</text>
+  </view>
+</view>

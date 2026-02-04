@@ -1,0 +1,43 @@
+<!--pages/driver/vehicles/detail.wxml-->
+<view class="detail-container">
+  <block wx:if="{{vehicle}}">
+    <!-- 车辆头部信息 -->
+    <view class="vehicle-header glass-card">
+      <text class="plate-number">{{vehicle.plateNumber}}</text>
+      <view class="status-badge status-{{vehicle.status}}">
+        {{vehicle.status === 'ACTIVE' ? '运营中' : '闲置'}}
+      </view>
+    </view>
+
+    <!-- 车辆详细信息 -->
+    <view class="info-section glass-card">
+      <view class="section-title">车辆信息</view>
+
+      <view class="info-item">
+        <text class="label">车型</text>
+        <text class="value">{{vehicle.type}}</text>
+      </view>
+
+      <view class="info-item">
+        <text class="label">载重</text>
+        <text class="value">{{vehicle.loadCapacity}}吨</text>
+      </view>
+
+      <view class="info-item">
+        <text class="label">长度</text>
+        <text class="value">{{vehicle.length}}米</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-section">
+      <button class="action-btn glass-btn" bindtap="editVehicle">编辑</button>
+      <button class="action-btn glass-btn-secondary" bindtap="deleteVehicle">删除</button>
+    </view>
+  </block>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text>加载中...</text>
+  </view>
+</view>

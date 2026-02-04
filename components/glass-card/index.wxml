@@ -1,0 +1,4 @@
+<!--components/glass-card/index.wxml-->
+<view class="glass-card {{ className }}" style="{{ customStyle }}" bind:tap="onTap">
+  <slot></slot>
+</view>

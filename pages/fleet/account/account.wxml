@@ -1,0 +1,57 @@
+<!--pages/fleet/account/account.wxml-->
+<view class="account-container">
+  <!-- 用户信息 -->
+  <view class="user-section glass-card">
+    <view class="user-info">
+      <image class="avatar" src="{{userInfo.avatar || '/images/icons/default-avatar.png'}}"></image>
+      <view class="user-details">
+        <text class="username">{{userInfo.username}}</text>
+        <text class="role-text">{{userInfo.role === 'FLEET_MANAGER' ? '车队管理员' : '司机'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 车队管理员账户余额 -->
+  <block wx:if="{{isFleetManager}}">
+    <view class="balance-section glass-card">
+      <view class="balance-header">
+        <text class="balance-label">账户余额</text>
+        <text class="balance-value">¥{{balance}}</text>
+      </view>
+
+      <view class="balance-actions">
+        <button class="action-btn glass-btn" bindtap="recharge">充值</button>
+        <button class="action-btn glass-btn-secondary" bindtap="withdraw">提现</button>
+      </view>
+
+      <view class="transaction-link" bindtap="viewTransactions">
+        <text>交易记录</text>
+        <text class="arrow">></text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section glass-card">
+    <view class="menu-item">
+      <text class="menu-label">个人资料</text>
+      <text class="arrow">></text>
+    </view>
+    <view class="menu-item">
+      <text class="menu-label">设置</text>
+      <text class="arrow">></text>
+    </view>
+    <view class="menu-item">
+      <text class="menu-label">帮助中心</text>
+      <text class="arrow">></text>
+    </view>
+    <view class="menu-item" bindtap="logout">
+      <text class="menu-label logout">退出登录</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text>加载中...</text>
+  </view>
+</view>

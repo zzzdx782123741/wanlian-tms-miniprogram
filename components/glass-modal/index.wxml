@@ -1,0 +1,39 @@
+<!--components/glass-modal/index.wxml-->
+<view wx:if="{{ visible }}" class="glass-modal" catchtap="onMaskTap">
+  <!-- 遮罩层 -->
+  <view class="glass-modal-mask" animation="{{ maskAnimation }}"></view>
+
+  <!-- 弹窗容器 -->
+  <view class="glass-modal-container" catchtap="stopPropagation" animation="{{ modalAnimation }}">
+    <!-- 弹窗内容 -->
+    <view class="glass-modal-content {{ size ? 'glass-modal-' + size : '' }}">
+      <!-- 头部 -->
+      <view wx:if="{{ title || showClose }}" class="glass-modal-header">
+        <view wx:if="{{ title }}" class="glass-modal-title">{{ title }}</view>
+        <view wx:if="{{ showClose }}" class="glass-modal-close" catchtap="onClose">
+          <view class="close-icon">×</view>
+        </view>
+      </view>
+
+      <!-- 内容区域 -->
+      <view class="glass-modal-body">
+        <slot></slot>
+      </view>
+
+      <!-- 底部操作栏 -->
+      <view wx:if="{{ showFooter }}" class="glass-modal-footer">
+        <glass-button
+          wx:if="{{ showCancel }}"
+          type="secondary"
+          size="md"
+          bind:tap="onCancel"
+        >{{ cancelText }}</glass-button>
+        <glass-button
+          type="primary"
+          size="md"
+          bind:tap="onConfirm"
+        >{{ confirmText }}</glass-button>
+      </view>
+    </view>
+  </view>
+</view>

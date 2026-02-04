@@ -1,0 +1,61 @@
+{
+  "pages": [
+    "pages/auth/login",
+    "pages/index/index",
+    "pages/driver/vehicles/vehicles",
+    "pages/driver/report/report",
+    "pages/driver/progress/progress",
+    "pages/fleet/vehicles/vehicles",
+    "pages/fleet/report/report",
+    "pages/fleet/approve/approve",
+    "pages/fleet/account/account",
+    "pages/store/orders/orders",
+    "pages/store/quote/quote",
+    "pages/store/order-detail/order-detail"
+  ],
+  "window": {
+    "backgroundColor": "#F5F5F5",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#667EEA",
+    "navigationBarTitleText": "万联TMS",
+    "navigationBarTextStyle": "white",
+    "enablePullDownRefresh": true,
+    "backgroundColorTop": "#667EEA",
+    "backgroundColorBottom": "#F5F5F5"
+  },
+  "tabBar": {
+    "color": "#8C8C8C",
+    "selectedColor": "#667EEA",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/icons/home.png",
+        "selectedIconPath": "images/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/store/orders/orders",
+        "text": "订单",
+        "iconPath": "images/icons/order.png",
+        "selectedIconPath": "images/icons/order-active.png"
+      },
+      {
+        "pagePath": "pages/driver/vehicles/vehicles",
+        "text": "车辆",
+        "iconPath": "images/icons/car.png",
+        "selectedIconPath": "images/icons/car-active.png"
+      },
+      {
+        "pagePath": "pages/fleet/account/account",
+        "text": "我的",
+        "iconPath": "images/icons/user.png",
+        "selectedIconPath": "images/icons/user-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

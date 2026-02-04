@@ -1,0 +1,60 @@
+<!--pages/driver/vehicles/vehicles.wxml-->
+<view class="vehicles-container">
+  <!-- 顶部操作栏 -->
+  <view class="action-bar">
+    <button class="add-btn glass-btn-cta" bindtap="addVehicle">
+      + 添加车辆
+    </button>
+  </view>
+
+  <!-- 车辆列表 -->
+  <view class="vehicles-list">
+    <block wx:if="{{vehicles.length > 0}}">
+      <view
+        class="vehicle-card glass-card"
+        wx:for="{{vehicles}}"
+        wx:key="_id"
+        bindtap="viewDetail"
+        data-id="{{item._id}}"
+      >
+        <view class="vehicle-header">
+          <text class="plate-number">{{item.plateNumber}}</text>
+          <view class="status-badge status-{{item.status}}">
+            {{item.status === 'ACTIVE' ? '运营中' : '闲置'}}
+          </view>
+        </view>
+
+        <view class="vehicle-info">
+          <view class="info-row">
+            <text class="label">车型：</text>
+            <text class="value">{{item.type}}</text>
+          </view>
+          <view class="info-row">
+            <text class="label">载重：</text>
+            <text class="value">{{item.loadCapacity}}吨</text>
+          </view>
+          <view class="info-row">
+            <text class="label">长度：</text>
+            <text class="value">{{item.length}}米</text>
+          </view>
+        </view>
+
+        <view class="vehicle-footer">
+          <text class="arrow-icon">></text>
+        </view>
+      </view>
+    </block>
+
+    <!-- 空状态 -->
+    <view wx:else class="empty-state">
+      <image class="empty-icon" src="/images/icons/empty-car.png"></image>
+      <text class="empty-text">暂无车辆</text>
+      <text class="empty-hint">点击上方按钮添加车辆</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text>加载中...</text>
+  </view>
+</view>

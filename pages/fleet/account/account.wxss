@@ -1,0 +1,127 @@
+/* pages/fleet/account/account.wxss */
+@import "../../../styles/design-system.wxss";
+
+.account-container {
+  min-height: 100vh;
+  padding: var(--spacing-md);
+  background: var(--color-bg-page);
+}
+
+/* 用户信息区域 */
+.user-section {
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: var(--radius-full);
+  margin-right: var(--spacing-md);
+}
+
+.user-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.role-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* 账户余额区域 */
+.balance-section {
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.balance-header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.balance-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.balance-value {
+  display: block;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-cta);
+}
+
+.balance-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.action-btn {
+  flex: 1;
+  font-size: var(--font-size-base);
+  padding: var(--spacing-md);
+}
+
+.transaction-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  font-size: var(--font-size-base);
+  color: var(--color-primary);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.arrow {
+  color: var(--color-text-tertiary);
+}
+
+/* 功能菜单 */
+.menu-section {
+  padding: 0 var(--spacing-lg);
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border-light);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-label.logout {
+  color: var(--color-error);
+}
+
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-tertiary);
+}

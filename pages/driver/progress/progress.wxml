@@ -1,0 +1,55 @@
+<!--pages/driver/progress/progress.wxml-->
+<view class="progress-container">
+  <block wx:if="{{order}}">
+    <!-- 当前位置 -->
+    <view class="location-section glass-card">
+      <view class="section-title">当前位置</view>
+      <view class="location-info">
+        <text class="location-text">{{order.currentLocation.address}}</text>
+        <button class="map-btn glass-btn" bindtap="viewMap">查看地图</button>
+      </view>
+    </view>
+
+    <!-- 时间线 -->
+    <view class="timeline-section glass-card">
+      <view class="section-title">运输轨迹</view>
+
+      <view class="timeline">
+        <view
+          class="timeline-item"
+          wx:for="{{timeline}}"
+          wx:key="_id"
+        >
+          <view class="timeline-dot"></view>
+          <view class="timeline-content">
+            <view class="timeline-status">{{item.status}}</view>
+            <view class="timeline-time">{{item.time}}</view>
+            <view class="timeline-location">{{item.location}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 订单信息 -->
+    <view class="order-info glass-card">
+      <view class="section-title">订单信息</view>
+      <view class="info-row">
+        <text class="label">订单号</text>
+        <text class="value">{{order.orderNumber}}</text>
+      </view>
+      <view class="info-row">
+        <text class="label">起点</text>
+        <text class="value">{{order.origin}}</text>
+      </view>
+      <view class="info-row">
+        <text class="label">终点</text>
+        <text class="value">{{order.destination}}</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text>加载中...</text>
+  </view>
+</view>

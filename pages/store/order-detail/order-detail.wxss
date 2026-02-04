@@ -1,0 +1,148 @@
+/* pages/store/order-detail/order-detail.wxss */
+@import "../../../styles/design-system.wxss";
+
+.detail-container {
+  min-height: 100vh;
+  padding: var(--spacing-md);
+  background: var(--color-bg-page);
+}
+
+/* 状态区域 */
+.status-section {
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 16rpx 32rpx;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.status-PENDING {
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--color-text-tertiary);
+}
+
+.status-QUOTED {
+  background: rgba(6, 182, 212, 0.1);
+  color: var(--color-info);
+}
+
+.status-PENDING_APPROVAL {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+}
+
+.status-APPROVED {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--color-primary);
+}
+
+.status-IN_TRANSIT {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--color-primary);
+}
+
+.status-COMPLETED {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.status-CANCELLED {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+}
+
+.status-tip {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* 信息区域 */
+.order-section,
+.quote-section,
+.transport-section {
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row .label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.value-with-action {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.info-row .value {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.info-row .value.price {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-cta);
+}
+
+.copy-btn {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  padding: 4rpx 12rpx;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+/* 操作区域 */
+.action-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.action-btn {
+  width: 100%;
+  font-size: var(--font-size-base);
+  padding: var(--spacing-md);
+}
+
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-3xl);
+  color: var(--color-text-tertiary);
+}

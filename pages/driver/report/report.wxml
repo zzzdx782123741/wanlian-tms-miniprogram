@@ -1,0 +1,58 @@
+<!--pages/driver/report/report.wxml-->
+<view class="report-container">
+  <!-- 订单列表 -->
+  <view class="orders-list">
+    <block wx:if="{{orders.length > 0}}">
+      <view
+        class="order-card glass-card"
+        wx:for="{{orders}}"
+        wx:key="_id"
+      >
+        <view class="order-header">
+          <text class="order-id">订单号：{{item.orderNumber}}</text>
+          <view class="status-badge">运输中</view>
+        </view>
+
+        <view class="order-route">
+          <view class="route-point">
+            <text class="point-label">起点</text>
+            <text class="point-value">{{item.origin}}</text>
+          </view>
+          <view class="route-arrow">↓</view>
+          <view class="route-point">
+            <text class="point-label">终点</text>
+            <text class="point-value">{{item.destination}}</text>
+          </view>
+        </view>
+
+        <view class="order-actions">
+          <button
+            class="action-btn glass-btn"
+            bindtap="reportLocation"
+            data-id="{{item._id}}"
+          >
+            上报位置
+          </button>
+          <button
+            class="action-btn glass-btn-secondary"
+            bindtap="updateStatus"
+            data-id="{{item._id}}"
+          >
+            更新状态
+          </button>
+        </view>
+      </view>
+    </block>
+
+    <!-- 空状态 -->
+    <view wx:else class="empty-state">
+      <image class="empty-icon" src="/images/icons/empty-order.png"></image>
+      <text class="empty-text">暂无运输中订单</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text>加载中...</text>
+  </view>
+</view>

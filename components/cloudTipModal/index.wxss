@@ -1,0 +1,152 @@
+/**
+ * 玻璃态弹窗组件
+ * Glassmorphism Tip Modal Component
+ */
+
+/* 遮罩层 */
+.install_tip_back {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  animation: fadeIn 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 弹窗容器 */
+.install_tip_detail {
+  position: fixed;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2rpx solid rgba(255, 255, 255, 0.8);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 48rpx 48rpx 0 0;
+  padding: 64rpx 48rpx 120rpx 48rpx;
+  z-index: 1001;
+  box-shadow: 0 -16rpx 64rpx rgba(0, 0, 0, 0.15);
+  animation: slideUp 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 关闭按钮 */
+.install_tip_close {
+  position: absolute;
+  right: 48rpx;
+  top: 48rpx;
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 50%;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.install_tip_close:active {
+  background: rgba(0, 0, 0, 0.08);
+  transform: scale(0.9);
+}
+
+.install_tip_close image {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+/* 标题 */
+.install_tip_detail_title {
+  font-weight: 700;
+  font-size: 40rpx;
+  text-align: center;
+  color: #1E293B;
+  margin-bottom: 24rpx;
+  letter-spacing: -0.02em;
+}
+
+/* 内容 */
+.install_tip_detail_tip {
+  font-size: 28rpx;
+  color: #475569;
+  margin-top: 24rpx;
+  text-align: left;
+  line-height: 1.75;
+  background: rgba(37, 99, 235, 0.05);
+  border-radius: 20rpx;
+  padding: 32rpx;
+  border: 2rpx solid rgba(37, 99, 235, 0.1);
+}
+
+/* 按钮组 */
+.install_tip_detail_buttons {
+  padding-top: 64rpx;
+  display: flex;
+  gap: 24rpx;
+}
+
+.install_tip_detail_button {
+  color: #2563EB;
+  font-weight: 600;
+  background: rgba(37, 99, 235, 0.1);
+  flex: 1;
+  text-align: center;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  border: 2rpx solid rgba(37, 99, 235, 0.2);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.install_tip_detail_button:active {
+  background: rgba(37, 99, 235, 0.2);
+  transform: scale(0.98);
+}
+
+/* 主要按钮 */
+.install_tip_detail_button_primary {
+  background: linear-gradient(135deg, #2563EB, #3B82F6);
+  color: #FFFFFF;
+  border-color: transparent;
+  box-shadow: 0 4rpx 16rpx rgba(37, 99, 235, 0.3);
+}
+
+.install_tip_detail_button_primary:active {
+  background: linear-gradient(135deg, #1D4ED8, #2563EB);
+  box-shadow: 0 2rpx 8rpx rgba(37, 99, 235, 0.2);
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 减少动画模式 */
+@media (prefers-reduced-motion: reduce) {
+  .install_tip_back,
+  .install_tip_detail,
+  .install_tip_close,
+  .install_tip_detail_button {
+    animation: none;
+    transition: none;
+  }
+}

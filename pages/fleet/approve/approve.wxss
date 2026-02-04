@@ -1,0 +1,111 @@
+/* pages/fleet/approve/approve.wxss */
+@import "../../../styles/design-system.wxss";
+
+.approve-container {
+  min-height: 100vh;
+  padding: var(--spacing-md);
+  background: var(--color-bg-page);
+}
+
+/* 订单列表 */
+.orders-list {
+  padding: var(--spacing-sm);
+}
+
+.order-card {
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.order-id {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.status-badge {
+  padding: 8rpx 16rpx;
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+}
+
+/* 订单信息 */
+.order-info {
+  margin-bottom: var(--spacing-md);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.info-row .label {
+  color: var(--color-text-secondary);
+}
+
+.info-row .value {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  flex: 1;
+  text-align: right;
+}
+
+.info-row .value.price {
+  color: var(--color-cta);
+  font-size: var(--font-size-lg);
+}
+
+/* 操作按钮 */
+.order-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.action-btn {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm);
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-tertiary);
+}

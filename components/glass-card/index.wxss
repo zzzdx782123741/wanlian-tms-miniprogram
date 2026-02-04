@@ -1,0 +1,61 @@
+/* components/glass-card/index.wxss */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(37, 99, 235, 0.1);
+  padding: 48rpx;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 玻璃态光效 */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+/* 点击/激活状态 */
+.glass-card:active {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 12rpx 48rpx rgba(37, 99, 235, 0.15);
+  transform: translateY(-4rpx);
+}
+
+/* 小尺寸卡片 */
+.glass-card.card-sm {
+  padding: 24rpx;
+  border-radius: 16rpx;
+}
+
+/* 大尺寸卡片 */
+.glass-card.card-lg {
+  padding: 64rpx;
+  border-radius: 32rpx;
+}
+
+/* 无内边距卡片 */
+.glass-card.card-no-padding {
+  padding: 0;
+}
+
+/* 可点击卡片 */
+.glass-card.card-clickable {
+  cursor: pointer;
+}
+
+.glass-card.card-clickable:active {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(0.99);
+}

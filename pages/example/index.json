@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "示例",
+  "usingComponents": {
+    "cloud-tip-modal": "/components/cloudTipModal/index",
+    "glass-card": "/components/glass-card/index",
+    "glass-button": "/components/glass-button/index",
+    "glass-modal": "/components/glass-modal/index"
+  }
+}

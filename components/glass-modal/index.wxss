@@ -1,0 +1,194 @@
+/* components/glass-modal/index.wxss */
+
+@import "../glass-button/index.wxss";
+
+.glass-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 遮罩层 */
+.glass-modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* 弹窗容器 */
+.glass-modal-container {
+  position: relative;
+  z-index: 1051;
+  width: 100%;
+  padding: 48rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 弹窗内容 */
+.glass-modal-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 32rpx;
+  box-shadow: 0 16rpx 64rpx rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  max-width: 600rpx;
+  width: 100%;
+  transform: scale(1);
+  opacity: 1;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 弹窗尺寸 */
+.glass-modal-sm {
+  max-width: 480rpx;
+}
+
+.glass-modal-lg {
+  max-width: 680rpx;
+}
+
+.glass-modal-full {
+  max-width: calc(100% - 96rpx);
+  max-height: calc(100% - 96rpx);
+  display: flex;
+  flex-direction: column;
+}
+
+.glass-modal-full .glass-modal-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 头部 */
+.glass-modal-header {
+  position: relative;
+  padding: 48rpx 48rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.08);
+}
+
+.glass-modal-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1E293B;
+  flex: 1;
+  padding-right: 48rpx;
+}
+
+/* 关闭按钮 */
+.glass-modal-close {
+  position: absolute;
+  top: 48rpx;
+  right: 48rpx;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.04);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.glass-modal-close:active {
+  background: rgba(0, 0, 0, 0.08);
+  transform: scale(0.95);
+}
+
+.close-icon {
+  font-size: 48rpx;
+  line-height: 1;
+  color: #475569;
+  font-weight: 300;
+}
+
+/* 内容区域 */
+.glass-modal-body {
+  padding: 48rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 滚动条样式 */
+.glass-modal-body::-webkit-scrollbar {
+  width: 8rpx;
+}
+
+.glass-modal-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 4rpx;
+}
+
+.glass-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 4rpx;
+}
+
+/* 底部操作栏 */
+.glass-modal-footer {
+  padding: 24rpx 48rpx 48rpx;
+  display: flex;
+  gap: 24rpx;
+  justify-content: flex-end;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.08);
+}
+
+.glass-modal-footer glass-button {
+  flex: 1;
+  max-width: 280rpx;
+}
+
+/* 动画 */
+.modal-enter {
+  transform: scale(0.9);
+  opacity: 0;
+}
+
+.modal-enter-active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.modal-exit {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.modal-exit-active {
+  transform: scale(0.9);
+  opacity: 0;
+}
+
+/* 减少动画模式 */
+@media (prefers-reduced-motion: reduce) {
+  .glass-modal-content,
+  .glass-modal-close {
+    transition: none;
+  }
+}
+
+/* 安全区域适配 */
+.glass-modal-safe-area {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}

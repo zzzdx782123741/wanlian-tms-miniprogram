@@ -1,0 +1,50 @@
+<!--pages/driver/vehicles/add.wxml-->
+<view class="add-container">
+  <view class="form-section glass-card">
+    <view class="form-item">
+      <text class="label">车牌号</text>
+      <input
+        class="input-field"
+        placeholder="请输入车牌号（如：京A12345）"
+        value="{{plateNumber}}"
+        bindinput="onPlateNumberInput"
+        maxlength="7"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">车型</text>
+      <picker class="picker" mode="selector" range="{{typeList}}" bindchange="onTypeChange">
+        <view class="picker-text">
+          {{type || '请选择车型'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">载重（吨）</text>
+      <input
+        class="input-field"
+        type="digit"
+        placeholder="请输入载重"
+        value="{{loadCapacity}}"
+        bindinput="onLoadCapacityInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">长度（米）</text>
+      <input
+        class="input-field"
+        type="digit"
+        placeholder="请输入车辆长度"
+        value="{{length}}"
+        bindinput="onLengthInput"
+      />
+    </view>
+
+    <button class="submit-btn glass-btn-cta" bindtap="handleSubmit">
+      提交
+    </button>
+  </view>
+</view>

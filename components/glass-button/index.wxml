@@ -1,0 +1,23 @@
+<!--components/glass-button/index.wxml-->
+<button
+  class="glass-btn glass-btn-{{ type }} glass-btn-{{ size }} {{ className }} {{ isLoading ? 'is-loading' : '' }}"
+  style="{{ customStyle }}"
+  hover-class="glass-btn-{{ type }}-hover"
+  bind:getuserinfo="onGetUserInfo"
+  bind:contact="onContact"
+  bind:getphonenumber="onGetPhoneNumber"
+  bind:error="onError"
+  bind:tap="onTap"
+  disabled="{{ disabled || isLoading }}"
+>
+  <view wx:if="{{ isLoading }}" class="glass-btn-loading">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">{{ loadingText }}</text>
+  </view>
+  <view wx:else class="glass-btn-content">
+    <view wx:if="{{ icon }}" class="glass-btn-icon">
+      <image src="{{ icon }}" mode="aspectFit" />
+    </view>
+    <slot></slot>
+  </view>
+</button>
