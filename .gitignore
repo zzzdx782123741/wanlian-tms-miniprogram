@@ -1,0 +1,18 @@
+﻿# WeChat Miniprogram
+project.private.config.json
+
+# Dependencies
+node_modules/
+
+# Build
+miniprogram_npm/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
