@@ -1,0 +1,107 @@
+<!--pages/fleet-vehicles/fleet-vehicles.wxml - 车队车辆管理页面-->
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">车队车辆</view>
+    <view class="header-subtitle">管理车队的所有车辆</view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-row">
+    <view class="stat-card">
+      <view class="stat-value">{{stats.total}}</view>
+      <view class="stat-label">全部车辆</view>
+    </view>
+    <view class="stat-card">
+      <view class="stat-value">{{stats.normal}}</view>
+      <view class="stat-label">正常运行</view>
+    </view>
+    <view class="stat-card">
+      <view class="stat-value">{{stats.repairing}}</view>
+      <view class="stat-label">维修中</view>
+    </view>
+  </view>
+
+  <!-- 车辆列表 -->
+  <view class="vehicle-list">
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && vehicles.length === 0}}">
+      <text class="empty-icon">🚛</text>
+      <text class="empty-text">暂无车辆</text>
+      <text class="empty-hint">请先添加车辆到车队</text>
+    </view>
+
+    <!-- 车辆卡片 -->
+    <view
+      class="vehicle-card"
+      wx:for="{{vehicles}}"
+      wx:key="_id"
+      bindtap="onVehicleDetail"
+      data-vehicle-id="{{item._id}}"
+    >
+      <!-- 车辆头部 -->
+      <view class="vehicle-header">
+        <view class="vehicle-plate">{{item.plateNumber}}</view>
+        <view class="vehicle-status status-{{item.status}}">
+          {{item.statusText}}
+        </view>
+      </view>
+
+      <!-- 车辆详情 -->
+      <view class="vehicle-details">
+        <view class="detail-row">
+          <text class="detail-icon">🚗</text>
+          <view class="detail-info">
+            <text class="detail-label">品牌车型</text>
+            <text class="detail-value">{{item.brand}} {{item.model}}</text>
+          </view>
+        </view>
+
+        <view class="detail-row" wx:if="{{item.currentDriverId}}">
+          <text class="detail-icon">👤</text>
+          <view class="detail-info">
+            <text class="detail-label">当前司机</text>
+            <text class="detail-value">{{item.currentDriverId.nickname}}</text>
+          </view>
+        </view>
+
+        <view class="detail-row" wx:if="{{item.currentDriverId && item.currentDriverId.phone}}">
+          <text class="detail-icon">📞</text>
+          <view class="detail-info">
+            <text class="detail-label">联系电话</text>
+            <text class="detail-value">{{item.currentDriverId.phone}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 车辆操作 -->
+      <view class="vehicle-actions">
+        <button
+          class="action-btn"
+          bindtap="onViewOrders"
+          data-vehicle-id="{{item._id}}"
+          catchtap="true"
+        >
+          <text class="btn-icon">📋</text>
+          维修记录
+        </button>
+        <button
+          class="action-btn primary"
+          bindtap="onCallDriver"
+          data-phone="{{item.currentDriverId.phone}}"
+          catchtap="true"
+          disabled="{{!item.currentDriverId || !item.currentDriverId.phone}}"
+        >
+          <text class="btn-icon">📞</text>
+          联系司机
+        </button>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+</view>

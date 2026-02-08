@@ -28,8 +28,14 @@ Page({
 
       const vehicles = await request.get('/vehicles');
 
+      // 计算统计数据
+      const activeCount = vehicles.filter(v => v.status === 'ACTIVE').length;
+      const idleCount = vehicles.filter(v => v.status === 'IDLE').length;
+
       this.setData({
         vehicles,
+        activeCount,
+        idleCount,
         loading: false
       });
 

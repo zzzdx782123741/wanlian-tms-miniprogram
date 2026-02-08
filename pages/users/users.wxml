@@ -1,0 +1,123 @@
+<!--pages/users/users.wxml - 用户管理页面-->
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">用户管理</view>
+    <view class="header-subtitle">管理系统用户权限</view>
+  </view>
+
+  <!-- 搜索和筛选 -->
+  <view class="search-bar">
+    <view class="search-row">
+      <picker
+        mode="selector"
+        range="{{roleOptions}}"
+        range-key="label"
+        value="{{roleIndex}}"
+        bindchange="onRoleChange"
+      >
+        <view class="filter-picker half">
+          <text>{{roleOptions[roleIndex].label}}</text>
+          <text class="arrow">▼</text>
+        </view>
+      </picker>
+
+      <picker
+        mode="selector"
+        range="{{statusOptions}}"
+        range-key="label"
+        value="{{statusIndex}}"
+        bindchange="onStatusChange"
+      >
+        <view class="filter-picker half">
+          <text>{{statusOptions[statusIndex].label}}</text>
+          <text class="arrow">▼</text>
+        </view>
+      </picker>
+    </view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="搜索用户昵称或手机号"
+        value="{{keyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearch"
+      />
+      <button class="search-btn" bindtap="onSearch">搜索</button>
+    </view>
+  </view>
+
+  <!-- 用户列表 -->
+  <view class="list-container">
+    <view
+      class="user-card"
+      wx:for="{{users}}"
+      wx:key="_id"
+    >
+      <!-- 用户基本信息 -->
+      <view class="user-header">
+        <view class="user-info">
+          <image class="avatar" src="{{item.avatar || '/images/icons/avatar.png'}}" mode="aspectFill"/>
+          <view class="user-details">
+            <view class="user-name">{{item.nickname || item.name || '未设置昵称'}}</view>
+            <view class="user-phone">{{item.phone || '未绑定手机'}}</view>
+          </view>
+        </view>
+        <view class="user-status status-{{item.role ? item.role.status : ''}}">
+          {{item.role && item.role.status === 'normal' ? '正常' : item.role && item.role.status === 'pending_audit' ? '待审核' : '已停用'}}
+        </view>
+      </view>
+
+      <!-- 用户详细信息 -->
+      <view class="user-meta">
+        <view class="meta-item">
+          <text class="meta-label">角色</text>
+          <text class="meta-value role-{{item.role ? item.role.type : ''}}">
+            {{item.role && item.role.type ? getRoleText(item.role.type) : '未知'}}
+          </text>
+        </view>
+        <view class="meta-item">
+          <text class="meta-label">所属</text>
+          <text class="meta-value">{{getBelongsTo(item)}}</text>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-row">
+        <button
+          class="action-btn primary"
+          data-id="{{item._id}}"
+          bindtap="onViewDetail"
+        >
+          查看详情
+        </button>
+
+        <button
+          wx:if="{{item.role && item.role.status === 'normal'}}"
+          class="action-btn warning"
+          data-id="{{item._id}}"
+          data-status="suspended"
+          bindtap="onUpdateStatus"
+        >
+          停用
+        </button>
+
+        <button
+          wx:if="{{item.role && item.role.status === 'suspended'}}"
+          class="action-btn success"
+          data-id="{{item._id}}"
+          data-status="normal"
+          bindtap="onUpdateStatus"
+        >
+          启用
+        </button>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{users.length === 0 && !loading}}">
+      <text class="empty-icon">👥</text>
+      <text class="empty-text">暂无用户数据</text>
+    </view>
+  </view>
+</view>

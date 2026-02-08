@@ -1,29 +1,165 @@
-<!--index.wxml-->
-<view class="container">
-  <view class="title">快速了解云开发</view>
-  <view class="top_tip">免鉴权接口调用 免部署后台 高并发</view>
-  <view class="power" wx:key="title" wx:for="{{powerList}}" wx:for-item="power">
-    <view class="power_info" data-index="{{index}}" data-type="{{ power.type }}" bindtap="onClickPowerInfo">
-      <view class="power_info_text">
-        <view class="power_info_text_title">
-          {{power.title}}
-          <view class="power_info_text_tag" wx:if="{{power.tag}}">{{power.tag}}</view>
-        </view>
-        <view class="power_info_text_tip">{{power.tip}}</view>
+<!--index.wxml - 万联驿站TMS首页 - 现代化设计-->
+<view class="page">
+  <!-- 顶部装饰背景 -->
+  <view class="header-bg"></view>
+
+  <!-- 用户信息卡片 -->
+  <view class="user-section">
+    <view class="user-card">
+      <view class="avatar-container">
+        <image
+          class="avatar"
+          src="{{userInfo.avatar || '/images/icons/avatar.png'}}"
+          mode="aspectFill"
+        />
+        <view class="avatar-badge">{{roleShortText}}</view>
       </view>
-      <image wx:if="{{!power.showItem && power.item.length}}" class="power_info_more" src="../../images/arrow.svg"></image>
-      <image wx:if="{{power.showItem && power.item.length}}" class="power_info_less" src="../../images/arrow.svg"></image>
-      <image wx:if="{{!power.item.length}}" class="power_item_icon" src="../../images/arrow.svg"></image>
+      <view class="user-details">
+        <view class="greeting">你好，{{userInfo.nickname || '用户'}}</view>
+        <view class="role-badge">{{roleText}}</view>
+      </view>
+      <view class="notification-btn">
+        <text class="icon">🔔</text>
+      </view>
     </view>
-    <view wx:if="{{power.showItem}}">
-      <view wx:key="title" wx:for="{{power.item}}">
-        <view class="line"></view>
-        <view class="power_item" bindtap="jumpPage" data-type="{{ item.type }}" data-page="{{item.page}}">
-          <view class="power_item_title">{{item.title}}</view>
-          <image class="power_item_icon" src="../../images/arrow.svg"></image>
+
+    <!-- 快捷统计 -->
+    <view class="stats-row">
+      <view class="stat-item">
+        <view class="stat-value">0</view>
+        <view class="stat-label">待处理</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-value">0</view>
+        <view class="stat-label">进行中</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-value">0</view>
+        <view class="stat-label">已完成</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单区域 -->
+  <view class="menu-section">
+    <view class="section-header">
+      <view class="section-title">功能菜单</view>
+      <view class="section-subtitle">选择您需要的服务</view>
+    </view>
+
+    <view class="menu-grid">
+      <view
+        class="menu-card"
+        wx:for="{{menuList}}"
+        wx:key="id"
+        data-url="{{item.url}}"
+        bindtap="onMenuTap"
+      >
+        <view class="menu-card-bg" style="background: {{item.color}}"></view>
+        <view class="menu-content-wrapper">
+          <view class="menu-icon-wrapper">
+            <text class="menu-icon">{{item.icon}}</text>
+          </view>
+          <view class="menu-text">
+            <view class="menu-title">{{item.title}}</view>
+            <view class="menu-desc">{{item.description}}</view>
+          </view>
+          <view class="menu-arrow">›</view>
         </view>
       </view>
     </view>
   </view>
-  <cloud-tip-modal showTipProps="{{showTip}}" title="{{title}}" content="{{content}}"></cloud-tip-modal>
+
+  <!-- 快捷操作区域 -->
+  <view class="quick-actions">
+    <!-- 开发模式：角色切换按钮 -->
+    <view
+      wx:if="{{isDevMode}}"
+      class="action-btn dev-mode-btn"
+      bindtap="onShowRoleSwitcher"
+    >
+      <text class="action-icon">🔄</text>
+      <text class="action-text">切换角色（开发）</text>
+    </view>
+
+    <view class="action-btn" bindtap="onLogout">
+      <text class="action-icon">🚪</text>
+      <text class="action-text">退出登录</text>
+    </view>
+  </view>
+
+  <!-- 底部版本信息 -->
+  <view class="footer">
+    <text class="version">万联驿站TMS v1.0.0</text>
+  </view>
+
+  <!-- 角色切换弹窗（开发模式） -->
+  <view class="role-switcher-mask" wx:if="{{showRoleSwitcher}}" bindtap="onHideRoleSwitcher">
+    <view class="role-switcher-content" catchtap="stopPropagation">
+      <view class="role-switcher-header">
+        <text class="role-switcher-title">切换角色</text>
+        <text class="role-switcher-subtitle">开发调试专用</text>
+      </view>
+
+      <view class="role-list">
+        <view
+          class="role-item {{role === 'DRIVER' ? 'role-item-active' : ''}}"
+          data-role="DRIVER"
+          bindtap="onSwitchRole"
+        >
+          <view class="role-item-icon">🚚</view>
+          <view class="role-item-info">
+            <view class="role-item-name">司机</view>
+            <view class="role-item-desc">创建报修单</view>
+          </view>
+          <view class="role-item-check" wx:if="{{role === 'DRIVER'}}">✓</view>
+        </view>
+
+        <view
+          class="role-item {{role === 'STORE_TECHNICIAN' ? 'role-item-active' : ''}}"
+          data-role="STORE_TECHNICIAN"
+          bindtap="onSwitchRole"
+        >
+          <view class="role-item-icon">🔧</view>
+          <view class="role-item-info">
+            <view class="role-item-name">门店技师</view>
+            <view class="role-item-desc">接单报价维修</view>
+          </view>
+          <view class="role-item-check" wx:if="{{role === 'STORE_TECHNICIAN'}}">✓</view>
+        </view>
+
+        <view
+          class="role-item {{role === 'PLATFORM_OPERATOR' ? 'role-item-active' : ''}}"
+          data-role="PLATFORM_OPERATOR"
+          bindtap="onSwitchRole"
+        >
+          <view class="role-item-icon">👔</view>
+          <view class="role-item-info">
+            <view class="role-item-name">平台运营</view>
+            <view class="role-item-desc">审核订单</view>
+          </view>
+          <view class="role-item-check" wx:if="{{role === 'PLATFORM_OPERATOR'}}">✓</view>
+        </view>
+
+        <view
+          class="role-item {{role === 'FLEET_MANAGER' ? 'role-item-active' : ''}}"
+          data-role="FLEET_MANAGER"
+          bindtap="onSwitchRole"
+        >
+          <view class="role-item-icon">🏢</view>
+          <view class="role-item-info">
+            <view class="role-item-name">车队管理员</view>
+            <view class="role-item-desc">终审支付</view>
+          </view>
+          <view class="role-item-check" wx:if="{{role === 'FLEET_MANAGER'}}">✓</view>
+        </view>
+      </view>
+
+      <view class="role-switcher-close" bindtap="onHideRoleSwitcher">
+        <text>关闭</text>
+      </view>
+    </view>
+  </view>
 </view>

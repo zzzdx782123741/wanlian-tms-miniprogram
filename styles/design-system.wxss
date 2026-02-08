@@ -3,140 +3,162 @@
  * UI/UX Pro Max Design System
  */
 
-/* ============================================
-   颜色系统 Color System
-   ============================================ */
+page {
+  /* ============================================
+     颜色系统 Color System
+     ============================================ */
 
-/* 主色调 - 蓝色系 */
---color-primary: #2563EB;
---color-primary-light: #3B82F6;
---color-primary-dark: #1D4ED8;
+  /* 主色调 - 蓝色系 */
+  --color-primary: #2563EB;
+  --color-primary-light: #3B82F6;
+  --color-primary-dark: #1D4ED8;
 
-/* 辅助色 */
---color-secondary: #3B82F6;
+  /* 辅助色 */
+  --color-secondary: #3B82F6;
 
-/* CTA 颜色 - 橙色强调 */
---color-cta: #F97316;
---color-cta-hover: #EA580C;
+  /* CTA 颜色 - 橙色强调 */
+  --color-cta: #F97316;
+  --color-cta-hover: #EA580C;
 
-/* 背景色 */
---color-bg-page: #F8FAFC;
---color-bg-card: rgba(255, 255, 255, 0.15);
---color-bg-card-hover: rgba(255, 255, 255, 0.25);
+  /* 背景色 */
+  --color-bg-page: #F8FAFC;
+  --color-bg-card: rgba(255, 255, 255, 0.15);
+  --color-bg-card-hover: rgba(255, 255, 255, 0.25);
 
-/* 文字颜色 */
---color-text-primary: #1E293B;
---color-text-secondary: #475569;
---color-text-tertiary: #94A3B8;
---color-text-inverse: #FFFFFF;
+  /* 文字颜色 */
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94A3B8;
+  --color-text-inverse: #FFFFFF;
 
-/* 边框颜色 - 玻璃态 */
---color-border-glass: rgba(255, 255, 255, 0.2);
---color-border-light: rgba(0, 0, 0, 0.08);
+  /* 边框颜色 - 玻璃态 */
+  --color-border-glass: rgba(255, 255, 255, 0.2);
+  --color-border-light: rgba(0, 0, 0, 0.08);
 
-/* 功能色 */
---color-success: #10B981;
---color-warning: #F59E0B;
---color-error: #EF4444;
---color-info: #06B6D4;
+  /* 功能色 */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #06B6D4;
 
-/* 玻璃态特殊效果 */
---glass-blur: 15px;
---glass-opacity: 0.15;
---glass-border: 1px solid rgba(255, 255, 255, 0.2);
+  /* 玻璃态特殊效果 */
+  --glass-blur: 15px;
+  --glass-opacity: 0.15;
+  --glass-border: 1px solid rgba(255, 255, 255, 0.2);
 
-/* ============================================
-   字体系统 Typography
-   ============================================ */
+  /* ============================================
+     字体系统 Typography
+     ============================================ */
 
-/* 字体族 */
---font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
---font-family-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+  /* 字体族 */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  --font-family-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
 
-/* 字号（使用 rpx 自动适配） */
---font-size-xs: 20rpx;
---font-size-sm: 24rpx;
---font-size-base: 28rpx;
---font-size-lg: 32rpx;
---font-size-xl: 36rpx;
---font-size-2xl: 40rpx;
---font-size-3xl: 48rpx;
---font-size-4xl: 56rpx;
+  /* 字号（使用 rpx 自动适配） */
+  --font-size-xs: 20rpx;
+  --font-size-sm: 24rpx;
+  --font-size-base: 28rpx;
+  --font-size-lg: 32rpx;
+  --font-size-xl: 36rpx;
+  --font-size-2xl: 40rpx;
+  --font-size-3xl: 48rpx;
+  --font-size-4xl: 56rpx;
 
-/* 行高 */
---line-height-tight: 1.25;
---line-height-normal: 1.5;
---line-height-relaxed: 1.75;
---line-height-loose: 2;
+  /* 行高 */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  --line-height-loose: 2;
 
-/* 字重 */
---font-weight-normal: 400;
---font-weight-medium: 500;
---font-weight-semibold: 600;
---font-weight-bold: 700;
+  /* 字重 */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
-/* ============================================
-   间距系统 Spacing
-   ============================================ */
+  /* ============================================
+     间距系统 Spacing
+     ============================================ */
 
---spacing-xs: 8rpx;
---spacing-sm: 16rpx;
---spacing-md: 24rpx;
---spacing-lg: 32rpx;
---spacing-xl: 48rpx;
---spacing-2xl: 64rpx;
---spacing-3xl: 96rpx;
+  --spacing-xs: 8rpx;
+  --spacing-sm: 16rpx;
+  --spacing-md: 24rpx;
+  --spacing-lg: 32rpx;
+  --spacing-xl: 48rpx;
+  --spacing-2xl: 64rpx;
+  --spacing-3xl: 96rpx;
 
-/* ============================================
-   圆角系统 Border Radius
-   ============================================ */
+  /* ============================================
+     圆角系统 Border Radius
+     ============================================ */
 
---radius-sm: 8rpx;
---radius-md: 12rpx;
---radius-lg: 16rpx;
---radius-xl: 24rpx;
---radius-2xl: 32rpx;
---radius-full: 9999rpx;
+  --radius-sm: 8rpx;
+  --radius-md: 12rpx;
+  --radius-lg: 16rpx;
+  --radius-xl: 24rpx;
+  --radius-2xl: 32rpx;
+  --radius-full: 9999rpx;
 
-/* ============================================
-   阴影系统 Box Shadow
-   ============================================ */
+  /* ============================================
+     阴影系统 Box Shadow
+     ============================================ */
 
---shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
---shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
---shadow-lg: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
---shadow-xl: 0 16rpx 48rpx rgba(0, 0, 0, 0.16);
+  --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16rpx 48rpx rgba(0, 0, 0, 0.16);
 
-/* 玻璃态阴影 */
---shadow-glass: 0 8rpx 32rpx rgba(37, 99, 235, 0.1);
---shadow-glass-hover: 0 12rpx 48rpx rgba(37, 99, 235, 0.15);
+  /* 玻璃态阴影 */
+  --shadow-glass: 0 8rpx 32rpx rgba(37, 99, 235, 0.1);
+  --shadow-glass-hover: 0 12rpx 48rpx rgba(37, 99, 235, 0.15);
 
-/* ============================================
-   动画系统 Animation
-   ============================================ */
+  /* ============================================
+     动画系统 Animation
+     ============================================ */
 
-/* 过渡时长（符合 150-300ms 规范） */
---duration-fast: 150ms;
---duration-base: 200ms;
---duration-slow: 300ms;
+  /* 过渡时长（符合 150-300ms 规范） */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
 
-/* 缓动函数 */
---ease-default: cubic-bezier(0.4, 0, 0.2, 1);
---ease-in: cubic-bezier(0.4, 0, 1, 1);
---ease-out: cubic-bezier(0, 0, 0.2, 1);
---ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
+  /* 缓动函数 */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
 
-/* ============================================
-   层级系统 Z-Index
-   ============================================ */
+  /* ============================================
+     层级系统 Z-Index
+     ============================================ */
 
---z-dropdown: 1000;
---z-sticky: 1020;
---z-fixed: 1030;
---z-modal-backdrop: 1040;
---z-modal: 1050;
---z-popover: 1060;
---z-tooltip: 1070;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+
+  /* ============================================
+     页面基础设置 Page Base Settings
+     ============================================ */
+
+  /* 字体设置 */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: #1E293B;
+
+  /* 背景设置 */
+  background: #F8FAFC;
+
+  /* 布局设置 */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
 
 /* ============================================
    玻璃态核心样式类 Glass Morphism Core
@@ -287,18 +309,5 @@
   outline-offset: 2px;
 }
 
-/* 高对比度模式支持 */
-@media (prefers-contrast: high) {
-  .glass-card {
-    border: 2px solid var(--color-primary);
-  }
-}
-
-/* 减少动画模式 */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+/* 注意：WXSS 不支持 @media (prefers-contrast) 查询，已移除 */
+/* 注意：WXSS 不支持 @media (prefers-reduced-motion) 查询，已移除 */

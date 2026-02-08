@@ -1,0 +1,167 @@
+<!--pages/report/report.wxml - 报修申请页面-->
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">报修申请</view>
+    <view class="header-subtitle">提交车辆维修申请</view>
+  </view>
+
+  <!-- 表单区域 -->
+  <view class="form-container">
+    <!-- 选择车辆 -->
+    <view class="form-group">
+      <view class="form-label">
+        <text class="required">*</text>
+        选择车辆
+      </view>
+      <picker
+        mode="selector"
+        range="{{vehicles}}"
+        range-key="label"
+        value="{{selectedVehicleIndex}}"
+        bindchange="onVehicleChange"
+        disabled="{{vehicles.length === 0}}"
+      >
+        <view class="picker-view {{selectedVehicleIndex === -1 ? 'placeholder' : ''}}">
+          {{selectedVehicleIndex !== -1 ? vehicles[selectedVehicleIndex].label : '请选择车辆'}}
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 选择门店 -->
+    <view class="form-group">
+      <view class="form-label">
+        <text class="required">*</text>
+        选择门店
+      </view>
+      <picker
+        mode="selector"
+        range="{{stores}}"
+        range-key="label"
+        value="{{selectedStoreIndex}}"
+        bindchange="onStoreChange"
+        disabled="{{stores.length === 0}}"
+      >
+        <view class="picker-view {{selectedStoreIndex === -1 ? 'placeholder' : ''}}">
+          {{selectedStoreIndex !== -1 ? stores[selectedStoreIndex].label : '请选择维修门店'}}
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 预约时间 -->
+    <view class="form-group">
+      <view class="form-label">预约时间</view>
+      <view class="datetime-row">
+        <picker
+          mode="date"
+          value="{{appointmentDate}}"
+          bindchange="onDateChange"
+          start="{{today}}"
+        >
+          <view class="picker-view small {{appointmentDate ? '' : 'placeholder'}}">
+            {{appointmentDate || '选择日期'}}
+            <text class="picker-arrow">›</text>
+          </view>
+        </picker>
+        <picker
+          mode="time"
+          value="{{appointmentTime}}"
+          bindchange="onTimeChange"
+        >
+          <view class="picker-view small {{appointmentTime ? '' : 'placeholder'}}">
+            {{appointmentTime || '选择时间'}}
+            <text class="picker-arrow">›</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 故障描述 -->
+    <view class="form-group">
+      <view class="form-label">
+        <text class="required">*</text>
+        故障描述
+      </view>
+      <textarea
+        class="textarea-field"
+        placeholder="请详细描述故障情况，例如：发动机异响、刹车失灵等"
+        value="{{faultDescription}}"
+        bindinput="onDescriptionInput"
+        maxlength="500"
+        auto-height
+      />
+      <view class="char-count">{{faultDescription.length}}/500</view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="form-group">
+      <view class="form-label">备注</view>
+      <textarea
+        class="textarea-field"
+        placeholder="如有其他需求或特殊情况，请在此备注（选填）"
+        value="{{remark}}"
+        bindinput="onRemarkInput"
+        maxlength="200"
+        auto-height
+      />
+      <view class="char-count">{{remark.length}}/200</view>
+    </view>
+
+    <!-- 故障图片 -->
+    <view class="form-group">
+      <view class="form-label">故障图片</view>
+      <view class="image-upload">
+        <view
+          class="upload-btn"
+          bindtap="onChooseImage"
+          wx:if="{{faultImages.length < 9}}"
+        >
+          <text class="upload-icon">📷</text>
+          <text class="upload-text">上传图片</text>
+          <text class="upload-hint">（最多9张）</text>
+        </view>
+        <view class="image-list">
+          <view
+            class="image-item"
+            wx:for="{{faultImages}}"
+            wx:key="index"
+          >
+            <image
+              class="uploaded-image"
+              src="{{item}}"
+              mode="aspectFill"
+              bindtap="onPreviewImage"
+              data-url="{{item}}"
+            />
+            <view
+              class="delete-btn"
+              bindtap="onDeleteImage"
+              data-index="{{index}}"
+            >
+              ✕
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <button
+      class="submit-btn"
+      bindtap="onSubmit"
+      disabled="{{submitting}}"
+    >
+      {{submitting ? '提交中...' : '提交申请'}}
+    </button>
+
+    <!-- 提示信息 -->
+    <view class="tips">
+      <view class="tip-title">💡 温馨提示</view>
+      <view class="tip-item">• 请如实描述故障情况，方便门店快速定位问题</view>
+      <view class="tip-item">• 上传清晰的故障图片可以加快处理速度</view>
+      <view class="tip-item">• 提交后订单将发送给附近门店接单</view>
+    </view>
+  </view>
+</view>

@@ -1,5 +1,5 @@
 // pages/auth/register.js
-const request = require('../../utils/request');
+const request = require('../../../utils/request');
 
 Page({
   data: {
@@ -8,6 +8,7 @@ Page({
     confirmPassword: '',
     username: '',
     role: 'DRIVER',
+    roleIndex: 0,
     roleList: [
       { value: 'DRIVER', label: '司机' },
       { value: 'FLEET_MANAGER', label: '车队管理员' },
@@ -17,8 +18,10 @@ Page({
 
   // 选择角色
   onRoleChange(e) {
+    const index = e.detail.value;
     this.setData({
-      role: this.data.roleList[e.detail.value].value
+      roleIndex: index,
+      role: this.data.roleList[index].value
     });
   },
 

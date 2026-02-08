@@ -6,7 +6,7 @@
       <image class="avatar" src="{{userInfo.avatar || '/images/icons/default-avatar.png'}}"></image>
       <view class="user-details">
         <text class="username">{{userInfo.username}}</text>
-        <text class="role-text">{{userInfo.role === 'FLEET_MANAGER' ? '车队管理员' : '司机'}}</text>
+        <text class="role-text">{{roleText}}</text>
       </view>
     </view>
   </view>

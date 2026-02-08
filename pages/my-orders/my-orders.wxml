@@ -1,0 +1,98 @@
+<!--pages/my-orders/my-orders.wxml - 我的订单页面（门店技师）-->
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">我的订单</view>
+    <view class="header-subtitle">进行中的维修任务</view>
+  </view>
+
+  <!-- 状态筛选标签 -->
+  <view class="filter-tabs">
+    <view
+      class="tab-item {{activeTab === 'all' ? 'active' : ''}}"
+      data-tab="all"
+      bindtap="onTabChange"
+    >
+      <text class="tab-text">全部</text>
+    </view>
+    <view
+      class="tab-item {{activeTab === 'received' ? 'active' : ''}}"
+      data-tab="received"
+      bindtap="onTabChange"
+    >
+      <text class="tab-text">已接单</text>
+    </view>
+    <view
+      class="tab-item {{activeTab === 'approved' ? 'active' : ''}}"
+      data-tab="approved"
+      bindtap="onTabChange"
+    >
+      <text class="tab-text">维修中</text>
+    </view>
+  </view>
+
+  <!-- 订单列表 -->
+  <view class="order-list">
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && orders.length === 0}}">
+      <text class="empty-icon">🔧</text>
+      <text class="empty-text">暂无订单</text>
+      <text class="empty-hint">去接单大厅看看吧</text>
+    </view>
+
+    <!-- 订单卡片 -->
+    <view
+      class="order-card"
+      wx:for="{{orders}}"
+      wx:key="_id"
+      bindtap="onOrderTap"
+      data-id="{{item._id}}"
+    >
+      <!-- 订单状态标签 -->
+      <view class="order-status status-{{item.status}}">
+        {{item.statusText}}
+      </view>
+
+      <!-- 订单头部 -->
+      <view class="order-header">
+        <view class="order-number">{{item.orderNumber}}</view>
+        <view class="order-time">{{item.createdAtText}}</view>
+      </view>
+
+      <!-- 车辆信息 -->
+      <view class="order-vehicle">
+        <text class="vehicle-icon">🚚</text>
+        <view class="vehicle-info">
+          <view class="vehicle-plate">{{item.vehicleId.plateNumber}}</view>
+          <view class="vehicle-model">{{item.vehicleId.brand}} {{item.vehicleId.model}}</view>
+        </view>
+      </view>
+
+      <!-- 故障描述 -->
+      <view class="order-fault">
+        <text class="fault-label">故障：</text>
+        <text class="fault-text">{{item.faultDescription}}</text>
+      </view>
+
+      <!-- 进度提示 -->
+      <view class="order-progress-hint" wx:if="{{item.nextAction}}">
+        <text class="hint-icon">💡</text>
+        <text class="hint-text">{{item.nextAction}}</text>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+
+  <!-- 去接单大厅按钮 -->
+  <view class="goto-hall" wx:if="{{!loading && orders.length === 0}}">
+    <button class="hall-btn" bindtap="onGoToHall">
+      <text class="btn-icon">📋</text>
+      前往接单大厅
+    </button>
+  </view>
+</view>

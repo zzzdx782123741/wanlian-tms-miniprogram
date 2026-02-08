@@ -1,31 +1,29 @@
 {
   "pages": [
-    "pages/auth/login",
+    "pages/auth/login/login",
     "pages/index/index",
-    "pages/driver/vehicles/vehicles",
-    "pages/driver/report/report",
-    "pages/driver/progress/progress",
-    "pages/fleet/vehicles/vehicles",
-    "pages/fleet/report/report",
-    "pages/fleet/approve/approve",
-    "pages/fleet/account/account",
-    "pages/store/orders/orders",
-    "pages/store/quote/quote",
-    "pages/store/order-detail/order-detail"
+    "pages/orders/orders",
+    "pages/order-detail/order-detail",
+    "pages/vehicle/vehicle",
+    "pages/report/report",
+    "pages/account/account",
+    "pages/fleet-vehicles/fleet-vehicles",
+    "pages/my-orders/my-orders",
+    "pages/fleets/fleets",
+    "pages/stores/stores",
+    "pages/users/users"
   ],
   "window": {
-    "backgroundColor": "#F5F5F5",
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#667EEA",
-    "navigationBarTitleText": "万联TMS",
+    "backgroundColor": "#F5F7FA",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarTitleText": "万联驿站TMS",
     "navigationBarTextStyle": "white",
-    "enablePullDownRefresh": true,
-    "backgroundColorTop": "#667EEA",
-    "backgroundColorBottom": "#F5F5F5"
+    "enablePullDownRefresh": false
   },
   "tabBar": {
     "color": "#8C8C8C",
-    "selectedColor": "#667EEA",
+    "selectedColor": "#667eea",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [
@@ -36,22 +34,22 @@
         "selectedIconPath": "images/icons/home-active.png"
       },
       {
-        "pagePath": "pages/store/orders/orders",
+        "pagePath": "pages/orders/orders",
         "text": "订单",
-        "iconPath": "images/icons/order.png",
-        "selectedIconPath": "images/icons/order-active.png"
+        "iconPath": "images/icons/goods.png",
+        "selectedIconPath": "images/icons/goods-active.png"
       },
       {
-        "pagePath": "pages/driver/vehicles/vehicles",
+        "pagePath": "pages/vehicle/vehicle",
         "text": "车辆",
-        "iconPath": "images/icons/car.png",
-        "selectedIconPath": "images/icons/car-active.png"
+        "iconPath": "images/icons/business.png",
+        "selectedIconPath": "images/icons/business-active.png"
       },
       {
-        "pagePath": "pages/fleet/account/account",
+        "pagePath": "pages/account/account",
         "text": "我的",
-        "iconPath": "images/icons/user.png",
-        "selectedIconPath": "images/icons/user-active.png"
+        "iconPath": "images/icons/usercenter.png",
+        "selectedIconPath": "images/icons/usercenter-active.png"
       }
     ]
   },

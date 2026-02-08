@@ -20,7 +20,8 @@
         <view class="vehicle-header">
           <text class="plate-number">{{item.plateNumber}}</text>
           <view class="status-badge status-{{item.status}}">
-            {{item.status === 'ACTIVE' ? '运营中' : '闲置'}}
+            <text wx:if="{{item.status === 'ACTIVE'}}">运营中</text>
+            <text wx:else>闲置</text>
           </view>
         </view>
 

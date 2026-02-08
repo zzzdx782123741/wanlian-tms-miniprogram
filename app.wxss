@@ -4,29 +4,8 @@
  * 引入玻璃态设计系统
  */
 
-/* 引入设计系统变量 */
+/* 引入设计系统变量 - 必须在最前面 */
 @import "styles/design-system.wxss";
-
-/**
- * 页面基础设置
- */
-page {
-  /* 字体设置 */
-  font-family: var(--font-family-base);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
-
-  /* 背景设置 */
-  background: var(--color-bg-page);
-
-  /* 布局设置 */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-height: 100vh;
-  box-sizing: border-box;
-}
 
 /**
  * 全局容器

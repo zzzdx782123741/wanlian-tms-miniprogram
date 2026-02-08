@@ -1,185 +1,322 @@
-// index.js
+// index.js - 万联驿站TMS首页 - 现代化设计
+const app = getApp();
+
 Page({
   data: {
-    showTip: false,
-    powerList: [
-      {
-        title: "云托管",
-        tip: "不限语言的全托管容器服务",
-        showItem: false,
-        item: [
-          {
-            type: "cloudbaserun",
-            title: "云托管调用",
-          },
-        ],
-      },
-      {
-        title: "云函数",
-        tip: "安全、免鉴权运行业务代码",
-        showItem: false,
-        item: [
-          {
-            type: "getOpenId",
-            title: "获取OpenId",
-          },
-          {
-            type: "getMiniProgramCode",
-            title: "生成小程序码",
-          },
-        ],
-      },
-      {
-        title: "数据库",
-        tip: "安全稳定的文档型数据库",
-        showItem: false,
-        item: [
-          {
-            type: "createCollection",
-            title: "创建集合",
-          },
-          {
-            type: "selectRecord",
-            title: "增删改查记录",
-          },
-          // {
-          //   title: '聚合操作',
-          //   page: 'sumRecord',
-          // },
-        ],
-      },
-      {
-        title: "云存储",
-        tip: "自带CDN加速文件存储",
-        showItem: false,
-        item: [
-          {
-            type: "uploadFile",
-            title: "上传文件",
-          },
-        ],
-      },
-      {
-        title: "AI 接入能力",
-        tip: "云开发 AI 接入能力",
-        showItem: false,
-        item: [
-          {
-            type: "model-guide",
-            title: "大模型对话指引",
-          },
-        ],
-      },
-      {
-        title: "AI 智能开发小程序",
-        tip: "连接 AI 开发工具与 MCP 开发小程序",
-        type: "ai-assistant",
-        skipEnvCheck: true,
-        showItem: false,
-        item: [],
-      },
-    ],
-    haveCreateCollection: false,
-    title: "",
-    content: "",
+    userInfo: null,
+    role: '',
+    roleText: '',
+    roleShortText: '',
+    menuList: [],
+    isDevMode: false, // 开发模式标识
+    showRoleSwitcher: false // 角色切换弹窗显示状态
   },
-  onClickPowerInfo(e) {
-    const app = getApp();
-    const index = e.currentTarget.dataset.index;
-    const powerList = this.data.powerList;
-    const selectedItem = powerList[index];
-    
-    // 检查是否跳过环境配置检测
-    if (!selectedItem.skipEnvCheck && !app.globalData.env) {
-      wx.showModal({
-        title: "提示",
-        content: "请在 `miniprogram/app.js` 中正确配置 `env` 参数",
+
+  onLoad() {
+    this.initPage();
+  },
+
+  onShow() {
+    // 每次显示页面时刷新用户信息
+    this.initPage();
+  },
+
+  /**
+   * 初始化页面
+   */
+  initPage() {
+    const userInfo = app.globalData.userInfo;
+    const role = app.globalData.role;
+
+    if (!userInfo || !role) {
+      // 未登录，跳转到登录页
+      wx.redirectTo({
+        url: '/pages/auth/login/login'
       });
       return;
     }
-    if (selectedItem.link) {
-      wx.navigateTo({
-        url: `../web/index?url=${selectedItem.link}&title=${selectedItem.title}`,
-      });
-    } else if (selectedItem.type) {
-      wx.navigateTo({
-        url: `/pages/example/index?envId=${this.data.selectedEnv?.envId}&type=${selectedItem.type}`,
-      });
-    } else if (selectedItem.page) {
-      wx.navigateTo({
-        url: `/pages/${selectedItem.page}/index`,
-      });
-    } else if (
-      selectedItem.title === "数据库" &&
-      !this.data.haveCreateCollection
-    ) {
-      this.onClickDatabase(powerList, selectedItem);
-    } else {
-      selectedItem.showItem = !selectedItem.showItem;
-      this.setData({
-        powerList,
-      });
-    }
-  },
 
-  jumpPage(e) {
-    const { type, page } = e.currentTarget.dataset;
-    console.log("jump page", type, page);
-    if (type) {
-      wx.navigateTo({
-        url: `/pages/example/index?envId=${this.data.selectedEnv?.envId}&type=${type}`,
-      });
-    } else {
-      wx.navigateTo({
-        url: `/pages/${page}/index?envId=${this.data.selectedEnv?.envId}`,
-      });
-    }
-  },
+    // 检测开发模式（根据API地址或版本号判断）
+    const isDevMode = this.checkDevMode();
 
-  onClickDatabase(powerList, selectedItem) {
-    wx.showLoading({
-      title: "",
+    this.setData({
+      userInfo,
+      role,
+      roleText: this.getRoleText(role),
+      roleShortText: this.getRoleShortText(role),
+      isDevMode
     });
-    wx.cloud
-      .callFunction({
-        name: "quickstartFunctions",
-        data: {
-          type: "createCollection",
-        },
-      })
-      .then((resp) => {
-        if (resp.result.success) {
+
+    // 根据角色设置菜单
+    this.setupMenu(role);
+  },
+
+  /**
+   * 检查是否为开发模式
+   */
+  checkDevMode() {
+    // 方式1: 检查API地址
+    const apiHost = app.globalData.baseUrl;
+    if (apiHost.includes('localhost') || apiHost.includes('127.0.0.1')) {
+      return true;
+    }
+
+    // 方式2: 检查小程序版本（开发版/体验版）
+    const accountInfo = wx.getAccountInfoSync();
+    if (accountInfo.miniProgram.envVersion === 'develop' ||
+        accountInfo.miniProgram.envVersion === 'trial') {
+      return true;
+    }
+
+    return false;
+  },
+
+  /**
+   * 显示角色切换弹窗
+   */
+  onShowRoleSwitcher() {
+    this.setData({
+      showRoleSwitcher: true
+    });
+  },
+
+  /**
+   * 关闭角色切换弹窗
+   */
+  onHideRoleSwitcher() {
+    this.setData({
+      showRoleSwitcher: false
+    });
+  },
+
+  /**
+   * 切换角色（开发环境专用）
+   */
+  onSwitchRole(e) {
+    const { role } = e.currentTarget.dataset;
+
+    wx.showModal({
+      title: '切换角色',
+      content: `确定要切换到${this.getRoleText(role)}吗？`,
+      confirmColor: '#667eea',
+      success: (res) => {
+        if (res.confirm) {
+          // 临时切换角色（仅修改前端状态）
+          app.globalData.role = role;
+          wx.setStorageSync('role', role);
+
+          // 关闭弹窗并刷新页面
           this.setData({
-            haveCreateCollection: true,
+            showRoleSwitcher: false
+          });
+
+          // 重新初始化页面
+          this.initPage();
+
+          wx.showToast({
+            title: `已切换到${this.getRoleText(role)}`,
+            icon: 'success'
           });
         }
-        selectedItem.showItem = !selectedItem.showItem;
-        this.setData({
-          powerList,
-        });
-        wx.hideLoading();
-      })
-      .catch((e) => {
-        wx.hideLoading();
-        const { errCode, errMsg } = e;
-        if (errMsg.includes("Environment not found")) {
-          this.setData({
-            showTip: true,
-            title: "云开发环境未找到",
-            content:
-              "如果已经开通云开发，请检查环境ID与 `miniprogram/app.js` 中的 `env` 参数是否一致。",
+      }
+    });
+  },
+
+  /**
+   * 获取角色文本
+   */
+  getRoleText(role) {
+    const roleMap = {
+      'DRIVER': '司机',
+      'FLEET_MANAGER': '车队管理员',
+      'STORE_TECHNICIAN': '门店技师',
+      'PLATFORM_OPERATOR': '平台运营'
+    };
+    return roleMap[role] || '未知角色';
+  },
+
+  /**
+   * 获取角色简称
+   */
+  getRoleShortText(role) {
+    const roleMap = {
+      'DRIVER': '司机',
+      'FLEET_MANAGER': '车队',
+      'STORE_TECHNICIAN': '技师',
+      'PLATFORM_OPERATOR': '运营'
+    };
+    return roleMap[role] || '';
+  },
+
+  /**
+   * 根据角色设置菜单
+   */
+  setupMenu(role) {
+    let menuList = [];
+
+    switch (role) {
+      case 'DRIVER':
+        menuList = [
+          {
+            id: 'vehicle',
+            title: '我的车辆',
+            icon: '🚚',
+            description: '查看和管理我的车辆信息',
+            url: '/pages/vehicle/vehicle',
+            color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          },
+          {
+            id: 'report',
+            title: '报修申请',
+            icon: '🔧',
+            description: '快速提交车辆维修申请',
+            url: '/pages/report/report',
+            color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+          },
+          {
+            id: 'orders',
+            title: '我的订单',
+            icon: '📋',
+            description: '查看维修订单进度',
+            url: '/pages/orders/orders',
+            color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+          }
+        ];
+        break;
+
+      case 'FLEET_MANAGER':
+        menuList = [
+          {
+            id: 'vehicles',
+            title: '车队车辆',
+            icon: '🚛',
+            description: '管理车队所有车辆',
+            url: '/pages/fleet-vehicles/fleet-vehicles',
+            color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          },
+          {
+            id: 'orders',
+            title: '维修订单',
+            icon: '📋',
+            description: '查看和管理所有订单',
+            url: '/pages/orders/orders',
+            color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+          },
+          {
+            id: 'account',
+            title: '账户余额',
+            icon: '💰',
+            description: '查看账户余额和交易',
+            url: '/pages/account/account',
+            color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+          }
+        ];
+        break;
+
+      case 'STORE_TECHNICIAN':
+        menuList = [
+          {
+            id: 'orders',
+            title: '接单大厅',
+            icon: '📋',
+            description: '查看和接收维修订单',
+            url: '/pages/orders/orders',
+            color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+          },
+          {
+            id: 'my-orders',
+            title: '我的订单',
+            icon: '🔧',
+            description: '进行中的维修任务',
+            url: '/pages/my-orders/my-orders',
+            color: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
+          }
+        ];
+        break;
+
+      case 'PLATFORM_OPERATOR':
+        menuList = [
+          {
+            id: 'fleets',
+            title: '车队管理',
+            icon: '🏢',
+            description: '管理平台所有车队',
+            url: '/pages/fleets/fleets',
+            color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          },
+          {
+            id: 'stores',
+            title: '门店管理',
+            icon: '🏪',
+            description: '管理合作维修门店',
+            url: '/pages/stores/stores',
+            color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+          },
+          {
+            id: 'orders',
+            title: '订单监控',
+            icon: '📊',
+            description: '监控全平台订单',
+            url: '/pages/orders/orders',
+            color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+          },
+          {
+            id: 'users',
+            title: '用户管理',
+            icon: '👥',
+            description: '管理系统用户权限',
+            url: '/pages/users/users',
+            color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+          }
+        ];
+        break;
+    }
+
+    this.setData({ menuList });
+  },
+
+  /**
+   * 点击菜单项
+   */
+  onMenuTap(e) {
+    const { url } = e.currentTarget.dataset;
+
+    if (url) {
+      wx.navigateTo({
+        url,
+        fail: () => {
+          wx.showToast({
+            title: '页面开发中',
+            icon: 'none'
           });
-          return;
-        }
-        if (errMsg.includes("FunctionName parameter could not be found")) {
-          this.setData({
-            showTip: true,
-            title: "请上传云函数",
-            content:
-              "在'cloudfunctions/quickstartFunctions'目录右键，选择【上传并部署-云端安装依赖】，等待云函数上传完成后重试。",
-          });
-          return;
         }
       });
+    }
   },
+
+  /**
+   * 退出登录
+   */
+  onLogout() {
+    wx.showModal({
+      title: '提示',
+      content: '确定要退出登录吗？',
+      confirmColor: '#667eea',
+      success: (res) => {
+        if (res.confirm) {
+          app.clearUserInfo();
+          wx.redirectTo({
+            url: '/pages/auth/login/login'
+          });
+        }
+      }
+    });
+  },
+
+  /**
+   * 阻止事件冒泡
+   */
+  stopPropagation() {
+    // 空函数，仅用于阻止事件冒泡
+  }
 });

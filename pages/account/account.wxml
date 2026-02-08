@@ -1,0 +1,78 @@
+<!--pages/account/account.wxml - 账户余额页面-->
+<view class="page">
+  <!-- 顶部余额卡片 -->
+  <view class="balance-card">
+    <view class="balance-label">账户余额</view>
+    <view class="balance-value">¥{{account.balance.toFixed(2)}}</view>
+    <view class="balance-hint">可用于支付维修费用</view>
+
+    <!-- 充值按钮 -->
+    <button class="recharge-btn" bindtap="onRecharge">
+      <text class="btn-icon">💰</text>
+      立即充值
+    </button>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-container">
+    <view class="stat-item">
+      <view class="stat-value">{{stats.totalOrders}}</view>
+      <view class="stat-label">总订单数</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <view class="stat-value">¥{{stats.totalSpent.toFixed(2)}}</view>
+      <view class="stat-label">累计消费</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <view class="stat-value">{{stats.pendingOrders}}</view>
+      <view class="stat-label">待处理</view>
+    </view>
+  </view>
+
+  <!-- 交易记录 -->
+  <view class="transactions-section">
+    <view class="section-header">
+      <view class="section-title">交易记录</view>
+      <view class="section-filter" bindtap="onFilter">
+        <text>{{filterText}}</text>
+        <text class="filter-icon">▼</text>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && transactions.length === 0}}">
+      <text class="empty-icon">💳</text>
+      <text class="empty-text">暂无交易记录</text>
+    </view>
+
+    <!-- 交易列表 -->
+    <view class="transaction-list" wx:if="{{transactions.length > 0}}">
+      <view
+        class="transaction-item"
+        wx:for="{{transactions}}"
+        wx:key="_id"
+        bindtap="onTransactionDetail"
+        data-item="{{item}}"
+      >
+        <view class="transaction-icon {{item.type === 'recharge' ? 'income' : 'expense'}}">
+          {{item.type === 'recharge' ? '↓' : '↑'}}
+        </view>
+        <view class="transaction-info">
+          <view class="transaction-title">{{item.description}}</view>
+          <view class="transaction-time">{{item.createdAtText}}</view>
+        </view>
+        <view class="transaction-amount {{item.type === 'recharge' ? 'income' : 'expense'}}">
+          {{item.type === 'recharge' ? '+' : '-'}}¥{{item.amount.toFixed(2)}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="loading-more" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+</view>

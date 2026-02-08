@@ -1,0 +1,127 @@
+<!--pages/fleets/fleets.wxml - 车队管理页面-->
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">车队管理</view>
+    <view class="header-subtitle">管理平台所有车队</view>
+  </view>
+
+  <!-- 搜索和筛选 -->
+  <view class="search-bar">
+    <view class="search-row">
+      <picker
+        mode="selector"
+        range="{{statusOptions}}"
+        range-key="label"
+        value="{{statusIndex}}"
+        bindchange="onStatusChange"
+      >
+        <view class="filter-picker">
+          <text>{{statusOptions[statusIndex].label}}</text>
+          <text class="arrow">▼</text>
+        </view>
+      </picker>
+    </view>
+    <view class="search-row">
+      <input
+        class="search-input"
+        placeholder="搜索车队名称"
+        value="{{keyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearch"
+      />
+      <button class="search-btn" bindtap="onSearch">搜索</button>
+    </view>
+  </view>
+
+  <!-- 车队列表 -->
+  <view class="list-container">
+    <view
+      class="fleet-card"
+      wx:for="{{fleets}}"
+      wx:key="_id"
+    >
+      <!-- 车队基本信息 -->
+      <view class="fleet-header">
+        <view class="fleet-name">{{item.name}}</view>
+        <view class="fleet-status status-{{item.status}}">
+          {{item.status === 'pending_audit' ? '待审核' : item.status === 'normal' ? '正常' : '已停用'}}
+        </view>
+      </view>
+
+      <!-- 车队详细信息 -->
+      <view class="fleet-info">
+        <view class="info-row">
+          <text class="label">联系人：</text>
+          <text class="value">{{item.contact.name}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">联系电话：</text>
+          <text class="value">{{item.contact.phone}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">车队规模：</text>
+          <text class="value">{{item.scale}} 辆</text>
+        </view>
+        <view class="info-row">
+          <text class="label">地址：</text>
+          <text class="value">{{item.address.city}}{{item.address.district}}</text>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-row">
+        <button
+          class="action-btn primary"
+          data-id="{{item._id}}"
+          bindtap="onViewDetail"
+        >
+          查看详情
+        </button>
+
+        <button
+          wx:if="{{item.status === 'pending_audit'}}"
+          class="action-btn success"
+          data-id="{{item._id}}"
+          bindtap="onApprove"
+        >
+          审核通过
+        </button>
+
+        <button
+          wx:if="{{item.status === 'normal'}}"
+          class="action-btn warning"
+          data-id="{{item._id}}"
+          data-status="suspended"
+          bindtap="onUpdateStatus"
+        >
+          停用
+        </button>
+
+        <button
+          wx:if="{{item.status === 'suspended'}}"
+          class="action-btn success"
+          data-id="{{item._id}}"
+          data-status="normal"
+          bindtap="onUpdateStatus"
+        >
+          启用
+        </button>
+
+        <button
+          class="action-btn danger"
+          data-id="{{item._id}}"
+          bindtap="onDelete"
+        >
+          删除
+        </button>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{fleets.length === 0 && !loading}}">
+      <text class="empty-icon">🏢</text>
+      <text class="empty-text">暂无车队数据</text>
+    </view>
+  </view>
+</view>

@@ -35,10 +35,12 @@ Page({
     }
 
     const isFleetManager = userInfo.role === 'FLEET_MANAGER';
+    const roleText = isFleetManager ? '车队管理员' : '司机';
 
     this.setData({
       userInfo,
-      isFleetManager
+      isFleetManager,
+      roleText
     });
 
     // 只有FLEET_MANAGER加载账户余额

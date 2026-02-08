@@ -1,0 +1,87 @@
+<!--pages/vehicle/vehicle.wxml - 我的车辆页面-->
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">我的车辆</view>
+    <view class="header-subtitle">查看和管理您的车辆信息</view>
+  </view>
+
+  <!-- 车辆列表 -->
+  <view class="vehicle-list">
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && vehicles.length === 0}}">
+      <text class="empty-icon">🚚</text>
+      <text class="empty-text">暂无车辆信息</text>
+      <text class="empty-hint">请联系管理员分配车辆</text>
+    </view>
+
+    <!-- 车辆卡片 -->
+    <view
+      class="vehicle-card"
+      wx:for="{{vehicles}}"
+      wx:key="_id"
+    >
+      <!-- 车辆头部 -->
+      <view class="vehicle-header">
+        <view class="vehicle-plate">{{item.plateNumber}}</view>
+        <view class="vehicle-status status-{{item.status}}">
+          {{item.statusText}}
+        </view>
+      </view>
+
+      <!-- 车辆详情 -->
+      <view class="vehicle-details">
+        <view class="detail-row">
+          <text class="detail-icon">🚗</text>
+          <view class="detail-info">
+            <text class="detail-label">品牌车型</text>
+            <text class="detail-value">{{item.brand}} {{item.model}}</text>
+          </view>
+        </view>
+
+        <view class="detail-row" wx:if="{{item.year}}">
+          <text class="detail-icon">📅</text>
+          <view class="detail-info">
+            <text class="detail-label">年份</text>
+            <text class="detail-value">{{item.year}}年</text>
+          </view>
+        </view>
+
+        <view class="detail-row" wx:if="{{item.vin}}">
+          <text class="detail-icon">🔢</text>
+          <view class="detail-info">
+            <text class="detail-label">车架号</text>
+            <text class="detail-value">{{item.vin}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="vehicle-actions">
+        <button
+          class="action-btn primary"
+          bindtap="onReport"
+          data-vehicle-id="{{item._id}}"
+          disabled="{{item.status !== 'normal'}}"
+        >
+          <text class="btn-icon">🔧</text>
+          <text>报修申请</text>
+        </button>
+        <button
+          class="action-btn secondary"
+          bindtap="onViewOrders"
+          data-vehicle-id="{{item._id}}"
+        >
+          <text class="btn-icon">📋</text>
+          <text>维修记录</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+</view>

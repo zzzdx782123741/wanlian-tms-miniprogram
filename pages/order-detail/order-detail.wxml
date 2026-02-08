@@ -1,0 +1,232 @@
+<!--pages/order-detail/order-detail.wxml - 订单详情页面-->
+<view class="page">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 订单详情 -->
+  <view class="order-detail" wx:if="{{!loading && order}}">
+    <!-- 顶部状态卡片 -->
+    <view class="status-card status-{{order.status}}">
+      <view class="status-icon">{{order.statusIcon}}</view>
+      <view class="status-info">
+        <view class="status-text">{{order.statusText}}</view>
+        <view class="status-hint">{{order.statusHint}}</view>
+      </view>
+    </view>
+
+    <!-- 进度时间线 -->
+    <view class="timeline" wx:if="{{order.timeline && order.timeline.length > 0}}">
+      <view class="timeline-item" wx:for="{{order.timeline}}" wx:key="index">
+        <view class="timeline-dot {{item.completed ? 'active' : ''}}"></view>
+        <view class="timeline-content">
+          <view class="timeline-title">{{item.title}}</view>
+          <view class="timeline-time" wx:if="{{item.time}}">{{item.time}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 订单基本信息 -->
+    <view class="info-card">
+      <view class="card-title">订单信息</view>
+      <view class="info-row">
+        <text class="info-label">订单编号</text>
+        <text class="info-value">{{order.orderNumber}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">创建时间</text>
+        <text class="info-value">{{order.createdAtText}}</text>
+      </view>
+    </view>
+
+    <!-- 车辆信息 -->
+    <view class="info-card" bindtap="onVehicleDetail" data-vehicle-id="{{order.vehicleId._id}}">
+      <view class="card-title">车辆信息</view>
+      <view class="vehicle-info">
+        <view class="vehicle-main">
+          <text class="vehicle-plate">{{order.vehicleId.plateNumber}}</text>
+          <text class="vehicle-model">{{order.vehicleId.brand}} {{order.vehicleId.model}}</text>
+        </view>
+        <text class="arrow-icon">›</text>
+      </view>
+    </view>
+
+    <!-- 故障描述 -->
+    <view class="info-card">
+      <view class="card-title">故障描述</view>
+      <view class="fault-content">{{order.faultDescription}}</view>
+      <!-- 故障图片 -->
+      <view class="fault-images" wx:if="{{order.faultImages && order.faultImages.length > 0}}">
+        <image
+          class="fault-image"
+          wx:for="{{order.faultImages}}"
+          wx:for-item="image"
+          wx:key="*this"
+          src="{{image}}"
+          mode="aspectFill"
+          bindtap="onPreviewImage"
+          data-url="{{image}}"
+          data-urls="{{order.faultImages}}"
+        />
+      </view>
+    </view>
+
+    <!-- 门店信息（已接单后显示） -->
+    <view class="info-card" wx:if="{{order.storeId}}">
+      <view class="card-title">维修门店</view>
+      <view class="store-info">
+        <view class="store-name">{{order.storeId.name}}</view>
+        <view class="store-detail">
+          <text class="detail-icon">📍</text>
+          <text>{{order.storeId.address}}</text>
+        </view>
+        <view class="store-detail" wx:if="{{order.storeId.phone}}">
+          <text class="detail-icon">📞</text>
+          <text>{{order.storeId.phone}}</text>
+        </view>
+      </view>
+      <button class="contact-btn" bindtap="onContactStore">
+        <text class="btn-icon">📞</text>
+        联系门店
+      </button>
+    </view>
+
+    <!-- 维修报价（已报价后显示） -->
+    <view class="info-card" wx:if="{{order.quote}}">
+      <view class="card-title">维修报价</view>
+      <view class="quote-items">
+        <view class="quote-item" wx:for="{{order.quote.items}}" wx:key="name">
+          <view class="item-name">{{item.name}}</view>
+          <view class="item-price">¥{{item.price}} × {{item.quantity}}</view>
+        </view>
+      </view>
+      <view class="quote-total">
+        <text class="total-label">总计：</text>
+        <text class="total-value">¥{{order.quote.total}}</text>
+      </view>
+      <!-- 报价图片 -->
+      <view class="quote-images" wx:if="{{order.quote.images && order.quote.images.length > 0}}">
+        <image
+          class="quote-image"
+          wx:for="{{order.quote.images}}"
+          wx:for-item="image"
+          wx:key="*this"
+          src="{{image}}"
+          mode="aspectFill"
+          bindtap="onPreviewImage"
+          data-url="{{image}}"
+          data-urls="{{order.quote.images}}"
+        />
+      </view>
+    </view>
+
+    <!-- 维修日志 -->
+    <view class="info-card" wx:if="{{order.logs && order.logs.length > 0}}">
+      <view class="card-title">维修日志</view>
+      <view class="log-list">
+        <view class="log-item" wx:for="{{order.logs}}" wx:key="_id">
+          <view class="log-header">
+            <text class="log-operator">{{item.operatorId.nickname}}</text>
+            <text class="log-time">{{item.createdAtText}}</text>
+          </view>
+          <view class="log-content">{{item.content}}</view>
+          <!-- 日志图片 -->
+          <view class="log-images" wx:if="{{item.images && item.images.length > 0}}">
+            <image
+              class="log-image"
+              wx:for="{{item.images}}"
+              wx:for-item="image"
+              wx:key="*this"
+              src="{{image}}"
+              mode="aspectFill"
+              bindtap="onPreviewImage"
+              data-url="{{image}}"
+              data-urls="{{item.images}}"
+            />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 完工信息（已完工后显示） -->
+    <view class="info-card" wx:if="{{order.completion}}">
+      <view class="card-title">完工信息</view>
+      <view class="completion-content">{{order.completion.description}}</view>
+      <!-- 完工图片 -->
+      <view class="completion-images" wx:if="{{order.completion.images && order.completion.images.length > 0}}">
+        <image
+          class="completion-image"
+          wx:for="{{order.completion.images}}"
+          wx:for-item="image"
+          wx:key="*this"
+          src="{{image}}"
+          mode="aspectFill"
+          bindtap="onPreviewImage"
+          data-url="{{image}}"
+          data-urls="{{order.completion.images}}"
+        />
+      </view>
+    </view>
+
+    <!-- 底部操作按钮 -->
+    <view class="action-bar">
+      <!-- 车队管理员审批按钮 -->
+      <button
+        class="action-btn approve"
+        wx:if="{{order.status === 'quoted' && userRole === 'FLEET_MANAGER'}}"
+        bindtap="onApproveQuote"
+        data-approved="{{true}}"
+      >
+        <text class="btn-icon">✓</text>
+        批准报价
+      </button>
+      <button
+        class="action-btn reject"
+        wx:if="{{order.status === 'quoted' && userRole === 'FLEET_MANAGER'}}"
+        bindtap="onApproveQuote"
+        data-approved="{{false}}"
+      >
+        <text class="btn-icon">✕</text>
+        拒绝报价
+      </button>
+
+      <!-- 门店技师操作按钮 -->
+      <button
+        class="action-btn primary"
+        wx:if="{{order.status === 'pending' && userRole === 'STORE_TECHNICIAN'}}"
+        bindtap="onReceiveOrder"
+      >
+        <text class="btn-icon">📋</text>
+        接单
+      </button>
+      <button
+        class="action-btn primary"
+        wx:if="{{order.status === 'received' && userRole === 'STORE_TECHNICIAN'}}"
+        bindtap="onSubmitQuote"
+      >
+        <text class="btn-icon">💰</text>
+        提交报价
+      </button>
+      <button
+        class="action-btn primary"
+        wx:if="{{order.status === 'approved' && userRole === 'STORE_TECHNICIAN'}}"
+        bindtap="onCompleteOrder"
+      >
+        <text class="btn-icon">✓</text>
+        提交完工
+      </button>
+
+      <!-- 客户确认按钮 -->
+      <button
+        class="action-btn confirm"
+        wx:if="{{order.status === 'completed' && userRole === 'DRIVER'}}"
+        bindtap="onConfirmOrder"
+      >
+        <text class="btn-icon">✓</text>
+        确认完工
+      </button>
+    </view>
+  </view>
+</view>

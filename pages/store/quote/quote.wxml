@@ -1,9 +1,19 @@
-<!--pages/store/quote/quote.wxml-->
+<!--pages/store/quote/quote.wxml - 门店技师填写报价-->
+<wxs module="utils">
+  module.exports = {
+    toFixed: function(value) {
+      return (value || 0).toFixed(2);
+    }
+  }
+</wxs>
 <view class="quote-container">
   <block wx:if="{{order}}">
     <!-- 订单信息 -->
     <view class="order-section glass-card">
-      <view class="section-title">订单信息</view>
+      <view class="section-title">
+        <text class="icon">📋</text>
+        <text>订单信息</text>
+      </view>
 
       <view class="info-row">
         <text class="label">订单号</text>
@@ -11,70 +21,162 @@
       </view>
 
       <view class="info-row">
-        <text class="label">起点</text>
-        <text class="value">{{order.origin}}</text>
+        <text class="label">车牌号</text>
+        <text class="value">{{(order.vehicleId && order.vehicleId.plateNumber) || '-'}}</text>
       </view>
 
       <view class="info-row">
-        <text class="label">终点</text>
-        <text class="value">{{order.destination}}</text>
+        <text class="label">车队</text>
+        <text class="value">{{(order.vehicleId && order.vehicleId.fleetId && order.vehicleId.fleetId.name) || '-'}}</text>
       </view>
 
       <view class="info-row">
-        <text class="label">货物</text>
-        <text class="value">{{order.goodsName}}</text>
+        <text class="label">故障描述</text>
+        <text class="value fault-desc">{{order.faultDescription}}</text>
       </view>
 
-      <view class="info-row">
-        <text class="label">重量</text>
-        <text class="value">{{order.weight}}吨</text>
+      <block wx:if="{{order.faultImages && order.faultImages.length > 0}}">
+        <view class="fault-images">
+          <image
+            wx:for="{{order.faultImages}}"
+            wx:key="*this"
+            class="fault-image"
+            src="{{item}}"
+            mode="aspectFill"
+            bindtap="previewImage"
+            data-url="{{item}}"
+            data-urls="{{order.faultImages}}"
+          />
+        </view>
+      </block>
+    </view>
+
+    <!-- 报价项目 -->
+    <view class="form-section glass-card">
+      <view class="section-title">
+        <text class="icon">💰</text>
+        <text>报价项目</text>
+      </view>
+
+      <view class="quote-items">
+        <view class="quote-item" wx:for="{{quoteItems}}" wx:key="index">
+          <view class="item-row">
+            <input
+              class="item-input item-name"
+              placeholder="项目名称（如：工时费、材料费）"
+              value="{{item.name}}"
+              bindinput="onItemNameInput"
+              data-index="{{index}}"
+            />
+            <input
+              class="item-input item-price"
+              type="digit"
+              placeholder="单价"
+              value="{{item.price}}"
+              bindinput="onItemPriceInput"
+              data-index="{{index}}"
+            />
+            <input
+              class="item-input item-quantity"
+              type="number"
+              placeholder="数量"
+              value="{{item.quantity}}"
+              bindinput="onItemQuantityInput"
+              data-index="{{index}}"
+            />
+            <view class="item-delete" bindtap="deleteQuoteItem" data-index="{{index}}" wx:if="{{quoteItems.length > 1}}">
+              <text class="delete-icon">🗑️</text>
+            </view>
+          </view>
+          <view class="item-subtotal">
+            小计: ¥{{utils.toFixed(item.price * item.quantity)}}
+          </view>
+        </view>
+      </view>
+
+      <button class="add-item-btn" bindtap="addQuoteItem">
+        <text class="add-icon">➕</text>
+        <text>添加项目</text>
+      </button>
+
+      <view class="total-section">
+        <text class="total-label">报价总计</text>
+        <text class="total-amount">¥{{totalAmount}}</text>
       </view>
     </view>
 
-    <!-- 报价表单 -->
+    <!-- 报价图片 -->
     <view class="form-section glass-card">
-      <view class="section-title">报价信息</view>
+      <view class="section-title">
+        <text class="icon">📷</text>
+        <text>报价图片（选填）</text>
+      </view>
 
-      <view class="form-item">
-        <text class="label">报价（元）</text>
-        <input
-          class="input-field"
-          type="digit"
-          placeholder="请输入报价"
-          value="{{price}}"
-          bindinput="onPriceInput"
-        />
+      <view class="image-upload">
+        <block wx:if="{{quoteImages.length > 0}}">
+          <view class="image-item" wx:for="{{quoteImages}}" wx:key="index">
+            <image
+              class="uploaded-image"
+              src="{{item}}"
+              mode="aspectFill"
+              bindtap="previewImage"
+              data-url="{{item}}"
+            />
+            <view class="image-delete" bindtap="deleteImage" data-index="{{index}}">
+              <text>✕</text>
+            </view>
+          </view>
+        </block>
+
+        <view class="upload-btn" wx:if="{{quoteImages.length < 9}}" bindtap="chooseImage">
+          <text class="upload-icon">📷</text>
+          <text class="upload-text">添加图片</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 其他信息 -->
+    <view class="form-section glass-card">
+      <view class="section-title">
+        <text class="icon">📝</text>
+        <text>其他信息</text>
       </view>
 
       <view class="form-item">
-        <text class="label">预计完成时间</text>
+        <text class="label">预计完成天数</text>
         <picker
           class="picker"
-          mode="date"
-          value="{{estimatedTime}}"
-          bindchange="onTimeChange"
+          mode="selector"
+          range="{{[1,2,3,5,7,10,15]}}"
+          value="{{estimatedDays - 1}}"
+          bindchange="onDaysChange"
         >
           <view class="picker-text">
-            {{estimatedTime || '请选择预计完成时间'}}
+            {{estimatedDays}} 天
           </view>
         </picker>
       </view>
 
       <view class="form-item">
-        <text class="label">备注</text>
+        <text class="label">报价说明</text>
         <textarea
           class="textarea-field"
-          placeholder="请输入备注信息（选填）"
-          value="{{notes}}"
-          bindinput="onNotesInput"
-          maxlength="200"
+          placeholder="请输入报价说明、维修方案等（选填）"
+          value="{{description}}"
+          bindinput="onDescriptionInput"
+          maxlength="500"
         ></textarea>
       </view>
-
-      <button class="submit-btn glass-btn-cta" bindtap="handleSubmit">
-        提交报价
-      </button>
     </view>
+
+    <!-- 提交按钮 -->
+    <button
+      class="submit-btn glass-btn-cta"
+      bindtap="handleSubmit"
+      disabled="{{submitting}}"
+    >
+      {{submitting ? '提交中...' : '提交报价'}}
+    </button>
   </block>
 
   <!-- 加载状态 -->
