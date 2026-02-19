@@ -1,0 +1,128 @@
+<!--pages/store/product-select/product-select.wxml - 商品选择页面-->
+<view class="product-select-container">
+  <!-- 搜索框 -->
+  <view class="search-section">
+    <view class="search-box">
+      <input
+        class="search-input"
+        placeholder="搜索商品名称、编码、品牌"
+        value="{{keyword}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+        bindconfirm="onSearchConfirm"
+      />
+      <text class="search-icon">🔍</text>
+    </view>
+
+    <!-- 分类筛选 -->
+    <scroll-view scroll-x class="category-tabs-scroll">
+      <view class="category-tabs">
+        <view
+          class="category-tab {{activeCategory === '' ? 'active' : ''}}"
+          bindtap="onCategoryChange"
+          data-category=""
+        >
+          全部
+        </view>
+        <view
+          class="category-tab {{activeCategory === 'parts' ? 'active' : ''}}"
+          bindtap="onCategoryChange"
+          data-category="parts"
+        >
+          配件
+        </view>
+        <view
+          class="category-tab {{activeCategory === 'labor' ? 'active' : ''}}"
+          bindtap="onCategoryChange"
+          data-category="labor"
+        >
+          工时
+        </view>
+        <view
+          class="category-tab {{activeCategory === 'service' ? 'active' : ''}}"
+          bindtap="onCategoryChange"
+          data-category="service"
+        >
+          服务
+        </view>
+        <view
+          class="category-tab {{activeCategory === 'material' ? 'active' : ''}}"
+          bindtap="onCategoryChange"
+          data-category="material"
+        >
+          材料
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 商品列表 -->
+  <view class="product-list">
+    <block wx:if="{{!loading && products.length > 0}}">
+      <view
+        class="product-item"
+        wx:for="{{products}}"
+        wx:key="_id"
+      >
+        <!-- 商品图片区域 -->
+        <view
+          class="product-image-wrapper"
+          bindtap="previewImage"
+          data-url="{{item.images && item.images.length > 0 ? item.images[0] : ''}}"
+          data-urls="{{item.images || []}}"
+        >
+          <image
+            class="product-image"
+            src="{{item.images && item.images.length > 0 ? item.images[0] : '/images/product-placeholder.png'}}"
+            mode="aspectFill"
+          />
+          <view class="image-hint">点击放大</view>
+        </view>
+
+        <!-- 商品信息区域 -->
+        <view class="product-info">
+          <view class="product-header">
+            <view class="product-name">{{item.name}}</view>
+            <view class="product-category category-{{item.category}}">{{item.categoryText}}</view>
+          </view>
+
+          <view class="product-spec">
+            <text class="spec-item" wx:if="{{item.brand}}">🏷️ {{item.brand}}</text>
+            <text class="spec-item" wx:if="{{item.spec}}">📐 {{item.spec}}</text>
+          </view>
+
+          <view class="product-models">
+            <text class="models-icon">🚗</text>
+            <text class="models-text">{{item.isUniversal ? '通用' : item.compatibleModels.join('、')}}</text>
+          </view>
+
+          <view class="product-footer">
+            <view class="product-price-row">
+              <text class="product-price">¥{{item.price}}</text>
+              <text class="product-unit">/{{item.unit}}</text>
+            </view>
+            <view class="product-stock">库存: {{item.stock}}</view>
+          </view>
+
+          <!-- 选择按钮 -->
+          <view class="select-btn" bindtap="onSelectProduct" data-product="{{item}}">
+            <text class="select-icon">➕</text>
+            <text class="select-text">添加</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && products.length === 0}}">
+      <text class="empty-icon">📦</text>
+      <text class="empty-text">暂无商品</text>
+      <text class="empty-hint">请尝试其他搜索关键词</text>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <text>搜索中...</text>
+    </view>
+  </view>
+</view>

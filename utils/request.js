@@ -1,5 +1,18 @@
-// 基础URL配置
-const BASE_URL = 'http://localhost:3000/api';
+const DEFAULT_BASE_URL = 'http://localhost:3000/api';
+
+const getBaseUrl = () => {
+  try {
+    const storedBaseUrl = wx.getStorageSync('baseUrl');
+    if (storedBaseUrl) return storedBaseUrl;
+  } catch (e) {}
+
+  try {
+    const app = getApp();
+    if (app && app.globalData && app.globalData.baseUrl) return app.globalData.baseUrl;
+  } catch (e) {}
+
+  return DEFAULT_BASE_URL;
+};
 
 // 封装请求方法
 const request = (options) => {
@@ -8,7 +21,7 @@ const request = (options) => {
     const token = wx.getStorageSync('token');
 
     wx.request({
-      url: `${BASE_URL}${options.url}`,
+      url: `${getBaseUrl()}${options.url}`,
       method: options.method || 'GET',
       data: options.data || {},
       header: {

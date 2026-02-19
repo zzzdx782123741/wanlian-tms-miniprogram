@@ -37,7 +37,7 @@ Page({
       }
 
       const res = await request.get('/stores', params);
-      this.setData({ stores: res.data });
+      this.setData({ stores: res.data.stores || [] });
 
     } catch (error) {
       console.error('加载门店列表失败:', error);
@@ -78,14 +78,10 @@ Page({
    */
   onViewDetail(e) {
     const storeId = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/stores/detail/detail?id=${storeId}`,
-      fail: () => {
-        wx.showToast({
-          title: '详情页开发中',
-          icon: 'none'
-        });
-      }
+    wx.showModal({
+      title: '门店详情',
+      content: `门店详情页开发中（ID：${storeId}）`,
+      showCancel: false
     });
   },
 

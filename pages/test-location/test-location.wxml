@@ -1,0 +1,68 @@
+<!--pages/test-location/test-location.wxml - 位置功能测试页面-->
+<view class="page">
+  <view class="header">
+    <view class="header-title">📍 位置功能测试</view>
+    <view class="header-subtitle">测试腾讯地图API和位置服务</view>
+  </view>
+
+  <!-- 位置信息卡片 -->
+  <view class="location-card">
+    <view class="location-icon">📍</view>
+    <view class="location-info">
+      <view class="location-label">当前位置</view>
+      <view class="location-address">{{location.address}}</view>
+      <view class="location-coords" wx:if="{{location.latitude}}">
+        纬度: {{location.latitude.toFixed(4)}}, 经度: {{location.longitude.toFixed(4)}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 测试按钮 -->
+  <view class="test-buttons">
+    <button class="test-btn primary" bindtap="testGetLocation">
+      <text class="btn-icon">🎯</text>
+      测试获取位置
+    </button>
+    <button class="test-btn success" bindtap="testChooseLocation">
+      <text class="btn-icon">🗺️</text>
+      地图选择位置
+    </button>
+    <button class="test-btn info" bindtap="testDefaultLocation">
+      <text class="btn-icon">🏢</text>
+      使用默认地址
+    </button>
+    <button class="test-btn warning" bindtap="clearResults">
+      <text class="btn-icon">🗑️</text>
+      清空日志
+    </button>
+  </view>
+
+  <!-- 配置信息 -->
+  <view class="config-card">
+    <view class="config-title">⚙️ 配置信息</view>
+    <view class="config-item">
+      <text class="config-label">地图Key:</text>
+      <text class="config-value">{{mapKey}}</text>
+    </view>
+    <view class="config-item">
+      <text class="config-label">功能状态:</text>
+      <text class="config-value {{mapEnabled ? 'success' : 'error'}}">
+        {{mapEnabled ? '✅ 已启用' : '❌ 未启用'}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 测试结果日志 -->
+  <view class="log-card" wx:if="{{testResult.length > 0}}">
+    <view class="log-title">📋 测试日志</view>
+    <view class="log-list">
+      <view class="log-item" wx:for="{{testResult}}" wx:key="index">
+        <view class="log-time">{{item.timestamp}}</view>
+        <view class="log-content">
+          <view class="log-title">{{item.title}}</view>
+          <view class="log-message">{{item.message}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

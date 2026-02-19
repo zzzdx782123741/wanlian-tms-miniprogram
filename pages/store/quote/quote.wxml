@@ -26,20 +26,27 @@
       </view>
 
       <view class="info-row">
-        <text class="label">车队</text>
-        <text class="value">{{(order.vehicleId && order.vehicleId.fleetId && order.vehicleId.fleetId.name) || '-'}}</text>
+        <text class="label">车型</text>
+        <text class="value">{{(order.vehicleId && order.vehicleId.brand) || '-'}} {{(order.vehicleId && order.vehicleId.model) || ''}}</text>
       </view>
 
       <view class="info-row">
-        <text class="label">故障描述</text>
-        <text class="value fault-desc">{{order.faultDescription}}</text>
+        <text class="label">预约时间</text>
+        <text class="value">{{order.appointmentAtText || '未预约'}}</text>
       </view>
 
+      <view class="info-row-block">
+        <text class="label-block">故障描述</text>
+        <text class="value-block fault-desc">{{order.faultDescription}}</text>
+      </view>
+
+      <!-- 故障图片 -->
       <block wx:if="{{order.faultImages && order.faultImages.length > 0}}">
         <view class="fault-images">
           <image
             wx:for="{{order.faultImages}}"
             wx:key="*this"
+            wx:for-index="imgIndex"
             class="fault-image"
             src="{{item}}"
             mode="aspectFill"
@@ -49,59 +56,147 @@
           />
         </view>
       </block>
+
+      <!-- 故障视频 -->
+      <block wx:if="{{order.faultVideos && order.faultVideos.length > 0}}">
+        <view class="fault-videos">
+          <view class="section-subtitle">故障视频</view>
+          <view class="video-list">
+            <video
+              wx:for="{{order.faultVideos}}"
+              wx:key="*this"
+              wx:for-index="videoIndex"
+              class="fault-video"
+              src="{{item}}"
+              show-center-play-btn="{{true}}"
+              controls="{{true}}"
+            />
+          </view>
+        </view>
+      </block>
+
+      <!-- 备注信息 -->
+      <view class="info-row-block" wx:if="{{order.remark}}">
+        <text class="label-block">备注信息</text>
+        <text class="value-block">{{order.remark}}</text>
+      </view>
     </view>
 
-    <!-- 报价项目 -->
+    <!-- 接车检查 -->
     <view class="form-section glass-card">
       <view class="section-title">
-        <text class="icon">💰</text>
-        <text>报价项目</text>
+        <text class="icon">🔍</text>
+        <text>接车检查</text>
       </view>
 
-      <view class="quote-items">
-        <view class="quote-item" wx:for="{{quoteItems}}" wx:key="index">
-          <view class="item-row">
-            <input
-              class="item-input item-name"
-              placeholder="项目名称（如：工时费、材料费）"
-              value="{{item.name}}"
-              bindinput="onItemNameInput"
-              data-index="{{index}}"
-            />
-            <input
-              class="item-input item-price"
-              type="digit"
-              placeholder="单价"
-              value="{{item.price}}"
-              bindinput="onItemPriceInput"
-              data-index="{{index}}"
-            />
-            <input
-              class="item-input item-quantity"
-              type="number"
-              placeholder="数量"
-              value="{{item.quantity}}"
-              bindinput="onItemQuantityInput"
-              data-index="{{index}}"
-            />
-            <view class="item-delete" bindtap="deleteQuoteItem" data-index="{{index}}" wx:if="{{quoteItems.length > 1}}">
-              <text class="delete-icon">🗑️</text>
+      <!-- 当前里程（只读） -->
+      <view class="info-row">
+        <text class="label">当前里程</text>
+        <text class="value">{{order.milestone || '未填写'}} 公里</text>
+      </view>
+
+      <!-- 故障诊断 -->
+      <view class="form-item">
+        <text class="label">故障诊断</text>
+        <textarea
+          class="textarea-field"
+          placeholder="请输入故障诊断结果（选填）"
+          value="{{diagnosis}}"
+          bindinput="onDiagnosisInput"
+          maxlength="500"
+        ></textarea>
+      </view>
+
+      <!-- 接车照片 -->
+      <view class="form-item">
+        <text class="label required">接车照片</text>
+        <view class="photo-hint">
+          <text class="hint-icon">💡</text>
+          <text class="hint-text">请拍摄故障位置或更换零件位置作为凭证</text>
+        </view>
+        <view class="image-upload">
+          <block wx:if="{{checkinPhotos.length > 0}}">
+            <view class="image-item" wx:for="{{checkinPhotos}}" wx:key="index" wx:for-item="photoItem">
+              <image
+                class="uploaded-image"
+                src="{{photoItem}}"
+                mode="aspectFill"
+                bindtap="previewImage"
+                data-url="{{photoItem}}"
+                data-urls="{{checkinPhotos}}"
+              />
+              <view class="image-delete" bindtap="deleteCheckinPhoto" data-index="{{index}}">
+                <text>✕</text>
+              </view>
+            </view>
+          </block>
+          <view class="upload-btn" wx:if="{{checkinPhotos.length < 9}}" bindtap="chooseCheckinPhoto">
+            <text class="upload-icon">📷</text>
+            <text class="upload-text">添加接车照片</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 维修商品清单（商品选择模式） -->
+    <view class="form-section glass-card">
+      <view class="section-title">
+        <text class="icon">📦</text>
+        <text>维修商品清单</text>
+      </view>
+
+      <!-- 已选商品列表 -->
+      <view class="selected-products" wx:if="{{selectedItems.length > 0}}">
+        <view class="product-item" wx:for="{{selectedItems}}" wx:key="index">
+          <view class="product-info">
+            <view class="product-name">{{item.name}}</view>
+            <view class="product-meta">
+              <text class="product-category category-{{item.category}}">{{item.categoryText}}</text>
+              <text class="product-divider">|</text>
+              <text class="product-price">¥{{item.price}}</text>
+              <text class="product-divider">|</text>
+              <text class="product-unit">{{item.unit}}</text>
             </view>
           </view>
-          <view class="item-subtotal">
-            小计: ¥{{utils.toFixed(item.price * item.quantity)}}
+          <view class="product-actions">
+            <view class="quantity-control">
+              <button class="quantity-btn minus" bindtap="onQuantityInput" data-index="{{index}}" data-value="{{item.quantity - 1}}">-</button>
+              <input
+                class="quantity-input"
+                type="number"
+                value="{{item.quantity}}"
+                bindinput="onQuantityInput"
+                data-index="{{index}}"
+              />
+              <button class="quantity-btn plus" bindtap="onQuantityInput" data-index="{{index}}" data-value="{{item.quantity + 1}}">+</button>
+            </view>
+            <view class="item-subtotal">¥{{utils.toFixed(item.price * item.quantity)}}</view>
+            <view class="item-delete" bindtap="deleteItem" data-index="{{index}}">
+              <text class="delete-icon">🗑️</text>
+            </view>
           </view>
         </view>
       </view>
 
-      <button class="add-item-btn" bindtap="addQuoteItem">
+      <!-- 空状态提示 -->
+      <view class="empty-products" wx:if="{{selectedItems.length === 0}}">
+        <text class="empty-icon">📦</text>
+        <text class="empty-text">还未添加任何商品</text>
+        <text class="empty-hint">点击下方按钮从商品库中选择</text>
+      </view>
+
+      <!-- 添加商品按钮 -->
+      <button class="add-product-btn" bindtap="addProduct">
         <text class="add-icon">➕</text>
-        <text>添加项目</text>
+        <text>添加产品或项目</text>
       </button>
 
+      <!-- 总计区域 -->
       <view class="total-section">
-        <text class="total-label">报价总计</text>
-        <text class="total-amount">¥{{totalAmount}}</text>
+        <view class="total-row">
+          <text class="total-label">报价总计</text>
+          <text class="total-amount">¥{{totalAmount}}</text>
+        </view>
       </view>
     </view>
 
@@ -135,37 +230,45 @@
       </view>
     </view>
 
-    <!-- 其他信息 -->
+    <!-- 报价说明 -->
     <view class="form-section glass-card">
       <view class="section-title">
-        <text class="icon">📝</text>
-        <text>其他信息</text>
+        <text class="icon">💬</text>
+        <text>报价说明</text>
       </view>
 
-      <view class="form-item">
-        <text class="label">预计完成天数</text>
-        <picker
-          class="picker"
-          mode="selector"
-          range="{{[1,2,3,5,7,10,15]}}"
-          value="{{estimatedDays - 1}}"
-          bindchange="onDaysChange"
-        >
-          <view class="picker-text">
-            {{estimatedDays}} 天
-          </view>
-        </picker>
-      </view>
+      <textarea
+        class="textarea-field"
+        placeholder="请输入报价说明、维修方案、预计完成时间等（选填）"
+        value="{{description}}"
+        bindinput="onDescriptionInput"
+        maxlength="500"
+      ></textarea>
+    </view>
 
-      <view class="form-item">
-        <text class="label">报价说明</text>
-        <textarea
-          class="textarea-field"
-          placeholder="请输入报价说明、维修方案等（选填）"
-          value="{{description}}"
-          bindinput="onDescriptionInput"
-          maxlength="500"
-        ></textarea>
+    <!-- 审批流程提示 -->
+    <view class="process-hint">
+      <view class="hint-title">📢 审批流程</view>
+      <view class="hint-steps">
+        <view class="hint-step">
+          <view class="step-number">1</view>
+          <view class="step-text">提交报价</view>
+        </view>
+        <view class="step-arrow">→</view>
+        <view class="hint-step">
+          <view class="step-number">2</view>
+          <view class="step-text">平台运营初审</view>
+        </view>
+        <view class="step-arrow">→</view>
+        <view class="hint-step">
+          <view class="step-number">3</view>
+          <view class="step-text">车队审批</view>
+        </view>
+        <view class="step-arrow">→</view>
+        <view class="hint-step">
+          <view class="step-number">4</view>
+          <view class="step-text">开始维修</view>
+        </view>
       </view>
     </view>
 

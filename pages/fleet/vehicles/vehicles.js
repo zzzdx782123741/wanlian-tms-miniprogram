@@ -52,14 +52,14 @@ Page({
   viewDetail(e) {
     const { id } = e.currentTarget.dataset;
     wx.navigateTo({
-      url: `/pages/fleet/vehicles/detail?id=${id}`
+      url: `/pages/driver/vehicles/detail?id=${id}`
     });
   },
 
   // 添加车辆
   addVehicle() {
     wx.navigateTo({
-      url: '/pages/fleet/vehicles/add'
+      url: '/pages/driver/vehicles/add'
     });
   }
 });

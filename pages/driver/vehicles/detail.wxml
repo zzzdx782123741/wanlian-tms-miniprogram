@@ -33,6 +33,7 @@
     <!-- 操作按钮 -->
     <view class="action-section">
       <button class="action-btn glass-btn" bindtap="editVehicle">编辑</button>
+      <button class="action-btn glass-btn-primary" bindtap="applyMaintenance">保养申请</button>
       <button class="action-btn glass-btn-secondary" bindtap="deleteVehicle">删除</button>
     </view>
   </block>

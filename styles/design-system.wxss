@@ -1,6 +1,6 @@
 /**
- * 科技小程序 - 玻璃态设计系统
- * UI/UX Pro Max Design System
+ * 万联驿站TMS - 司机极简设计系统 (Driver First Design System)
+ * 核心原则：大字体、高对比度、直观、易操作
  */
 
 page {
@@ -8,67 +8,66 @@ page {
      颜色系统 Color System
      ============================================ */
 
-  /* 主色调 - 蓝色系 */
-  --color-primary: #2563EB;
-  --color-primary-light: #3B82F6;
-  --color-primary-dark: #1D4ED8;
+  /* 主色调 - 沉稳蓝 (高可见度) */
+  --color-primary: #1677FF;
+  --color-primary-light: #4096FF;
+  --color-primary-dark: #0958D9;
 
   /* 辅助色 */
-  --color-secondary: #3B82F6;
+  --color-secondary: #1677FF;
 
-  /* CTA 颜色 - 橙色强调 */
-  --color-cta: #F97316;
-  --color-cta-hover: #EA580C;
+  /* CTA 颜色 - 醒目橙 (用于重要操作) */
+  --color-cta: #FA8C16;
+  --color-cta-hover: #D46B08;
 
-  /* 背景色 */
-  --color-bg-page: #F8FAFC;
-  --color-bg-card: rgba(255, 255, 255, 0.15);
-  --color-bg-card-hover: rgba(255, 255, 255, 0.25);
+  /* 背景色 - 实体色，去除去玻璃态 */
+  --color-bg-page: #F0F2F5;  /* 浅灰背景，保护视力 */
+  --color-bg-card: #FFFFFF;  /* 纯白卡片，高对比度 */
+  --color-bg-card-hover: #FAFAFA;
 
-  /* 文字颜色 */
-  --color-text-primary: #1E293B;
-  --color-text-secondary: #475569;
-  --color-text-tertiary: #94A3B8;
-  --color-text-inverse: #FFFFFF;
+  /* 文字颜色 - 高对比度 */
+  --color-text-primary: #000000;   /* 纯黑标题 */
+  --color-text-secondary: #434343; /* 深灰正文 */
+  --color-text-tertiary: #8C8C8C;  /* 辅助文字 */
+  --color-text-inverse: #FFFFFF;   /* 反白文字 */
 
-  /* 边框颜色 - 玻璃态 */
-  --color-border-glass: rgba(255, 255, 255, 0.2);
-  --color-border-light: rgba(0, 0, 0, 0.08);
+  /* 边框颜色 */
+  --color-border-glass: #E5E7EB;   /* 实体边框 */
+  --color-border-light: #F0F0F0;
 
   /* 功能色 */
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
-  --color-info: #06B6D4;
+  --color-success: #52C41A;
+  --color-warning: #FAAD14;
+  --color-error: #FF4D4F;
+  --color-info: #1677FF;
 
-  /* 玻璃态特殊效果 */
-  --glass-blur: 15px;
-  --glass-opacity: 0.15;
-  --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+  /* 移除玻璃态特殊效果，改为实体效果 */
+  --glass-blur: 0px;
+  --glass-opacity: 1;
+  --glass-border: 1px solid #E5E7EB;
 
   /* ============================================
-     字体系统 Typography
+     字体系统 Typography (整体放大)
      ============================================ */
 
   /* 字体族 */
-  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  --font-family-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+  
+  /* 字号 - 整体加大 2-4rpx 以适应司机群体 */
+  --font-size-xs: 24rpx;   /* 原 20rpx */
+  --font-size-sm: 28rpx;   /* 原 24rpx */
+  --font-size-base: 32rpx; /* 原 28rpx - 正文加大 */
+  --font-size-lg: 36rpx;   /* 原 32rpx */
+  --font-size-xl: 40rpx;   /* 原 36rpx */
+  --font-size-2xl: 48rpx;  /* 原 40rpx */
+  --font-size-3xl: 56rpx;  /* 原 48rpx */
+  --font-size-4xl: 64rpx;  /* 原 56rpx */
 
-  /* 字号（使用 rpx 自动适配） */
-  --font-size-xs: 20rpx;
-  --font-size-sm: 24rpx;
-  --font-size-base: 28rpx;
-  --font-size-lg: 32rpx;
-  --font-size-xl: 36rpx;
-  --font-size-2xl: 40rpx;
-  --font-size-3xl: 48rpx;
-  --font-size-4xl: 56rpx;
-
-  /* 行高 */
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
-  --line-height-loose: 2;
+  /* 行高 - 宽松 */
+  --line-height-tight: 1.3;
+  --line-height-normal: 1.6;
+  --line-height-relaxed: 1.8;
+  --line-height-loose: 2.2;
 
   /* 字重 */
   --font-weight-normal: 400;
@@ -77,51 +76,49 @@ page {
   --font-weight-bold: 700;
 
   /* ============================================
-     间距系统 Spacing
+     间距系统 Spacing (加大触控区域)
      ============================================ */
 
-  --spacing-xs: 8rpx;
-  --spacing-sm: 16rpx;
-  --spacing-md: 24rpx;
-  --spacing-lg: 32rpx;
-  --spacing-xl: 48rpx;
-  --spacing-2xl: 64rpx;
-  --spacing-3xl: 96rpx;
+  --spacing-xs: 12rpx;
+  --spacing-sm: 20rpx;
+  --spacing-md: 32rpx;  /* 增加默认间距 */
+  --spacing-lg: 40rpx;
+  --spacing-xl: 60rpx;
+  --spacing-2xl: 80rpx;
+  --spacing-3xl: 120rpx;
 
   /* ============================================
-     圆角系统 Border Radius
+     圆角系统 Border Radius (适度圆角)
      ============================================ */
 
   --radius-sm: 8rpx;
-  --radius-md: 12rpx;
-  --radius-lg: 16rpx;
-  --radius-xl: 24rpx;
-  --radius-2xl: 32rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+  --radius-xl: 32rpx;
+  --radius-2xl: 40rpx;
   --radius-full: 9999rpx;
 
   /* ============================================
-     阴影系统 Box Shadow
+     阴影系统 Box Shadow (实体阴影)
      ============================================ */
 
-  --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 16rpx 48rpx rgba(0, 0, 0, 0.16);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
-  /* 玻璃态阴影 */
-  --shadow-glass: 0 8rpx 32rpx rgba(37, 99, 235, 0.1);
-  --shadow-glass-hover: 0 12rpx 48rpx rgba(37, 99, 235, 0.15);
+  /* 兼容旧的玻璃态变量名，但映射到实体阴影 */
+  --shadow-glass: var(--shadow-sm);
+  --shadow-glass-hover: var(--shadow-md);
 
   /* ============================================
      动画系统 Animation
      ============================================ */
 
-  /* 过渡时长（符合 150-300ms 规范） */
   --duration-fast: 150ms;
   --duration-base: 200ms;
   --duration-slow: 300ms;
 
-  /* 缓动函数 */
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
@@ -143,16 +140,12 @@ page {
      页面基础设置 Page Base Settings
      ============================================ */
 
-  /* 字体设置 */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  font-size: 28rpx;
-  line-height: 1.5;
-  color: #1E293B;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
 
-  /* 背景设置 */
-  background: #F8FAFC;
-
-  /* 布局设置 */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -161,90 +154,86 @@ page {
 }
 
 /* ============================================
-   玻璃态核心样式类 Glass Morphism Core
+   组件核心样式 Component Core (覆盖玻璃态)
    ============================================ */
 
-/* 基础玻璃态效果 */
+/* 基础卡片 - 纯白实体 */
 .glass {
   background: var(--color-bg-card);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--glass-border);
-  box-shadow: var(--shadow-glass);
+  border: 1px solid var(--color-border-glass);
+  box-shadow: var(--shadow-sm);
 }
 
-/* 玻璃态卡片 */
+/* 卡片 - 纯白实体，加大内边距 */
 .glass-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-glass);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-glass);
+  box-shadow: var(--shadow-sm);
   transition: all var(--duration-base) var(--ease-default);
 }
 
 .glass-card:active {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: var(--shadow-glass-hover);
-  transform: translateY(-2rpx);
+  background: var(--color-bg-card-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1rpx);
 }
 
-/* 玻璃态按钮 */
+/* 按钮 - 实体大按钮 */
 .glass-btn {
   background: var(--color-primary);
   color: var(--color-text-inverse);
   border: none;
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-md) var(--spacing-xl); /* 加大内边距 */
+  font-size: var(--font-size-lg); /* 加大字体 */
+  font-weight: var(--font-weight-semibold);
   transition: all var(--duration-base) var(--ease-default);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
+  min-height: 96rpx; /* 增加高度 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .glass-btn:active {
   transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* 次要按钮 - 浅灰背景 */
+.glass-btn-secondary {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border-glass);
+  color: var(--color-text-primary);
   box-shadow: var(--shadow-sm);
 }
 
-/* 玻璃态次要按钮 */
-.glass-btn-secondary {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: var(--color-primary);
-}
-
-/* CTA 按钮 */
+/* CTA 按钮 - 醒目橙 */
 .glass-btn-cta {
   background: var(--color-cta);
-  box-shadow: 0 4rpx 16rpx rgba(249, 115, 22, 0.3);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-md);
 }
 
 .glass-btn-cta:active {
   background: var(--color-cta-hover);
-  box-shadow: 0 2rpx 8rpx rgba(249, 115, 22, 0.2);
 }
 
 /* ============================================
    工具类 Utilities
    ============================================ */
 
-/* 文字对齐 */
 .text-left { text-align: left; }
 .text-center { text-align: center; }
 .text-right { text-align: right; }
 
-/* 文字颜色 */
 .text-primary { color: var(--color-text-primary); }
 .text-secondary { color: var(--color-text-secondary); }
 .text-tertiary { color: var(--color-text-tertiary); }
 .text-brand { color: var(--color-primary); }
 .text-cta { color: var(--color-cta); }
 
-/* 字号 */
 .text-xs { font-size: var(--font-size-xs); }
 .text-sm { font-size: var(--font-size-sm); }
 .text-base { font-size: var(--font-size-base); }
@@ -253,13 +242,11 @@ page {
 .text-2xl { font-size: var(--font-size-2xl); }
 .text-3xl { font-size: var(--font-size-3xl); }
 
-/* 字重 */
 .font-normal { font-weight: var(--font-weight-normal); }
 .font-medium { font-weight: var(--font-weight-medium); }
 .font-semibold { font-weight: var(--font-weight-semibold); }
 .font-bold { font-weight: var(--font-weight-bold); }
 
-/* 间距 */
 .mt-xs { margin-top: var(--spacing-xs); }
 .mt-sm { margin-top: var(--spacing-sm); }
 .mt-md { margin-top: var(--spacing-md); }
@@ -277,37 +264,21 @@ page {
 .p-lg { padding: var(--spacing-lg); }
 .p-xl { padding: var(--spacing-xl); }
 
-/* 圆角 */
 .rounded-sm { border-radius: var(--radius-sm); }
 .rounded-md { border-radius: var(--radius-md); }
 .rounded-lg { border-radius: var(--radius-lg); }
 .rounded-xl { border-radius: var(--radius-xl); }
 .rounded-full { border-radius: var(--radius-full); }
 
-/* 阴影 */
 .shadow-sm { box-shadow: var(--shadow-sm); }
 .shadow-md { box-shadow: var(--shadow-md); }
 .shadow-lg { box-shadow: var(--shadow-lg); }
-.shadow-glass { box-shadow: var(--shadow-glass); }
 
-/* ============================================
-   无障碍功能 Accessibility
-   ============================================ */
-
-/* 确保触摸目标至少 44x44px */
+/* 触摸目标优化 */
 .touch-target {
-  min-width: 88rpx;
-  min-height: 88rpx;
+  min-width: 96rpx; /* 加大到 48px */
+  min-height: 96rpx;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-
-/* 焦点状态（键盘导航） */
-.focusable:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-/* 注意：WXSS 不支持 @media (prefers-contrast) 查询，已移除 */
-/* 注意：WXSS 不支持 @media (prefers-reduced-motion) 查询，已移除 */

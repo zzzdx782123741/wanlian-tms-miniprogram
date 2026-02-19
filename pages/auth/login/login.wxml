@@ -9,15 +9,42 @@
     <text class="app-slogan">智慧物流管理系统</text>
   </view>
 
+  <!-- 开发模式切换 -->
+  <view class="dev-mode-section">
+    <view class="dev-mode-row" bindtap="toggleDevMode">
+      <text class="dev-mode-label">开发模式</text>
+      <switch checked="{{devMode}}" color="#1890ff" />
+    </view>
+  </view>
+
+  <!-- 开发模式：测试账号选择 -->
+  <view class="test-account-section" wx:if="{{devMode}}">
+    <view class="section-title">选择测试账号</view>
+    <picker
+      class="account-picker"
+      mode="selector"
+      range="{{accountList}}"
+      value="{{selectedAccountIndex}}"
+      bindchange="onAccountChange"
+    >
+      <view class="picker-display">
+        <text class="picker-text">{{accountList[selectedAccountIndex]}}</text>
+        <text class="picker-arrow">▼</text>
+      </view>
+    </picker>
+    <button class="test-login-btn" bindtap="testLogin">测试登录</button>
+  </view>
+
   <!-- 微信授权登录 -->
   <view class="login-section">
     <button
       class="wechat-login-btn glass-btn-cta"
       open-type="getUserInfo"
       bindgetuserinfo="onGetUserInfo"
+      disabled="{{loading || devMode}}"
     >
       <text class="wechat-icon">💬</text>
-      <text>微信一键登录</text>
+      <text>{{devMode ? '请使用测试登录' : '微信一键登录'}}</text>
     </button>
 
     <view class="tips">

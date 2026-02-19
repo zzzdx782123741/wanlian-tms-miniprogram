@@ -102,16 +102,29 @@ Page({
    */
   formatOrders(orders) {
     return orders.map(order => {
+      // 判断是否已确认
+      const isConfirmed = order.completion && order.completion.confirmedBy;
+
       const statusMap = {
-        'pending': { text: '待接单', showProgress: false },
-        'received': { text: '已接单', showProgress: true, progress: 25, progressText: '门店已接单' },
-        'quoted': { text: '待审批', showProgress: true, progress: 50, progressText: '等待审批报价' },
-        'approved': { text: '维修中', showProgress: true, progress: 75, progressText: '正在维修' },
-        'completed': { text: '待确认', showProgress: true, progress: 90, progressText: '维修完成' },
-        'confirmed': { text: '已完成', showProgress: false }
+        'awaiting_fleet_approval': { text: '待车队审批', showProgress: true, progress: 5, progressText: '等待车队审批' },
+        'pending_assessment': { text: '待评估', showProgress: true, progress: 10, progressText: '等待门店评估' },
+        'awaiting_approval': { text: '待审批', showProgress: true, progress: 35, progressText: '等待审批报价' },
+        'in_repair': { text: '维修中', showProgress: true, progress: 60, progressText: '正在维修' },
+        'awaiting_addon_approval': { text: '增项审批', showProgress: true, progress: 70, progressText: '等待增项审批' },
+        'completed': {
+          text: isConfirmed ? '已完成' : '待确认',
+          showProgress: !isConfirmed,
+          progress: isConfirmed ? 100 : 90,
+          progressText: isConfirmed ? '订单已完成' : '维修完成待确认'
+        },
+        'confirmed': { text: '已完成', showProgress: false },
+        'rejected': { text: '已拒绝', showProgress: false }
       };
 
       const statusInfo = statusMap[order.status] || { text: '未知', showProgress: false };
+
+      // 获取保养订单信息
+      const maint = order.maintenanceOrder || {};
 
       return {
         ...order,
@@ -119,10 +132,17 @@ Page({
         showProgress: statusInfo.showProgress,
         progress: statusInfo.progress || 0,
         progressText: statusInfo.progressText || '',
+        isConfirmed: isConfirmed, // 添加是否已确认的字段
+        type: order.type || 'repair', // 添加订单类型
+        // 保养订单字段
+        maintenanceTypeName: maint.maintenanceTypeName,
+        packageName: maint.packageName,
+        selectedTier: maint.selectedTier,
+        finalAmount: maint.finalAmount,
         vehicleInfo: {
-          plateNumber: order.vehicleId?.plateNumber || '未知车牌',
-          brand: order.vehicleId?.brand || '',
-          model: order.vehicleId?.model || ''
+          plateNumber: order.vehicleId && order.vehicleId.plateNumber ? order.vehicleId.plateNumber : '未知车牌',
+          brand: order.vehicleId && order.vehicleId.brand ? order.vehicleId.brand : '',
+          model: order.vehicleId && order.vehicleId.model ? order.vehicleId.model : ''
         },
         createdAtText: this.formatTime(order.createdAt)
       };
@@ -159,9 +179,9 @@ Page({
    */
   getStatusParam(tab) {
     const statusMap = {
-      'pending': 'pending',
-      'processing': 'received,quoted,approved,completed',
-      'completed': 'confirmed'
+      'pending': 'awaiting_fleet_approval,pending_assessment',
+      'processing': 'awaiting_approval,in_repair,awaiting_addon_approval',
+      'completed': 'completed' // 已完成列表筛选 completed 状态的订单
     };
     return statusMap[tab] || '';
   },
@@ -173,6 +193,26 @@ Page({
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({
       url: `/pages/order-detail/order-detail?id=${id}`
+    });
+  },
+
+  /**
+   * 点击去审批按钮
+   */
+  onApproveOrder(e) {
+    const id = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/order-detail/order-detail?id=${id}&action=approve`
+    });
+  },
+
+  /**
+   * 点击去确认按钮
+   */
+  onConfirmOrder(e) {
+    const id = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/order-detail/order-detail?id=${id}&action=confirm`
     });
   },
 

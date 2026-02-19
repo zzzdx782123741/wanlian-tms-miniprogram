@@ -158,14 +158,6 @@ Page({
       case 'DRIVER':
         menuList = [
           {
-            id: 'vehicle',
-            title: '我的车辆',
-            icon: '🚚',
-            description: '查看和管理我的车辆信息',
-            url: '/pages/vehicle/vehicle',
-            color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-          },
-          {
             id: 'report',
             title: '报修申请',
             icon: '🔧',
@@ -174,11 +166,11 @@ Page({
             color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
           },
           {
-            id: 'orders',
-            title: '我的订单',
-            icon: '📋',
-            description: '查看维修订单进度',
-            url: '/pages/orders/orders',
+            id: 'maintenance',
+            title: '保养申请',
+            icon: '🧰',
+            description: '预约车辆定期保养',
+            url: '/pages/report/report?type=maintenance',
             color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
           }
         ];
@@ -216,18 +208,10 @@ Page({
       case 'STORE_TECHNICIAN':
         menuList = [
           {
-            id: 'orders',
-            title: '接单大厅',
-            icon: '📋',
-            description: '查看和接收维修订单',
-            url: '/pages/orders/orders',
-            color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
-          },
-          {
             id: 'my-orders',
             title: '我的订单',
             icon: '🔧',
-            description: '进行中的维修任务',
+            description: '查看和管理所有维修订单',
             url: '/pages/my-orders/my-orders',
             color: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
           }
@@ -282,15 +266,40 @@ Page({
     const { url } = e.currentTarget.dataset;
 
     if (url) {
-      wx.navigateTo({
-        url,
-        fail: () => {
-          wx.showToast({
-            title: '页面开发中',
-            icon: 'none'
-          });
-        }
-      });
+      // tabBar 页面列表
+      const tabBarPages = [
+        '/pages/index/index',
+        '/pages/orders/orders',
+        '/pages/vehicle/vehicle',
+        '/pages/account/account'
+      ];
+
+      // 判断是否为 tabBar 页面
+      const isTabBarPage = tabBarPages.some(tabBarUrl => url.includes(tabBarUrl));
+
+      if (isTabBarPage) {
+        // tabBar 页面使用 switchTab
+        wx.switchTab({
+          url,
+          fail: () => {
+            wx.showToast({
+              title: '页面跳转失败',
+              icon: 'none'
+            });
+          }
+        });
+      } else {
+        // 普通页面使用 navigateTo
+        wx.navigateTo({
+          url,
+          fail: () => {
+            wx.showToast({
+              title: '页面开发中',
+              icon: 'none'
+            });
+          }
+        });
+      }
     }
   },
 

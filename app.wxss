@@ -1,7 +1,7 @@
 /**
  * 小程序全局样式
  * Global Styles for WeChat Mini Program
- * 引入玻璃态设计系统
+ * 引入司机极简设计系统
  */
 
 /* 引入设计系统变量 - 必须在最前面 */
@@ -17,6 +17,7 @@
   box-sizing: border-box;
   width: 100%;
   padding: var(--spacing-md);
+  background-color: var(--color-bg-page);
 }
 
 /**
@@ -37,10 +38,10 @@ button::after {
   border: none;
 }
 
-/* 确保按钮触摸目标至少 44x44px */
+/* 确保按钮触摸目标至少 48x48px (96rpx) */
 .button-wrapper {
-  min-width: 88rpx;
-  min-height: 88rpx;
+  min-width: 96rpx;
+  min-height: 96rpx;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -93,23 +94,21 @@ text {
 }
 
 /**
- * 全局卡片样式（玻璃态）
+ * 全局卡片样式 (实体卡片)
  */
 .card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-glass);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-glass);
+  box-shadow: var(--shadow-sm);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
   transition: all var(--duration-base) var(--ease-default);
 }
 
 .card:active {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: var(--shadow-glass-hover);
+  background: var(--color-bg-card-hover);
+  box-shadow: var(--shadow-md);
 }
 
 /**
@@ -120,74 +119,77 @@ text {
 }
 
 .list-item {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-sm);
   transition: all var(--duration-fast) var(--ease-default);
+  box-shadow: var(--shadow-sm);
 }
 
 .list-item:active {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(0.99);
+  background: var(--color-bg-card-hover);
+  transform: scale(0.995);
 }
 
 /**
- * 全局按钮样式
+ * 全局按钮样式 (实体大按钮)
  */
 .btn-primary {
   background: var(--color-primary);
   color: var(--color-text-inverse);
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  box-shadow: var(--shadow-md);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-sm);
   transition: all var(--duration-base) var(--ease-default);
-  min-width: 88rpx;
-  min-height: 88rpx;
+  min-width: 96rpx;
+  min-height: 96rpx;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .btn-primary:active {
+  background: var(--color-primary-dark);
   transform: scale(0.98);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: var(--color-primary);
+  background: #FFFFFF;
+  border: 1px solid var(--color-border-glass);
+  color: var(--color-text-primary);
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-size-base);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
   transition: all var(--duration-base) var(--ease-default);
-  min-width: 88rpx;
-  min-height: 88rpx;
+  min-width: 96rpx;
+  min-height: 96rpx;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:active {
+  background: var(--color-bg-card-hover);
 }
 
 .btn-cta {
   background: var(--color-cta);
   color: var(--color-text-inverse);
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  box-shadow: 0 4rpx 16rpx rgba(249, 115, 22, 0.3);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-md);
   transition: all var(--duration-base) var(--ease-default);
-  min-width: 88rpx;
-  min-height: 88rpx;
+  min-width: 96rpx;
+  min-height: 96rpx;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -195,8 +197,8 @@ text {
 
 .btn-cta:active {
   background: var(--color-cta-hover);
-  box-shadow: 0 2rpx 8rpx rgba(249, 115, 22, 0.2);
   transform: scale(0.98);
+  box-shadow: var(--shadow-sm);
 }
 
 /**
@@ -204,7 +206,7 @@ text {
  */
 .divider {
   height: 1px;
-  background: rgba(0, 0, 0, 0.08);
+  background: var(--color-border-light);
   margin: var(--spacing-lg) 0;
 }
 
@@ -213,37 +215,37 @@ text {
  */
 .badge {
   display: inline-block;
-  padding: 4rpx 12rpx;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
+  padding: 8rpx 16rpx; /* 加大 Padding */
+  border-radius: var(--radius-md); /* 方圆角 */
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   background: var(--color-primary);
   color: var(--color-text-inverse);
 }
 
 .badge-secondary {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--color-primary);
+  background: var(--color-bg-page);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-light);
 }
 
 /**
  * 输入框样式
  */
 .input {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #FFFFFF;
+  border: 1px solid var(--color-border-glass);
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md);
   font-size: var(--font-size-base);
   color: var(--color-text-primary);
-  transition: all var(--duration-fast) var(--ease-default);
+  height: 96rpx; /* 增加高度 */
+  box-sizing: border-box;
 }
 
 .input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 4rpx rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
 }
 
 /**

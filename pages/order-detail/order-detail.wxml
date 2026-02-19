@@ -28,6 +28,19 @@
       </view>
     </view>
 
+    <!-- 拒绝原因信息（被拒绝的订单显示） -->
+    <view class="info-card reject-card" wx:if="{{order.status === 'rejected' && order.rejectReason}}">
+      <view class="reject-header">
+        <text class="reject-icon">❌</text>
+        <text class="reject-title">订单已被拒绝</text>
+      </view>
+      <view class="reject-reason">
+        <text class="reject-reason-label">拒绝原因：</text>
+        <text class="reject-reason-text">{{order.rejectReason}}</text>
+      </view>
+      <view class="reject-tip">请根据拒绝原因修改订单信息后重新提交</view>
+    </view>
+
     <!-- 订单基本信息 -->
     <view class="info-card">
       <view class="card-title">订单信息</view>
@@ -51,10 +64,15 @@
         </view>
         <text class="arrow-icon">›</text>
       </view>
+      <!-- 车队信息 -->
+      <view class="fleet-info" wx:if="{{order.fleetId}}">
+        <text class="fleet-label">归属车队：</text>
+        <text class="fleet-name">{{order.fleetId.name}}</text>
+      </view>
     </view>
 
-    <!-- 故障描述 -->
-    <view class="info-card">
+    <!-- 故障描述（维修订单） -->
+    <view class="info-card" wx:if="{{order.type === 'repair'}}">
       <view class="card-title">故障描述</view>
       <view class="fault-content">{{order.faultDescription}}</view>
       <!-- 故障图片 -->
@@ -73,6 +91,47 @@
       </view>
     </view>
 
+    <!-- 保养信息（保养订单） -->
+    <view class="info-card" wx:if="{{order.type === 'maintenance'}}">
+      <view class="card-title">保养信息</view>
+      <view class="maint-info-row">
+        <text class="maint-label">保养类型：</text>
+        <text class="maint-value">{{order.maintenanceOrder.maintenanceTypeName}}</text>
+      </view>
+      <view class="maint-info-row">
+        <text class="maint-label">套餐：</text>
+        <text class="maint-value">{{order.maintenanceOrder.packageName || order.maintenanceOrder.selectedTier}}</text>
+      </view>
+      <view class="maint-info-row" wx:if="{{order.maintenanceOrder.serviceLocation}}">
+        <text class="maint-label">服务地址：</text>
+        <text class="maint-value">{{order.maintenanceOrder.serviceLocation.address}}</text>
+      </view>
+      <view class="maint-info-row" wx:if="{{order.maintenanceOrder.preferredTime}}">
+        <text class="maint-label">期望时间：</text>
+        <text class="maint-value">{{order.maintenanceOrder.preferredTime}}</text>
+      </view>
+      <view class="maint-info-row" wx:if="{{order.maintenanceOrder.driverRemark}}">
+        <text class="maint-label">司机备注：</text>
+        <text class="maint-value">{{order.maintenanceOrder.driverRemark}}</text>
+      </view>
+      <!-- 车队审批后显示 -->
+      <view class="maint-approval" wx:if="{{order.maintenanceOrder.approvedAt}}">
+        <view class="approval-divider"></view>
+        <view class="maint-info-row" wx:if="{{order.maintenanceOrder.confirmedStoreId}}">
+          <text class="maint-label">确认门店：</text>
+          <text class="maint-value">{{order.maintenanceOrder.confirmedStoreName}}</text>
+        </view>
+        <view class="maint-info-row" wx:if="{{order.maintenanceOrder.finalAmount}}">
+          <text class="maint-label">最终金额：</text>
+          <text class="maint-value price">¥{{order.maintenanceOrder.finalAmount}}</text>
+        </view>
+        <view class="maint-info-row" wx:if="{{order.maintenanceOrder.fleetRemark}}">
+          <text class="maint-label">车队备注：</text>
+          <text class="maint-value">{{order.maintenanceOrder.fleetRemark}}</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 门店信息（已接单后显示） -->
     <view class="info-card" wx:if="{{order.storeId}}">
       <view class="card-title">维修门店</view>
@@ -80,26 +139,57 @@
         <view class="store-name">{{order.storeId.name}}</view>
         <view class="store-detail">
           <text class="detail-icon">📍</text>
-          <text>{{order.storeId.address}}</text>
+          <text>{{order.storeId.address.city}} {{order.storeId.address.district}} {{order.storeId.address.detail}}</text>
         </view>
-        <view class="store-detail" wx:if="{{order.storeId.phone}}">
+        <view class="store-detail" wx:if="{{order.storeId.contact && order.storeId.contact.phone}}">
           <text class="detail-icon">📞</text>
-          <text>{{order.storeId.phone}}</text>
+          <text>{{order.storeId.contact.phone}}</text>
         </view>
       </view>
-      <button class="contact-btn" bindtap="onContactStore">
+      <!-- 司机和车队管理员可以联系门店，门店技师不需要 -->
+      <button class="contact-btn" wx:if="{{userRole !== 'STORE_TECHNICIAN'}}" bindtap="onContactStore">
         <text class="btn-icon">📞</text>
         联系门店
       </button>
+    </view>
+
+    <!-- 接车检查信息（门店检查后显示） -->
+    <view class="info-card" wx:if="{{order.receiveCheck}}">
+      <view class="card-title">接车检查</view>
+      <view class="check-info">
+        <view class="info-row" wx:if="{{order.receiveCheck.mileage}}">
+          <text class="info-label">当前里程</text>
+          <text class="info-value">{{order.receiveCheck.mileage}} 公里</text>
+        </view>
+        <view class="check-diagnosis" wx:if="{{order.receiveCheck.diagnosis}}">
+          <view class="diagnosis-label">诊断结果</view>
+          <text class="diagnosis-text">{{order.receiveCheck.diagnosis}}</text>
+        </view>
+        <!-- 接车检查照片 -->
+        <view class="check-photos" wx:if="{{order.receiveCheck.checkinPhotos && order.receiveCheck.checkinPhotos.length > 0}}">
+          <image
+            class="check-photo"
+            wx:for="{{order.receiveCheck.checkinPhotos}}"
+            wx:for-item="photo"
+            wx:key="*this"
+            src="{{photo}}"
+            mode="aspectFill"
+            bindtap="onPreviewImage"
+            data-url="{{photo}}"
+            data-urls="{{order.receiveCheck.checkinPhotos}}"
+          />
+        </view>
+      </view>
     </view>
 
     <!-- 维修报价（已报价后显示） -->
     <view class="info-card" wx:if="{{order.quote}}">
       <view class="card-title">维修报价</view>
       <view class="quote-items">
-        <view class="quote-item" wx:for="{{order.quote.items}}" wx:key="name">
-          <view class="item-name">{{item.name}}</view>
+        <view class="quote-item" wx:for="{{order.quote.items}}" wx:key="item">
+          <view class="item-name">{{item.item}}</view>
           <view class="item-price">¥{{item.price}} × {{item.quantity}}</view>
+          <view class="item-subtotal">¥{{item.price * item.quantity}}</view>
         </view>
       </view>
       <view class="quote-total">
@@ -168,14 +258,45 @@
           data-urls="{{order.completion.images}}"
         />
       </view>
+      <!-- 确认信息 -->
+      <view class="confirm-info" wx:if="{{order.completion.confirmedBy}}">
+        <view class="confirm-row">
+          <text class="confirm-icon">✓</text>
+          <text class="confirm-label">确认状态：</text>
+          <text class="confirm-value">已确认</text>
+        </view>
+        <view class="confirm-time" wx:if="{{order.completion.confirmedAtText}}">
+          确认时间：{{order.completion.confirmedAtText}}
+        </view>
+      </view>
     </view>
 
     <!-- 底部操作按钮 -->
     <view class="action-bar">
-      <!-- 车队管理员审批按钮 -->
+      <!-- 车队管理员审批按钮 - 待车队审批状态 -->
       <button
         class="action-btn approve"
-        wx:if="{{order.status === 'quoted' && userRole === 'FLEET_MANAGER'}}"
+        wx:if="{{order.status === 'awaiting_fleet_approval' && userRole === 'FLEET_MANAGER'}}"
+        bindtap="onFleetApproveOrder"
+        data-approved="{{true}}"
+      >
+        <text class="btn-icon">✓</text>
+        审批通过
+      </button>
+      <button
+        class="action-btn reject"
+        wx:if="{{order.status === 'awaiting_fleet_approval' && userRole === 'FLEET_MANAGER'}}"
+        bindtap="onFleetApproveOrder"
+        data-approved="{{false}}"
+      >
+        <text class="btn-icon">✕</text>
+        审批拒绝
+      </button>
+
+      <!-- 车队管理员审批按钮 - 待审批报价状态 -->
+      <button
+        class="action-btn approve"
+        wx:if="{{order.status === 'awaiting_approval' && userRole === 'FLEET_MANAGER'}}"
         bindtap="onApproveQuote"
         data-approved="{{true}}"
       >
@@ -184,7 +305,7 @@
       </button>
       <button
         class="action-btn reject"
-        wx:if="{{order.status === 'quoted' && userRole === 'FLEET_MANAGER'}}"
+        wx:if="{{order.status === 'awaiting_approval' && userRole === 'FLEET_MANAGER'}}"
         bindtap="onApproveQuote"
         data-approved="{{false}}"
       >
@@ -195,38 +316,56 @@
       <!-- 门店技师操作按钮 -->
       <button
         class="action-btn primary"
-        wx:if="{{order.status === 'pending' && userRole === 'STORE_TECHNICIAN'}}"
-        bindtap="onReceiveOrder"
-      >
-        <text class="btn-icon">📋</text>
-        接单
-      </button>
-      <button
-        class="action-btn primary"
-        wx:if="{{order.status === 'received' && userRole === 'STORE_TECHNICIAN'}}"
+        wx:if="{{order.status === 'pending_assessment' && userRole === 'STORE_TECHNICIAN'}}"
         bindtap="onSubmitQuote"
       >
-        <text class="btn-icon">💰</text>
-        提交报价
+        <text class="btn-icon">📋</text>
+        接车检查与报价
       </button>
       <button
         class="action-btn primary"
-        wx:if="{{order.status === 'approved' && userRole === 'STORE_TECHNICIAN'}}"
+        wx:if="{{order.status === 'in_repair' && userRole === 'STORE_TECHNICIAN'}}"
         bindtap="onCompleteOrder"
       >
         <text class="btn-icon">✓</text>
         提交完工
       </button>
 
-      <!-- 客户确认按钮 -->
+      <!-- 司机确认按钮 -->
       <button
         class="action-btn confirm"
-        wx:if="{{order.status === 'completed' && userRole === 'DRIVER'}}"
+        wx:if="{{order.status === 'completed' && userRole === 'DRIVER' && !(order.completion && order.completion.confirmedBy)}}"
         bindtap="onConfirmOrder"
       >
         <text class="btn-icon">✓</text>
         确认完工
       </button>
+
+      <!-- 司机重新提交按钮（被拒绝的订单） -->
+      <button
+        class="action-btn resubmit"
+        wx:if="{{order.status === 'rejected' && userRole === 'DRIVER'}}"
+        bindtap="onResubmitOrder"
+      >
+        <text class="btn-icon">🔄</text>
+        重新提交
+      </button>
+
+      <!-- 查看拒绝原因按钮（非司机角色查看被拒绝订单） -->
+      <button
+        class="action-btn info"
+        wx:if="{{order.status === 'rejected' && userRole !== 'DRIVER'}}"
+        bindtap="onViewRejectReason"
+      >
+        <text class="btn-icon">👁</text>
+        查看拒绝原因
+      </button>
+
+      <!-- 已确认提示 -->
+      <view class="confirmed-notice" wx:if="{{order.status === 'completed' && order.completion && order.completion.confirmedBy}}">
+        <text class="notice-icon">✓</text>
+        <text class="notice-text">您已确认完工</text>
+      </view>
     </view>
   </view>
 </view>

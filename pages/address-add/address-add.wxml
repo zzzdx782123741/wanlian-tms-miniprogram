@@ -1,0 +1,111 @@
+<!--pages/address-add/address-add.wxml - 添加/编辑服务地址-->
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">{{isEdit ? '编辑地址' : '添加地址'}}</view>
+  </view>
+
+  <!-- 表单内容 -->
+  <view class="content">
+    <view class="form-section">
+      <!-- 地址名称 -->
+      <view class="form-item">
+        <view class="form-label">地址名称 <text class="required">*</text></view>
+        <input
+          class="form-input"
+          placeholder="例如：万联驿站北京中心店"
+          value="{{formData.name}}"
+          bindinput="onInputChange"
+          data-field="name"
+          maxlength="50"
+        />
+      </view>
+
+      <!-- 联系人 -->
+      <view class="form-item">
+        <view class="form-label">联系人 <text class="required">*</text></view>
+        <input
+          class="form-input"
+          placeholder="请输入联系人姓名"
+          value="{{formData.contactName}}"
+          bindinput="onInputChange"
+          data-field="contactName"
+          maxlength="20"
+        />
+      </view>
+
+      <!-- 联系电话 -->
+      <view class="form-item">
+        <view class="form-label">联系电话 <text class="required">*</text></view>
+        <input
+          class="form-input"
+          placeholder="请输入联系电话"
+          value="{{formData.phone}}"
+          bindinput="onInputChange"
+          data-field="phone"
+          type="number"
+          maxlength="20"
+        />
+      </view>
+
+      <!-- 详细地址 -->
+      <view class="form-item">
+        <view class="form-label">详细地址 <text class="required">*</text></view>
+        <textarea
+          class="form-textarea"
+          placeholder="请输入详细地址"
+          value="{{formData.address}}"
+          bindinput="onInputChange"
+          data-field="address"
+          maxlength="200"
+          show-length
+          auto-height
+        />
+      </view>
+
+      <!-- 备注 -->
+      <view class="form-item">
+        <view class="form-label">备注</view>
+        <input
+          class="form-input"
+          placeholder="例如：总部、分拨中心等"
+          value="{{formData.remark}}"
+          bindinput="onInputChange"
+          data-field="remark"
+          maxlength="50"
+        />
+      </view>
+
+      <!-- 设为默认地址 -->
+      <view class="form-item switch-item">
+        <view class="form-label">设为默认地址</view>
+        <switch
+          checked="{{formData.isDefault}}"
+          bindchange="onSwitchChange"
+          color="#667eea"
+        />
+      </view>
+    </view>
+
+    <!-- 提示信息 -->
+    <view class="tips-section">
+      <view class="tips-title">💡 温馨提示</view>
+      <view class="tips-list">
+        <view class="tip-item">• 地址信息将用于维修/保养申请时的服务地址</view>
+        <view class="tip-item">• 设为默认地址后，会自动优先使用</view>
+        <view class="tip-item">• 请确保地址和电话信息准确无误</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="footer">
+    <button
+      class="save-btn"
+      bindtap="onSave"
+      disabled="{{submitting}}"
+    >
+      {{submitting ? '保存中...' : '保存地址'}}
+    </button>
+  </view>
+</view>

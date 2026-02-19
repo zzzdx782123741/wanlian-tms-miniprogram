@@ -1,17 +1,36 @@
 {
   "pages": [
     "pages/auth/login/login",
+    "pages/auth/register",
     "pages/index/index",
+    "pages/driver/vehicles/vehicles",
+    "pages/driver/vehicles/add",
+    "pages/driver/vehicles/detail",
+    "pages/driver/report/report",
+    "pages/driver/progress/progress",
+    "pages/maintenance/maintenance",
+    "pages/fleet/vehicles/vehicles",
+    "pages/fleet/report/report",
+    "pages/fleet/approve/approve",
+    "pages/fleet/account/account",
+    "pages/store/orders/orders",
+    "pages/store/order-detail/order-detail",
+    "pages/store/quote/quote",
+    "pages/store/complete/complete",
+    "pages/store/product-select/product-select",
     "pages/orders/orders",
     "pages/order-detail/order-detail",
     "pages/vehicle/vehicle",
     "pages/report/report",
     "pages/account/account",
+    "pages/address-list/address-list",
+    "pages/address-add/address-add",
     "pages/fleet-vehicles/fleet-vehicles",
     "pages/my-orders/my-orders",
     "pages/fleets/fleets",
     "pages/stores/stores",
-    "pages/users/users"
+    "pages/users/users",
+    "pages/test-location/test-location"
   ],
   "window": {
     "backgroundColor": "#F5F7FA",
@@ -21,6 +40,19 @@
     "navigationBarTextStyle": "white",
     "enablePullDownRefresh": false
   },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "您的位置信息将用于获取附近维修门店和显示服务地址"
+    },
+    "scope.userLocationBackground": {
+      "desc": "您的位置信息将用于后台定位服务"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation",
+    "chooseAddress"
+  ],
   "tabBar": {
     "color": "#8C8C8C",
     "selectedColor": "#667eea",

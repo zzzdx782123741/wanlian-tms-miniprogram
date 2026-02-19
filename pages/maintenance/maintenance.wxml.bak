@@ -1,0 +1,242 @@
+<!--pages/maintenance/maintenance.wxml - 保养申请页面-->
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">保养申请</view>
+    <view class="header-subtitle">选择保养类型和套餐</view>
+  </view>
+
+  <scroll-view class="content" scroll-y>
+    <!-- 车辆信息 -->
+    <view class="card">
+      <view class="card-title">车辆信息</view>
+      <view class="vehicle-info">
+        <text class="plate-number">{{vehicle.plateNumber}}</text>
+        <text class="vehicle-model">{{vehicle.brand}} {{vehicle.model}}</text>
+        <view class="mileage">当前里程：{{vehicle.mileage}} km</view>
+      </view>
+    </view>
+
+    <!-- 服务地址 -->
+    <view class="card">
+      <view class="card-title">服务地址</view>
+      <view class="location-info">
+        <text class="location-icon">📍</text>
+        <view class="location-content">
+          <view class="location-address">{{serviceLocation.address}}</view>
+          <view class="location-tip">点击修改服务地址</view>
+        </view>
+        <button class="location-change-btn" catchtap="onChangeLocation">
+          <text class="location-change-icon">📍</text>
+          <text>修改地址</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 保养类型 -->
+    <view class="card" wx:if="{{maintenanceTypes.length > 0}}">
+      <view class="card-title">选择保养类型</view>
+      <scroll-view class="type-list" scroll-x>
+        <view
+          class="type-item {{selectedTypeIndex === index ? 'active' : ''}}"
+          wx:for="{{maintenanceTypes}}"
+          wx:key="*this"
+          data-index="{{index}}"
+          bindtap="onSelectType"
+        >
+          <text class="type-icon">{{item.icon}}</text>
+          <text class="type-name">{{item.name}}</text>
+          <text class="type-desc">{{item.description}}</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 推荐套餐 -->
+    <view class="card" wx:if="{{recommendedPackages.length > 0}}">
+      <view class="card-title">
+        <text>推荐套餐</text>
+        <text class="title-tip" wx:if="{{fleetConfig.maintenanceProductPermission === 'driver_select'}}">（含商品明细和价格）</text>
+      </view>
+
+      <view class="packages-list">
+        <view
+          class="package-item {{selectedPackageIndex === index ? 'active' : ''}}"
+          wx:for="{{recommendedPackages}}"
+          wx:key="*this"
+          data-index="{{index}}"
+          bindtap="onSelectPackage"
+        >
+          <view class="package-header">
+            <text class="package-name">{{item.name}}</text>
+            <view class="package-tier">
+              <text class="tier-tag" data-tier="{{item.tier}}">{{item.tierName}}</text>
+              <text class="package-price">¥{{item.price}}</text>
+            </view>
+            <view class="package-products">含 {{item.products.length }} 项商品</view>
+          </view>
+          <view class="package-desc" wx:if="{{item.description}}">
+            <text>{{item.description}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 档位选择（司机无商品权限时） -->
+    <view class="card" wx:if="{{fleetConfig.maintenanceProductPermission !== 'driver_select' && recommendedPackages.length > 0}}">
+      <view class="card-title">选择档位</view>
+      <view class="tier-list">
+        <view
+          class="tier-item {{selectedTier === index ? 'active' : ''}}"
+          wx:for="{{tiers}}"
+          wx:key="*this"
+          data-index="{{index}}"
+          bindtap="onSelectTier"
+        >
+          <text class="tier-name">{{item.name}}</text>
+          <text class="tier-desc">{{item.priceRange}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 自定义商品（司机有权限时） -->
+    <view class="card" wx:if="{{fleetConfig.maintenanceProductPermission === 'driver_select' && allProducts.length > 0}}">
+      <view class="card-title">
+        <text>选择商品（可多选）</text>
+        <view class="products-tip">已选 {{selectedProductIndices.length}} 项，总价 ¥{{calculateProductsPrice()}}</view>
+      </view>
+
+      <checkbox-group>
+        <label
+          class="product-item {{selectedProductIndices.indexOf(index) > -1 ? 'checked' : ''}}"
+          wx:for="{{allProducts}}"
+          wx:key="*this"
+          data-index="{{index}}"
+          bindtap="onToggleProduct"
+        >
+          <view class="product-checkbox">
+            <checkbox value="{{index}}" checked="{{selectedProductIndices.indexOf(index) > -1}}" />
+          </view>
+          <view class="product-info">
+            <text class="product-name">{{item.name}}</text>
+            <text class="product-spec">{{item.spec}}</text>
+            <text class="product-price">¥{{item.price}}</text>
+          </view>
+        </label>
+      </checkbox-group>
+    </view>
+
+    <!-- 到店时间偏好 -->
+    <view class="card">
+      <view class="card-title">到店时间偏好</view>
+      <view class="time-preference">
+        <text class="time-label">期望到店时间：</text>
+        <view class="time-value" wx:if="{{preferredDate && preferredTime}}">
+          <text>{{preferredDate}} {{preferredTime}}</text>
+          <text class="time-change" bindtap="openTimePicker">修改</text>
+        </view>
+        <view class="time-value" wx:else>
+          <text>不限</text>
+          <text class="time-change" bindtap="openTimePicker">设置</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 司机备注 -->
+    <view class="card">
+      <view class="card-title">备注（选填）</view>
+      <textarea
+        class="remark-input"
+        placeholder="如有其他需求请说明"
+        value="{{driverRemark}}"
+        bindinput="onRemarkInput"
+        maxlength="500"
+        show-length
+      />
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-container">
+      <button
+        class="submit-btn"
+        bindtap="onSubmit"
+        disabled="{{submitting}}"
+      >
+        {{submitting ? '提交中...' : '提交保养申请'}}
+      </button>
+    </view>
+
+    <!-- 时间选择器 -->
+    <view class="picker-mask" wx:if="{{showTimePicker}}" bindtap="closeTimePicker">
+      <view class="picker-popup" catchtap="">
+        <view class="picker-header">
+          <text class="picker-title">选择到店时间</text>
+          <text class="picker-close" bindtap="closeTimePicker">✕</text>
+        </view>
+
+        <!-- 不限选项 -->
+        <view class="time-unlimited-option" bindtap="selectTimeUnlimited">
+          <text class="option-icon">⏰</text>
+          <text class="option-title">不限到店时间</text>
+          <text class="option-desc">提交后由门店联系您确认时间</text>
+        </view>
+
+        <!-- 日期选择 -->
+        <view class="date-section">
+          <picker
+            mode="date"
+            value="{{preferredDate}}"
+            start="{{today}}"
+            bindchange="onDateChange"
+          >
+            <view class="date-picker">
+              <text class="date-picker-text">{{preferredDate || '选择日期'}}</text>
+            </view>
+          </picker>
+
+          <!-- 时间选择 -->
+          <view class="time-section">
+            <scroll-view class="time-slots" scroll-y>
+              <view
+                class="time-slot-item"
+                wx:for="{{timeSlots}}"
+                wx:key="*this"
+                data-time="{{item}}"
+                bindtap="selectTimeSlot"
+              >
+                {{item}}
+              </view>
+            </scroll-view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 修改地址选择器 -->
+    <view class="picker-mask" wx:if="{{showLocationPicker}}" bindtap="closeLocationPicker">
+      <view class="location-picker-popup" catchtap="">
+        <view class="picker-header">
+          <text class="picker-title">修改服务地址</text>
+          <text class="picker-close" bindtap="closeLocationPicker">✕</text>
+        </view>
+
+        <button class="location-option" bindtap="onChooseCurrentLocation">
+          <text class="option-icon">📍</text>
+          <text class="option-title">当前位置</text>
+          <text class="option-desc">{{serviceLocation.address}}</text>
+        </button>
+
+        <button class="location-option" bindtap="onChooseFromContacts">
+          <text class="option-icon">⭐</text>
+          <text class="option-title">常用地址</text>
+          <text class="option-desc">从地址簿选择</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-container" wx:if="{{vehicleLoading || packagesLoading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">{{vehicleLoading ? '加载车辆信息...' : '加载推荐套餐...'}}</text>
+    </view>
+  </scroll-view>
+</view>

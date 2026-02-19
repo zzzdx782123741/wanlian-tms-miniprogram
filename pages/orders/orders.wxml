@@ -2,8 +2,8 @@
 <view class="page">
   <!-- 顶部标题栏 -->
   <view class="header">
-    <view class="header-title">维修订单</view>
-    <view class="header-subtitle">管理和追踪您的维修订单</view>
+    <view class="header-title">订单中心</view>
+    <view class="header-subtitle">管理和追踪您的订单</view>
   </view>
 
   <!-- 状态筛选标签 -->
@@ -21,7 +21,7 @@
       data-tab="pending"
       bindtap="onTabChange"
     >
-      <text class="tab-text">待接单</text>
+      <text class="tab-text">待处理</text>
       <text class="tab-badge" wx:if="{{counts.pending > 0}}">{{counts.pending}}</text>
     </view>
     <view
@@ -59,6 +59,11 @@
       bindtap="onOrderTap"
       data-id="{{item._id}}"
     >
+      <!-- 订单类型标签 -->
+      <view class="order-type-badge type-{{item.type}}">
+        {{item.type === 'maintenance' ? '保养' : '维修'}}
+      </view>
+
       <!-- 订单状态标签 -->
       <view class="order-status status-{{item.status}}">
         {{item.statusText}}
@@ -79,10 +84,20 @@
         </view>
       </view>
 
-      <!-- 故障描述 -->
-      <view class="order-fault" wx:if="{{item.faultDescription}}">
+      <!-- 维修订单：故障描述 -->
+      <view class="order-fault" wx:if="{{item.type === 'repair' && item.faultDescription}}">
         <text class="fault-label">故障描述：</text>
         <text class="fault-text">{{item.faultDescription}}</text>
+      </view>
+
+      <!-- 保养订单：保养类型和套餐 -->
+      <view class="order-maintenance" wx:if="{{item.type === 'maintenance'}}">
+        <text class="maint-label">保养类型：</text>
+        <text class="maint-value">{{item.maintenanceTypeName || '-'}}</text>
+      </view>
+      <view class="order-maintenance" wx:if="{{item.type === 'maintenance'}}">
+        <text class="maint-label">套餐：</text>
+        <text class="maint-value">{{item.packageName || item.selectedTier || '-'}}</text>
       </view>
 
       <!-- 进度条（进行中的订单） -->
@@ -95,11 +110,45 @@
 
       <!-- 订单底部信息 -->
       <view class="order-footer">
-        <view class="order-price" wx:if="{{item.quote}}">
+        <!-- 维修订单：显示报价 -->
+        <view class="order-price" wx:if="{{item.type === 'repair' && item.quote}}">
           <text class="price-label">报价：</text>
           <text class="price-value">¥{{item.quote.total}}</text>
         </view>
-        <view class="order-arrow">›</view>
+        <!-- 保养订单：显示金额 -->
+        <view class="order-price" wx:if="{{item.type === 'maintenance'}}">
+          <text class="price-label">金额：</text>
+          <text class="price-value">¥{{item.finalAmount || '-'}}</text>
+        </view>
+        <!-- 待车队审批订单显示去审批按钮 -->
+        <button
+          class="approve-btn"
+          wx:if="{{item.status === 'awaiting_fleet_approval'}}"
+          catchtap="onApproveOrder"
+          data-id="{{item._id}}"
+        >
+          去审批
+        </button>
+        <!-- 待报价审批订单显示去审批按钮 -->
+        <button
+          class="approve-btn"
+          wx:if="{{item.status === 'awaiting_approval'}}"
+          catchtap="onApproveOrder"
+          data-id="{{item._id}}"
+        >
+          去审批
+        </button>
+        <!-- 待确认订单显示去确认按钮 -->
+        <button
+          class="confirm-btn"
+          wx:if="{{item.status === 'completed' && !item.isConfirmed}}"
+          catchtap="onConfirmOrder"
+          data-id="{{item._id}}"
+        >
+          去确认
+        </button>
+        <!-- 其他状态显示箭头 -->
+        <view class="order-arrow" wx:if="{{item.status !== 'awaiting_fleet_approval' && item.status !== 'awaiting_approval' && !(item.status === 'completed' && !item.isConfirmed)}}">›</view>
       </view>
     </view>
 

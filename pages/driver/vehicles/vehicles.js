@@ -56,5 +56,13 @@ Page({
     wx.navigateTo({
       url: '/pages/driver/vehicles/add'
     });
+  },
+
+  // 保养申请
+  applyMaintenance(e) {
+    const { id } = e.currentTarget.dataset;
+    wx.navigateTo({
+      url: `/pages/maintenance/maintenance?vehicleId=${id}`
+    });
   }
 });

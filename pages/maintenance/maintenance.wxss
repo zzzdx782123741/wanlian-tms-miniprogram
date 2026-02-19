@@ -1,0 +1,649 @@
+/* pages/maintenance/maintenance.wxss - 保养申请页面样式 */
+
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+/* 顶部标题栏 */
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40rpx 32rpx 32rpx;
+  color: white;
+}
+
+.header-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.header-subtitle {
+  font-size: 28rpx;
+  opacity: 0.9;
+}
+
+/* 内容滚动区 */
+.content {
+  flex: 1;
+  padding: 24rpx 24rpx 160rpx;
+}
+
+/* 卡片通用样式 */
+.card {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title-tip {
+  font-size: 24rpx;
+  font-weight: normal;
+  color: #909399;
+}
+
+/* 车辆信息 */
+.vehicle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.plate-number {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.vehicle-model {
+  font-size: 28rpx;
+  color: #606266;
+}
+
+.mileage {
+  font-size: 28rpx;
+  color: #409eff;
+  font-weight: 500;
+}
+
+/* 服务地址 */
+.location-info {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.location-icon {
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.location-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.location-address {
+  font-size: 30rpx;
+  color: #1a1a1a;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-tip {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+.location-change-btn {
+  padding: 12rpx 24rpx;
+  background-color: #f0f9ff;
+  color: #409eff;
+  border: 1rpx solid #b3d8ff;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+.location-change-btn::after {
+  border: none;
+}
+
+.location-change-icon {
+  font-size: 28rpx;
+}
+
+/* 保养类型列表 */
+.type-list {
+  white-space: nowrap;
+}
+
+.type-item {
+  display: inline-block;
+  width: 240rpx;
+  padding: 24rpx;
+  margin-right: 16rpx;
+  background-color: #f5f7fa;
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+  vertical-align: top;
+  transition: all 0.3s;
+}
+
+.type-item.active {
+  background-color: #ecf5ff;
+  border-color: #409eff;
+}
+
+.type-icon {
+  display: block;
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.type-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 8rpx;
+}
+
+.type-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #909399;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 套餐列表 */
+.packages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.package-item {
+  padding: 24rpx;
+  background-color: #f5f7fa;
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.package-item.active {
+  background-color: #ecf5ff;
+  border-color: #409eff;
+}
+
+.package-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.package-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+  flex: 1;
+}
+
+.package-tier {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+}
+
+.tier-tag {
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+  font-size: 22rpx;
+  color: white;
+}
+
+.tier-tag[data-tier="basic"] {
+  background-color: #909399;
+}
+
+.tier-tag[data-tier="standard"] {
+  background-color: #409eff;
+}
+
+.tier-tag[data-tier="premium"] {
+  background-color: #67c23a;
+}
+
+.tier-tag[data-tier="luxury"] {
+  background-color: #e6a23c;
+}
+
+.package-price {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #f56c6c;
+}
+
+.package-products {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+.package-desc {
+  font-size: 26rpx;
+  color: #606266;
+  line-height: 1.6;
+  padding-top: 12rpx;
+  border-top: 1rpx solid #dcdfe6;
+}
+
+/* 档位列表 */
+.tier-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.tier-item {
+  padding: 24rpx;
+  background-color: #f5f7fa;
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.tier-item.active {
+  background-color: #ecf5ff;
+  border-color: #409eff;
+}
+
+.tier-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.tier-desc {
+  font-size: 26rpx;
+  color: #909399;
+}
+
+/* 商品列表 */
+.products-tip {
+  font-size: 24rpx;
+  color: #409eff;
+  margin-left: auto;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  background-color: #f5f7fa;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.product-item.checked {
+  background-color: #ecf5ff;
+  border-color: #409eff;
+}
+
+.product-checkbox {
+  margin-right: 16rpx;
+}
+
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.product-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.product-spec {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+.product-price {
+  font-size: 28rpx;
+  color: #f56c6c;
+  font-weight: 500;
+}
+
+/* 时间偏好 */
+.time-preference {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.time-label {
+  font-size: 28rpx;
+  color: #606266;
+}
+
+.time-value {
+  font-size: 28rpx;
+  color: #409eff;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.time-change {
+  padding: 8rpx 16rpx;
+  background-color: #f0f9ff;
+  color: #409eff;
+  border-radius: 4rpx;
+  font-size: 24rpx;
+}
+
+/* 备注输入 */
+.remark-input {
+  width: 100%;
+  min-height: 160rpx;
+  padding: 16rpx;
+  background-color: #f5f7fa;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+/* 提交按钮 */
+.submit-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx;
+  background-color: white;
+  box-shadow: 0 -4rpx 12rpx rgba(0, 0, 0, 0.08);
+  z-index: 100;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-btn::after {
+  border: none;
+}
+
+.submit-btn[disabled] {
+  opacity: 0.6;
+}
+
+/* 选择器遮罩 */
+.picker-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* 选择器弹窗 */
+.picker-popup {
+  width: 100%;
+  max-height: 80vh;
+  background-color: white;
+  border-radius: 24rpx 24rpx 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  border-bottom: 1rpx solid #ebeef5;
+}
+
+.picker-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.picker-close {
+  font-size: 44rpx;
+  color: #909399;
+  padding: 8rpx;
+}
+
+/* 不限时间选项 */
+.time-unlimited-option {
+  padding: 32rpx;
+  border-bottom: 1rpx solid #ebeef5;
+}
+
+.option-icon {
+  display: block;
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.option-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin-bottom: 8rpx;
+}
+
+.option-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #909399;
+}
+
+/* 日期选择区 */
+.date-section {
+  padding: 32rpx;
+}
+
+.date-picker {
+  padding: 24rpx;
+  background-color: #f5f7fa;
+  border-radius: 12rpx;
+  text-align: center;
+}
+
+.date-picker-text {
+  font-size: 28rpx;
+  color: #409eff;
+}
+
+/* 时间选择区 */
+.time-section {
+  margin-top: 24rpx;
+}
+
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+  max-height: 400rpx;
+}
+
+.time-slot-item {
+  padding: 16rpx;
+  background-color: #f5f7fa;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #606266;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.time-slot-item:active {
+  background-color: #ecf5ff;
+  border-color: #409eff;
+  color: #409eff;
+}
+
+/* 地址选择弹窗 */
+.location-picker-popup {
+  width: 90%;
+  margin: 0 auto;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.location-option {
+  width: 100%;
+  padding: 32rpx;
+  background-color: white;
+  border: none;
+  border-bottom: 1rpx solid #ebeef5;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  text-align: left;
+}
+
+.location-option::after {
+  border: none;
+}
+
+/* 加载状态 */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid #f3f3f3;
+  border-top-color: #409eff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  margin-top: 24rpx;
+  font-size: 28rpx;
+  color: #606266;
+}
+
+/* 语音输入提示 */
+.voice-input-hint {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: #FFF9E6;
+  border-left: 4rpx solid #E6A23C;
+  border-radius: 8rpx;
+  margin-bottom: 24rpx;
+}
+
+.hint-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.hint-text {
+  font-size: 26rpx;
+  color: #606266;
+}
+
+/* 车队提示卡片 */
+.fleet-tip-card {
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx;
+  background: #F0F9FF;
+  border-left: 4rpx solid #409EFF;
+  border-radius: 12rpx;
+}
+
+.tip-icon {
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.tip-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.tip-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+.tip-text {
+  font-size: 26rpx;
+  color: #606266;
+  line-height: 1.6;
+}

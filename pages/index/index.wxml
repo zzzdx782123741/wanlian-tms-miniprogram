@@ -3,45 +3,6 @@
   <!-- 顶部装饰背景 -->
   <view class="header-bg"></view>
 
-  <!-- 用户信息卡片 -->
-  <view class="user-section">
-    <view class="user-card">
-      <view class="avatar-container">
-        <image
-          class="avatar"
-          src="{{userInfo.avatar || '/images/icons/avatar.png'}}"
-          mode="aspectFill"
-        />
-        <view class="avatar-badge">{{roleShortText}}</view>
-      </view>
-      <view class="user-details">
-        <view class="greeting">你好，{{userInfo.nickname || '用户'}}</view>
-        <view class="role-badge">{{roleText}}</view>
-      </view>
-      <view class="notification-btn">
-        <text class="icon">🔔</text>
-      </view>
-    </view>
-
-    <!-- 快捷统计 -->
-    <view class="stats-row">
-      <view class="stat-item">
-        <view class="stat-value">0</view>
-        <view class="stat-label">待处理</view>
-      </view>
-      <view class="stat-divider"></view>
-      <view class="stat-item">
-        <view class="stat-value">0</view>
-        <view class="stat-label">进行中</view>
-      </view>
-      <view class="stat-divider"></view>
-      <view class="stat-item">
-        <view class="stat-value">0</view>
-        <view class="stat-label">已完成</view>
-      </view>
-    </view>
-  </view>
-
   <!-- 功能菜单区域 -->
   <view class="menu-section">
     <view class="section-header">

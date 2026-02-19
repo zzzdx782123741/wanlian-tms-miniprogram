@@ -1,4 +1,4 @@
-// pages/my-orders/my-orders.js - 我的订单页面（门店技师）
+// pages/my-orders/my-orders.js - 我的订单页面（支持所有角色）
 const app = getApp();
 const request = require('../../utils/request');
 
@@ -44,10 +44,7 @@ Page({
     try {
       const status = this.data.activeTab === 'all' ? '' : this.data.activeTab;
 
-      const res = await request.get('/orders', {
-        status,
-        myOrders: true // 只看自己接的订单
-      });
+      const res = await request.get('/orders', { status });
 
       const orders = this.formatOrders(res.data);
 
@@ -69,27 +66,50 @@ Page({
    */
   formatOrders(orders) {
     return orders.map(order => {
+      // 判断是否已确认
+      const isConfirmed = order.completion && order.completion.confirmedBy;
+
       const statusMap = {
-        'received': {
-          text: '已接单',
+        'pending_assessment': {
+          text: '待评估',
           nextAction: '请检查车辆并提交报价'
         },
-        'approved': {
+        'awaiting_approval': {
+          text: '费用审批中',
+          nextAction: '等待车队审批报价'
+        },
+        'in_repair': {
           text: '维修中',
           nextAction: '请尽快完成维修并提交完工'
+        },
+        'awaiting_addon_approval': {
+          text: '增项审批中',
+          nextAction: '等待车队审批增项费用'
+        },
+        'completed': {
+          text: isConfirmed ? '已完成' : '待确认',
+          nextAction: isConfirmed ? '订单已完成' : '等待司机确认'
+        },
+        'rejected': {
+          text: '已拒绝',
+          nextAction: ''
+        },
+        'refunded': {
+          text: '已退款',
+          nextAction: ''
         }
       };
 
-      const statusInfo = statusMap[order.status] || { text: '未知', nextAction: '' };
+      const statusInfo = statusMap[order.status] || { text: '未知状态', nextAction: '' };
 
       return {
         ...order,
         statusText: statusInfo.text,
         nextAction: statusInfo.nextAction,
         vehicleId: {
-          plateNumber: order.vehicleId?.plateNumber || '未知车牌',
-          brand: order.vehicleId?.brand || '',
-          model: order.vehicleId?.model || ''
+          plateNumber: order.vehicleId && order.vehicleId.plateNumber ? order.vehicleId.plateNumber : '未知车牌',
+          brand: order.vehicleId && order.vehicleId.brand ? order.vehicleId.brand : '',
+          model: order.vehicleId && order.vehicleId.model ? order.vehicleId.model : ''
         },
         createdAtText: this.formatTime(order.createdAt)
       };
@@ -129,15 +149,6 @@ Page({
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({
       url: `/pages/order-detail/order-detail?id=${id}`
-    });
-  },
-
-  /**
-   * 前往接单大厅
-   */
-  onGoToHall() {
-    wx.navigateTo({
-      url: '/pages/orders/orders'
     });
   },
 

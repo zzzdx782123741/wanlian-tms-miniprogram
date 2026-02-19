@@ -1,0 +1,60 @@
+<!--pages/address-list/address-list.wxml - 服务地址列表-->
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">服务地址管理</view>
+    <view class="header-subtitle">管理您的常用服务地址</view>
+  </view>
+
+  <!-- 地址列表 -->
+  <view class="content">
+    <view class="empty-tip" wx:if="{{addressList.length === 0}}">
+      <text class="empty-icon">📍</text>
+      <text class="empty-text">暂无服务地址</text>
+      <text class="empty-hint">点击下方按钮添加地址</text>
+    </view>
+
+    <view class="address-list" wx:else>
+      <view
+        class="address-card"
+        wx:for="{{addressList}}"
+        wx:key="_id"
+        bindtap="onEditAddress"
+        data-address="{{item}}"
+      >
+        <view class="address-header">
+          <view class="address-info">
+            <text class="address-name">{{item.name}}</text>
+            <text class="address-phone">{{item.phone}}</text>
+          </view>
+          <view class="address-actions">
+            <text
+              class="action-btn delete-btn"
+              catchtap="onDeleteAddress"
+              data-id="{{item._id}}"
+            >删除</text>
+            <text class="action-btn edit-btn">编辑</text>
+          </view>
+        </view>
+
+        <view class="address-detail">
+          <text class="address-icon">📍</text>
+          <text class="address-text">{{item.address}}</text>
+        </view>
+
+        <view class="address-tags" wx:if="{{item.isDefault || item.remark}}">
+          <text class="tag default-tag" wx:if="{{item.isDefault}}">默认</text>
+          <text class="tag remark-tag" wx:if="{{item.remark}}">{{item.remark}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部添加按钮 -->
+  <view class="footer">
+    <button class="add-btn" bindtap="onAddAddress">
+      <text class="add-icon">+</text>
+      <text class="add-text">添加新地址</text>
+    </button>
+  </view>
+</view>

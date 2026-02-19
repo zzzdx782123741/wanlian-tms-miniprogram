@@ -114,6 +114,27 @@
   font-weight: 600;
 }
 
+/* 订单类型徽章 */
+.order-type-badge {
+  position: absolute;
+  top: 32rpx;
+  left: 32rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.type-repair {
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+  color: #1E40AF;
+}
+
+.type-maintenance {
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+  color: #065F46;
+}
+
 .status-pending {
   background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
   color: #92400E;
@@ -205,6 +226,28 @@
   line-height: 1.6;
 }
 
+/* 保养订单信息 */
+.order-maintenance {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  background: #F0FDFA;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.maint-label {
+  font-size: 24rpx;
+  color: #115E59;
+  font-weight: 600;
+  margin-right: 8rpx;
+}
+
+.maint-value {
+  font-size: 26rpx;
+  color: #134E4A;
+}
+
 /* 进度条 */
 .order-progress {
   margin: 20rpx 0;
@@ -264,6 +307,52 @@
   font-size: 48rpx;
   color: #CBD5E0;
   font-weight: 300;
+}
+
+/* 去审批按钮 */
+.approve-btn {
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  border-radius: 32rpx;
+  border: none;
+  margin-left: auto;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+
+.approve-btn::after {
+  border: none;
+}
+
+/* 去确认按钮 */
+.confirm-btn {
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  border-radius: 32rpx;
+  border: none;
+  margin-left: auto;
+  box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.3);
+  animation: pulse 2s infinite;
+}
+
+.confirm-btn::after {
+  border: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 4rpx 16rpx rgba(245, 158, 11, 0.5);
+  }
 }
 
 /* 空状态 */

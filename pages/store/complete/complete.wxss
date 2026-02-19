@@ -1,0 +1,314 @@
+/* pages/store/complete/complete.wxss */
+@import "../../../styles/design-system.wxss";
+
+.complete-container {
+  min-height: 100vh;
+  padding: var(--spacing-md);
+  background: var(--color-bg-page);
+  padding-bottom: 120rpx;
+}
+
+/* 订单区域 */
+.order-section {
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.section-title .icon {
+  margin-right: var(--spacing-xs);
+  font-size: 32rpx;
+}
+
+.required-mark {
+  margin-left: var(--spacing-xs);
+  color: #EF4444;
+  font-size: var(--font-size-lg);
+}
+
+/* 信息行 */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row .label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.info-row .value {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  text-align: right;
+  flex: 1;
+  margin-left: var(--spacing-md);
+}
+
+/* 表单区域 */
+.form-section {
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+/* 照片提示 */
+.photo-hint, .video-hint {
+  display: flex;
+  align-items: center;
+  background: #FFFBEB;
+  border-left: 4rpx solid #F59E0B;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.video-hint {
+  background: #EFF6FF;
+  border-left-color: #3B82F6;
+}
+
+.hint-icon {
+  font-size: 28rpx;
+  margin-right: var(--spacing-xs);
+}
+
+.hint-text {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: #92400E;
+  line-height: 1.5;
+}
+
+.video-hint .hint-text {
+  color: #1E40AF;
+}
+
+/* 图片上传 */
+.image-upload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.image-item {
+  position: relative;
+  width: 160rpx;
+  height: 160rpx;
+}
+
+.uploaded-image {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  border: 2rpx solid var(--color-border-light);
+}
+
+.image-delete {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 48rpx;
+  height: 48rpx;
+  background: #EF4444;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: bold;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.upload-btn {
+  width: 160rpx;
+  height: 160rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #F9FAFB;
+  border: 2rpx dashed var(--color-border-glass);
+  border-radius: var(--radius-md);
+}
+
+.video-upload-btn {
+  width: 100%;
+  height: 120rpx;
+  flex-direction: row;
+  gap: var(--spacing-sm);
+}
+
+.upload-icon {
+  font-size: 48rpx;
+  margin-bottom: var(--spacing-xs);
+}
+
+.video-upload-btn .upload-icon {
+  font-size: 40rpx;
+  margin-bottom: 0;
+}
+
+.upload-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.upload-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-top: var(--spacing-xs);
+}
+
+.video-upload-btn .upload-count {
+  margin-top: 0;
+  margin-left: var(--spacing-xs);
+}
+
+/* 视频上传 */
+.video-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.video-item {
+  position: relative;
+  width: 100%;
+}
+
+.uploaded-video {
+  width: 100%;
+  height: 400rpx;
+  border-radius: var(--radius-md);
+  border: 2rpx solid var(--color-border-light);
+}
+
+.video-delete {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+/* 文本域 */
+.textarea-field {
+  width: 100%;
+  min-height: 200rpx;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: #FFFFFF;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+}
+
+.char-count {
+  text-align: right;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-top: var(--spacing-xs);
+}
+
+/* 完工流程提示 */
+.process-hint {
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-md);
+  border: 2rpx solid #10B981;
+}
+
+.hint-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: #065F46;
+  margin-bottom: var(--spacing-sm);
+}
+
+.hint-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+}
+
+.hint-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.step-number {
+  width: 48rpx;
+  height: 48rpx;
+  background: #10B981;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.step-text {
+  font-size: var(--font-size-xs);
+  color: #065F46;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.step-arrow {
+  font-size: 32rpx;
+  color: #10B981;
+  font-weight: bold;
+}
+
+/* 提交按钮 */
+.submit-btn {
+  width: 100%;
+  font-size: var(--font-size-lg);
+  padding: var(--spacing-md);
+  box-shadow: 0 8rpx 24rpx rgba(16, 185, 129, 0.3);
+}
+
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-3xl);
+  color: var(--color-text-tertiary);
+}

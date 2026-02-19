@@ -78,14 +78,10 @@ Page({
    */
   onViewDetail(e) {
     const fleetId = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/fleets/detail/detail?id=${fleetId}`,
-      fail: () => {
-        wx.showToast({
-          title: '详情页开发中',
-          icon: 'none'
-        });
-      }
+    wx.showModal({
+      title: '车队详情',
+      content: `车队详情页开发中（ID：${fleetId}）`,
+      showCancel: false
     });
   },
 

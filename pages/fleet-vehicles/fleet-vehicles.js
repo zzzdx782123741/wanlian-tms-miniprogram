@@ -75,7 +75,7 @@ Page({
   onVehicleDetail(e) {
     const vehicleId = e.currentTarget.dataset.vehicleId;
     wx.navigateTo({
-      url: `/pages/vehicle-detail/vehicle-detail?id=${vehicleId}`
+      url: `/pages/driver/vehicles/detail?id=${vehicleId}`
     });
   },
 

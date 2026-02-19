@@ -84,7 +84,31 @@
 .vehicle-footer {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: var(--spacing-md);
   padding-top: var(--spacing-sm);
+}
+
+.footer-btn {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.maintenance-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.maintenance-btn::after {
+  border: none;
+}
+
+.btn-icon {
+  font-size: var(--font-size-base);
 }
 
 .arrow-icon {

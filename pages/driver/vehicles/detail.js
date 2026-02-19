@@ -40,8 +40,16 @@ Page({
 
   // 编辑车辆
   editVehicle() {
+    wx.showToast({
+      title: '编辑功能开发中',
+      icon: 'none'
+    });
+  },
+
+  // 保养申请
+  applyMaintenance() {
     wx.navigateTo({
-      url: `/pages/driver/vehicles/edit?id=${this.data.vehicleId}`
+      url: `/pages/maintenance/maintenance?vehicleId=${this.data.vehicleId}`
     });
   },
 

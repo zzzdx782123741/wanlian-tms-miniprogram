@@ -52,7 +52,7 @@ Page({
       }
 
       const res = await request.get('/orders', params);
-      const orders = res.data.orders || [];
+      const orders = this.formatOrders(res.data.orders || []);
 
       // 过滤技师自己的订单
       const userInfo = wx.getStorageSync('userInfo');
@@ -137,15 +137,37 @@ Page({
     });
   },
 
+  // 格式化订单数据
+  formatOrders(orders) {
+    return orders.map(order => {
+      // 判断是否已确认
+      const isConfirmed = order.completion && order.completion.confirmedBy;
+
+      // 获取状态文本
+      let statusText = this.getStatusText(order.status, order);
+
+      return {
+        ...order,
+        statusText: statusText
+      };
+    });
+  },
+
   // 获取状态文本
-  getStatusText(status) {
+  getStatusText(status, order) {
+    // 判断是否已确认
+    const isConfirmed = order && order.completion && order.completion.confirmedBy;
+
     const statusMap = {
       'pending': '待接单',
+      'pending_assessment': '待评估',
       'received': '已接单',
+      'awaiting_approval': '待审批',
       'quoted': '已报价',
       'approved': '已审批',
       'repairing': '维修中',
-      'completed': '已完成',
+      'in_repair': '维修中',
+      'completed': isConfirmed ? '已完成' : '待确认',
       'confirmed': '已确认'
     };
     return statusMap[status] || status;
@@ -155,10 +177,13 @@ Page({
   getStatusType(status) {
     const typeMap = {
       'pending': 'warning',
+      'pending_assessment': 'warning',
       'received': 'info',
+      'awaiting_approval': 'info',
       'quoted': 'primary',
       'approved': 'primary',
       'repairing': 'primary',
+      'in_repair': 'primary',
       'completed': 'success',
       'confirmed': 'success'
     };

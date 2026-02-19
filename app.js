@@ -1,15 +1,19 @@
 // app.js - 万联驿站TMS
-const API_BASE = 'http://localhost:3000/api';
+const DEFAULT_BASE_URL = 'http://localhost:3000/api';
 
 App({
   globalData: {
-    baseUrl: API_BASE,
+    baseUrl: DEFAULT_BASE_URL,
     token: '',
     userInfo: null,
     role: '', // DRIVER, FLEET_MANAGER, STORE_TECHNICIAN, PLATFORM_OPERATOR
   },
 
   onLaunch() {
+    const storedBaseUrl = wx.getStorageSync('baseUrl');
+    if (storedBaseUrl) {
+      this.globalData.baseUrl = storedBaseUrl;
+    }
     // 检查登录状态
     this.checkLoginStatus();
   },
@@ -41,6 +45,11 @@ App({
     wx.setStorageSync('token', token);
     wx.setStorageSync('userInfo', userInfo);
     wx.setStorageSync('role', role);
+  },
+
+  setBaseUrl(baseUrl) {
+    this.globalData.baseUrl = baseUrl;
+    wx.setStorageSync('baseUrl', baseUrl);
   },
 
   /**

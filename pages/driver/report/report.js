@@ -46,17 +46,17 @@ Page({
 
   // 上报位置
   reportLocation(e) {
-    const { id } = e.currentTarget.dataset;
-    wx.navigateTo({
-      url: `/pages/driver/report/location?id=${id}`
+    wx.showToast({
+      title: '位置上报功能开发中',
+      icon: 'none'
     });
   },
 
   // 更新状态
   updateStatus(e) {
-    const { id } = e.currentTarget.dataset;
-    wx.navigateTo({
-      url: `/pages/driver/report/status?id=${id}`
+    wx.showToast({
+      title: '状态更新功能开发中',
+      icon: 'none'
     });
   }
 });

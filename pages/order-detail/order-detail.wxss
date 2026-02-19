@@ -217,6 +217,24 @@
   font-weight: 300;
 }
 
+/* 车队信息 */
+.fleet-info {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #E2E8F0;
+  font-size: 26rpx;
+  color: #718096;
+}
+
+.fleet-label {
+  color: #A0AEC0;
+}
+
+.fleet-name {
+  color: #4A5568;
+  font-weight: 600;
+}
+
 /* 故障描述 */
 .fault-content {
   font-size: 28rpx;
@@ -383,6 +401,46 @@
   margin-bottom: 20rpx;
 }
 
+/* 确认信息 */
+.confirm-info {
+  margin-top: 24rpx;
+  padding: 20rpx;
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+  border-radius: 12rpx;
+  border: 2rpx solid #10B981;
+}
+
+.confirm-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.confirm-icon {
+  font-size: 28rpx;
+  color: #10B981;
+  margin-right: 8rpx;
+  font-weight: bold;
+}
+
+.confirm-label {
+  font-size: 26rpx;
+  color: #065F46;
+}
+
+.confirm-value {
+  font-size: 26rpx;
+  color: #10B981;
+  font-weight: 600;
+  margin-left: 8rpx;
+}
+
+.confirm-time {
+  font-size: 24rpx;
+  color: #065F46;
+  padding-left: 36rpx;
+}
+
 /* 底部操作栏 */
 .action-bar {
   position: fixed;
@@ -445,4 +503,275 @@
 .btn-icon {
   font-size: 28rpx;
   margin-right: 8rpx;
+}
+
+/* 已确认提示 */
+.confirmed-notice {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+  border: 2rpx solid #10B981;
+}
+
+.notice-icon {
+  font-size: 32rpx;
+  color: #10B981;
+  margin-right: 12rpx;
+  font-weight: bold;
+}
+
+.notice-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #065F46;
+}
+
+/* 接车检查信息 */
+.check-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.check-diagnosis {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 16rpx;
+  background: #FFFBEB;
+  border-left: 4rpx solid #F59E0B;
+  border-radius: 8rpx;
+}
+
+.diagnosis-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #92400E;
+}
+
+.diagnosis-text {
+  font-size: 28rpx;
+  color: #4A5568;
+  line-height: 1.6;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.check-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 8rpx;
+}
+
+.check-photo {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 12rpx;
+  object-fit: cover;
+}
+
+/* 维修报价项目 */
+.quote-items {
+  margin-bottom: 16rpx;
+}
+
+.quote-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #E2E8F0;
+}
+
+.quote-item:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #2D3748;
+  font-weight: 500;
+  margin-right: 16rpx;
+}
+
+.item-price {
+  font-size: 26rpx;
+  color: #718096;
+  margin-right: 16rpx;
+}
+
+.item-subtotal {
+  font-size: 28rpx;
+  color: #667eea;
+  font-weight: 600;
+  min-width: 100rpx;
+  text-align: right;
+}
+
+/* 维修日志 */
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.log-item {
+  padding: 20rpx;
+  background: #F7FAFC;
+  border-radius: 12rpx;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.log-operator {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2D3748;
+}
+
+.log-time {
+  font-size: 22rpx;
+  color: #A0AEC0;
+}
+
+.log-content {
+  font-size: 28rpx;
+  color: #4A5568;
+  line-height: 1.6;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.log-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.log-image {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 12rpx;
+  object-fit: cover;
+}
+
+/* 拒绝原因卡片 */
+.reject-card {
+  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+  border: 2rpx solid #FCA5A5;
+}
+
+.reject-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.reject-icon {
+  font-size: 36rpx;
+  margin-right: 12rpx;
+}
+
+.reject-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #991B1B;
+}
+
+.reject-reason {
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.reject-reason-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #7F1D1D;
+}
+
+.reject-reason-text {
+  font-size: 28rpx;
+  color: #450A0A;
+  line-height: 1.6;
+}
+
+.reject-tip {
+  font-size: 24rpx;
+  color: #7F1D1D;
+  text-align: center;
+  padding: 12rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8rpx;
+}
+
+/* 重新提交按钮 */
+.action-btn.resubmit {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.3);
+}
+
+/* 查看拒绝原因按钮 */
+.action-btn.info {
+  background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+  color: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(107, 114, 128, 0.3);
+}
+
+/* 保养订单信息 */
+.maint-info-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #E2E8F0;
+}
+
+.maint-info-row:last-child {
+  border-bottom: none;
+}
+
+.maint-label {
+  font-size: 26rpx;
+  color: #718096;
+  font-weight: 600;
+  width: 180rpx;
+  flex-shrink: 0;
+}
+
+.maint-value {
+  font-size: 28rpx;
+  color: #2D3748;
+  flex: 1;
+  word-break: break-all;
+}
+
+.maint-value.price {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #F56C6C;
+}
+
+.maint-approval {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+}
+
+.approval-divider {
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent, #E2E8F0, transparent);
+  margin-bottom: 20rpx;
 }

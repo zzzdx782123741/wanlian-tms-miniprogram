@@ -48,6 +48,86 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+/* 开发模式区域 */
+.dev-mode-section {
+  width: 100%;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+}
+
+.dev-mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dev-mode-label {
+  font-size: var(--font-size-base);
+  color: #FFFFFF;
+  font-weight: var(--font-weight-medium);
+}
+
+/* 测试账号区域 */
+.test-account-section {
+  width: 100%;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-lg);
+}
+
+.section-title {
+  font-size: var(--font-size-sm);
+  color: #666;
+  margin-bottom: var(--spacing-md);
+  font-weight: var(--font-weight-medium);
+}
+
+.account-picker {
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+}
+
+.picker-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  background: #F5F5F5;
+  border-radius: var(--radius-md);
+  border: 1rpx solid #E0E0E0;
+}
+
+.picker-text {
+  font-size: var(--font-size-base);
+  color: #333;
+  flex: 1;
+}
+
+.picker-arrow {
+  font-size: var(--font-size-sm);
+  color: #999;
+  margin-left: var(--spacing-sm);
+}
+
+.test-login-btn {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: #1890ff;
+  color: #FFFFFF;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--radius-md);
+}
+
+.test-login-btn::after {
+  border: none;
+}
+
 /* 登录区域 */
 .login-section {
   width: 100%;
@@ -69,6 +149,11 @@
   border: none;
   border-radius: var(--radius-lg);
   box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
+}
+
+.wechat-login-btn[disabled] {
+  background: #CCCCCC;
+  opacity: 0.6;
 }
 
 .wechat-login-btn::after {

@@ -1,0 +1,155 @@
+<!--pages/store/complete/complete.wxml - 门店技师提交完工-->
+<view class="complete-container">
+  <block wx:if="{{order}}">
+    <!-- 订单信息 -->
+    <view class="order-section glass-card">
+      <view class="section-title">
+        <text class="icon">📋</text>
+        <text>订单信息</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">订单号</text>
+        <text class="value">{{order.orderNumber}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">车牌号</text>
+        <text class="value">{{(order.vehicleId && order.vehicleId.plateNumber) || '-'}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">车型</text>
+        <text class="value">{{(order.vehicleId && order.vehicleId.brand) || '-'}} {{(order.vehicleId && order.vehicleId.model) || ''}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">当前里程</text>
+        <text class="value">{{order.checkin && order.checkin.mileage ? order.checkin.mileage : (order.milestone || '未填写')}} 公里</text>
+      </view>
+    </view>
+
+    <!-- 完工图片 -->
+    <view class="form-section glass-card">
+      <view class="section-title">
+        <text class="icon">📷</text>
+        <text>完工照片</text>
+        <text class="required-mark">*</text>
+      </view>
+
+      <view class="photo-hint">
+        <text class="hint-icon">💡</text>
+        <text class="hint-text">请拍摄维修完成后的车辆照片作为凭证，至少上传一张</text>
+      </view>
+
+      <view class="image-upload">
+        <block wx:if="{{completionImages.length > 0}}">
+          <view class="image-item" wx:for="{{completionImages}}" wx:key="index">
+            <image
+              class="uploaded-image"
+              src="{{item}}"
+              mode="aspectFill"
+              bindtap="previewImage"
+              data-url="{{item}}"
+              data-urls="{{completionImages}}"
+            />
+            <view class="image-delete" bindtap="deleteImage" data-index="{{index}}">
+              <text>✕</text>
+            </view>
+          </view>
+        </block>
+
+        <view class="upload-btn" wx:if="{{completionImages.length < 9}}" bindtap="chooseImage">
+          <text class="upload-icon">📷</text>
+          <text class="upload-text">添加照片</text>
+          <text class="upload-count">({{completionImages.length}}/9)</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 完工视频 -->
+    <view class="form-section glass-card">
+      <view class="section-title">
+        <text class="icon">🎬</text>
+        <text>完工视频（选填）</text>
+      </view>
+
+      <view class="video-hint">
+        <text class="hint-icon">💡</text>
+        <text class="hint-text">可上传维修过程的视频，最多3个，每个不超过60秒</text>
+      </view>
+
+      <view class="video-list" wx:if="{{completionVideos.length > 0}}">
+        <view class="video-item" wx:for="{{completionVideos}}" wx:key="index">
+          <video
+            class="uploaded-video"
+            src="{{item}}"
+            show-center-play-btn="{{true}}"
+            controls="{{true}}"
+          />
+          <view class="video-delete" bindtap="deleteVideo" data-index="{{index}}">
+            <text>✕</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="upload-btn video-upload-btn" wx:if="{{completionVideos.length < 3}}" bindtap="chooseVideo">
+        <text class="upload-icon">🎥</text>
+        <text class="upload-text">添加视频</text>
+        <text class="upload-count">({{completionVideos.length}}/3)</text>
+      </view>
+    </view>
+
+    <!-- 完工描述 -->
+    <view class="form-section glass-card">
+      <view class="section-title">
+        <text class="icon">💬</text>
+        <text>完工说明</text>
+      </view>
+
+      <textarea
+        class="textarea-field"
+        placeholder="请描述维修完成情况、更换的零件、注意事项等（选填）"
+        value="{{description}}"
+        bindinput="onDescriptionInput"
+        maxlength="500"
+      ></textarea>
+      <view class="char-count">{{description.length}}/500</view>
+    </view>
+
+    <!-- 完工流程提示 -->
+    <view class="process-hint">
+      <view class="hint-title">📢 完工流程</view>
+      <view class="hint-steps">
+        <view class="hint-step">
+          <view class="step-number">1</view>
+          <view class="step-text">提交完工</view>
+        </view>
+        <view class="step-arrow">→</view>
+        <view class="hint-step">
+          <view class="step-number">2</view>
+          <view class="step-text">司机确认</view>
+        </view>
+        <view class="step-arrow">→</view>
+        <view class="hint-step">
+          <view class="step-number">3</view>
+          <view class="step-text">订单完成</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <button
+      class="submit-btn glass-btn-cta"
+      bindtap="handleSubmit"
+      disabled="{{submitting}}"
+    >
+      {{submitting ? '提交中...' : '提交完工'}}
+    </button>
+  </block>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text>加载中...</text>
+  </view>
+</view>
