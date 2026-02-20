@@ -1,0 +1,45 @@
+/* components/custom-tab-bar/index.wxss - 自定义 tabBar 样式 */
+.custom-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100rpx;
+  background: white;
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -2rpx 16rpx rgba(0, 0, 0, 0.08);
+  z-index: 9999;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 0;
+  transition: all 0.3s;
+}
+
+.tab-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-bottom: 4rpx;
+}
+
+.tab-text {
+  font-size: 20rpx;
+  color: #8C8C8C;
+  transition: color 0.3s;
+}
+
+.tab-item.active .tab-text {
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* 点击态效果 */
+.tab-item:active {
+  background: rgba(102, 126, 234, 0.05);
+}

@@ -185,12 +185,25 @@ Page({
 
     const statusInfo = statusMap[order.status] || { text: '未知状态', hint: '', icon: '❓', timeline: [] };
 
+    // 判断是否已评价
+    const isReviewed = !!order.reviewed;
+
+    // 判断是否可以追评（15天内，从完工时间开始计算）
+    const completedAt = order.completion?.completedAt || order.completedAt;
+    let canReview = false;
+    if (completedAt && !isReviewed) {
+      const daysDiff = (Date.now() - new Date(completedAt).getTime()) / (1000 * 60 * 60 * 24);
+      canReview = daysDiff <= 15;
+    }
+
     return {
       ...order,
       statusText: statusInfo.text,
       statusHint: statusInfo.hint,
       statusIcon: statusInfo.icon,
       timeline: statusInfo.timeline,
+      isReviewed,
+      canReview,
       createdAtText: this.formatTime(order.createdAt),
       logs: order.logs ? order.logs.map(log => ({
         ...log,
@@ -502,54 +515,86 @@ Page({
   /**
    * 确认完工
    */
-  async onConfirmOrder() {
-    wx.showModal({
-      title: '确认完工',
-      content: '确认车辆已维修完成？确认后将返回订单列表。',
-      confirmColor: '#10B981',
-      success: async (res) => {
-        if (res.confirm) {
-          try {
-            wx.showLoading({ title: '确认中...' });
+  onConfirmOrder() {
+    console.log('========== 确认完工方法被调用 ==========');
+    console.log('订单ID:', this.data.orderId);
+    console.log('当前页面栈长度:', getCurrentPages().length);
 
-            console.log('========== 开始确认完工 ==========');
-            console.log('订单ID:', this.data.orderId);
-
-            const response = await request.post(`/orders/${this.data.orderId}/confirm`);
-
-            console.log('确认完工响应:', response);
-            console.log('================================');
-
-            wx.hideLoading();
-            wx.showToast({
-              title: '确认成功',
-              icon: 'success'
-            });
-
-            // 确认成功后返回订单列表
-            setTimeout(() => {
-              wx.navigateBack({
-                delta: 1,
-                fail: () => {
-                  // 如果返回失败（比如没有上一页），跳转到订单列表
-                  wx.switchTab({
-                    url: '/pages/orders/orders'
-                  });
-                }
-              });
-            }, 1500);
-
-          } catch (error) {
-            console.error('确认完工失败:', error);
-            wx.hideLoading();
-            wx.showToast({
-              title: error.message || '确认失败',
-              icon: 'none'
-            });
-          }
-        }
-      }
+    // 先显示一个toast确认方法被调用
+    wx.showToast({
+      title: '正在打开确认对话框...',
+      icon: 'loading',
+      duration: 1000
     });
+
+    // 延迟一点显示modal，避免被toast打断
+    setTimeout(() => {
+      console.log('准备显示 showModal');
+      wx.showModal({
+        title: '确认完工',
+        content: '确认车辆已维修完成？确认后将跳转到评价页面。',
+        confirmText: '确认',
+        cancelText: '取消',
+        confirmColor: '#10B981',
+        success: (res) => {
+          console.log('========== 用户选择 ==========');
+          console.log('用户选择:', res);
+          console.log('res.confirm:', res.confirm);
+          console.log('res.cancel:', res.cancel);
+          console.log('====================================');
+          if (res.confirm) {
+            this.doConfirm();
+          }
+        },
+        fail: (err) => {
+          console.error('========== showModal 失败 ==========');
+          console.error(err);
+          console.error('====================================');
+          wx.showToast({
+            title: '对话框显示失败',
+            icon: 'none'
+          });
+        }
+      });
+    }, 500);
+  },
+
+  /**
+   * 执行确认操作
+   */
+  async doConfirm() {
+    try {
+      wx.showLoading({ title: '确认中...' });
+
+      console.log('========== 开始确认完工 ==========');
+      console.log('订单ID:', this.data.orderId);
+
+      const response = await request.post(`/orders/${this.data.orderId}/confirm`);
+
+      console.log('确认完工响应:', response);
+      console.log('================================');
+
+      wx.hideLoading();
+      wx.showToast({
+        title: '确认成功',
+        icon: 'success'
+      });
+
+      // 确认成功后跳转到评价页面
+      setTimeout(() => {
+        wx.navigateTo({
+          url: `/pages/driver/review/review?id=${this.data.orderId}`
+        });
+      }, 1500);
+
+    } catch (error) {
+      console.error('确认完工失败:', error);
+      wx.hideLoading();
+      wx.showToast({
+        title: error.message || '确认失败',
+        icon: 'none'
+      });
+    }
   },
 
   /**
@@ -630,6 +675,15 @@ Page({
       content: order.rejectReason || '未填写拒绝原因',
       showCancel: false,
       confirmText: '我知道了'
+    });
+  },
+
+  /**
+   * 跳转评价页面
+   */
+  onReviewOrder() {
+    wx.navigateTo({
+      url: `/pages/driver/review/review?id=${this.data.orderId}`
     });
   }
 });

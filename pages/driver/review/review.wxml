@@ -1,0 +1,183 @@
+<!--pages/driver/review/review.wxml - 门店评价页面-->
+<view class="review-page">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 评价表单 -->
+  <view class="review-form" wx:if="{{!loading && order && store}}">
+    <!-- 顶部提示 -->
+    <view class="review-header">
+      <text class="header-title">服务评价</text>
+      <text class="header-subtitle">您的评价能帮助我们提供更好的服务</text>
+    </view>
+
+    <!-- 门店信息 -->
+    <view class="store-info-card" wx:if="{{store}}">
+      <view class="store-name">{{store.name || '维修门店'}}</view>
+      <view class="store-address" wx:if="{{store.address}}">
+        <text class="address-icon">📍</text>
+        <text wx:if="{{store.address.full}}">{{store.address.full}}</text>
+        <text wx:elif="{{store.address.city}}">{{store.address.city}}{{store.address.district || ''}}{{store.address.detail || ''}}</text>
+        <text wx:else>{{store.address}}</text>
+      </view>
+    </view>
+
+    <!-- 评分区域 -->
+    <view class="rating-section">
+      <!-- 技术专业度 -->
+      <view class="rating-item">
+        <view class="rating-label">
+          <text class="label-icon">🔧</text>
+          <text class="label-text">技术专业度</text>
+        </view>
+        <view class="rating-stars">
+          <block wx:for="{{[1, 2, 3, 4, 5]}}" wx:key="index">
+            <view
+              class="star {{ratings.technicalSkill >= index ? 'active' : ''}} {{ratings.technicalSkill >= index + 0.5 && ratings.technicalSkill < index ? 'half' : ''}}"
+              bindtap="onRateStar"
+              data-field="technicalSkill"
+              data-value="{{index}}"
+            >
+              <text class="star-icon">★</text>
+            </view>
+          </block>
+        </view>
+        <view class="rating-text">{{ratingTexts[ratings.technicalSkill]}}</view>
+      </view>
+
+      <!-- 服务效率 -->
+      <view class="rating-item">
+        <view class="rating-label">
+          <text class="label-icon">⚡</text>
+          <text class="label-text">服务效率</text>
+        </view>
+        <view class="rating-stars">
+          <block wx:for="{{[1, 2, 3, 4, 5]}}" wx:key="index">
+            <view
+              class="star {{ratings.serviceEfficiency >= index ? 'active' : ''}} {{ratings.serviceEfficiency >= index + 0.5 && ratings.serviceEfficiency < index ? 'half' : ''}}"
+              bindtap="onRateStar"
+              data-field="serviceEfficiency"
+              data-value="{{index}}"
+            >
+              <text class="star-icon">★</text>
+            </view>
+          </block>
+        </view>
+        <view class="rating-text">{{ratingTexts[ratings.serviceEfficiency]}}</view>
+      </view>
+
+      <!-- 收费透明度 -->
+      <view class="rating-item">
+        <view class="rating-label">
+          <text class="label-icon">💰</text>
+          <text class="label-text">收费透明度</text>
+        </view>
+        <view class="rating-stars">
+          <block wx:for="{{[1, 2, 3, 4, 5]}}" wx:key="index">
+            <view
+              class="star {{ratings.pricingTransparency >= index ? 'active' : ''}} {{ratings.pricingTransparency >= index + 0.5 && ratings.pricingTransparency < index ? 'half' : ''}}"
+              bindtap="onRateStar"
+              data-field="pricingTransparency"
+              data-value="{{index}}"
+            >
+              <text class="star-icon">★</text>
+            </view>
+          </block>
+        </view>
+        <view class="rating-text">{{ratingTexts[ratings.pricingTransparency]}}</view>
+      </view>
+    </view>
+
+    <!-- 快捷标签 -->
+    <view class="tags-section">
+      <view class="section-title">
+        <text class="title-text">服务印象</text>
+        <text class="title-hint">（多选）</text>
+      </view>
+      <view class="tags-container">
+        <view
+          class="tag-item {{selectedTags.includes('技术专业') ? 'active' : ''}}"
+          bindtap="onToggleTag"
+          data-tag="技术专业"
+        >🔧 技术专业</view>
+        <view
+          class="tag-item {{selectedTags.includes('服务热情') ? 'active' : ''}}"
+          bindtap="onToggleTag"
+          data-tag="服务热情"
+        >😊 服务热情</view>
+        <view
+          class="tag-item {{selectedTags.includes('完工迅速') ? 'active' : ''}}"
+          bindtap="onToggleTag"
+          data-tag="完工迅速"
+        >⚡ 完工迅速</view>
+        <view
+          class="tag-item {{selectedTags.includes('价格公道') ? 'active' : ''}}"
+          bindtap="onToggleTag"
+          data-tag="价格公道"
+        >💰 价格公道</view>
+        <view
+          class="tag-item {{selectedTags.includes('环境整洁') ? 'active' : ''}}"
+          bindtap="onToggleTag"
+          data-tag="环境整洁"
+        >✨ 环境整洁</view>
+        <view
+          class="tag-item {{selectedTags.includes('响应及时') ? 'active' : ''}}"
+          bindtap="onToggleTag"
+          data-tag="响应及时"
+        >📞 响应及时</view>
+        <view
+          class="tag-item {{selectedTags.includes('收费透明') ? 'active' : ''}}"
+          bindtap="onToggleTag"
+          data-tag="收费透明"
+        >📋 收费透明</view>
+        <view
+          class="tag-item {{selectedTags.includes('值得信赖') ? 'active' : ''}}"
+          bindtap="onToggleTag"
+          data-tag="值得信赖"
+        >⭐ 值得信赖</view>
+      </view>
+    </view>
+
+    <!-- 文字评价（可选） -->
+    <view class="comment-section">
+      <view class="section-title">
+        <text class="title-text">详细评价</text>
+        <text class="title-hint">（选填，最多100字）</text>
+      </view>
+      <textarea
+        class="comment-input"
+        placeholder="说说您的服务体验，帮助我们改进..."
+        maxlength="100"
+        value="{{comment}}"
+        bindinput="onCommentInput"
+        auto-height
+      ></textarea>
+      <view class="char-count">{{comment.length}}/100</view>
+    </view>
+
+    <!-- 匿名选项 -->
+    <view class="anonymous-section">
+      <view class="anonymous-option" bindtap="toggleAnonymous">
+        <view class="checkbox {{anonymous ? 'checked' : ''}}">
+          <text class="check-icon" wx:if="{{anonymous}}">✓</text>
+        </view>
+        <text class="anonymous-label">匿名评价</text>
+      </view>
+      <view class="anonymous-hint">匿名后您的昵称将隐藏显示</view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-section">
+      <button class="submit-btn" bindtap="onSubmit">
+        <text class="btn-icon">✓</text>
+        提交评价
+      </button>
+      <button class="skip-btn" bindtap="onSkip">
+        跳过
+      </button>
+    </view>
+  </view>
+</view>

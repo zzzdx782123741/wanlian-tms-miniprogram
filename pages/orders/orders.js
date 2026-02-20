@@ -1,4 +1,4 @@
-// pages/orders/orders.js - 订单列表页面
+// pages/orders/orders.js - 订单列表页面（支持所有角色）
 const app = getApp();
 const request = require('../../utils/request');
 
@@ -7,21 +7,28 @@ Page({
     activeTab: 'all',
     orders: [],
     loading: false,
-    counts: {
-      all: 0,
-      pending: 0,
-      processing: 0,
-      completed: 0
-    },
-    page: 1,
-    hasMore: true
+    role: '',
+    // 标签配置（根据角色动态生成）
+    tabs: []
   },
 
   onLoad(options) {
+    const userInfo = wx.getStorageSync('userInfo');
+    const role = userInfo?.role?.type || '';
+
+    // 根据角色配置标签
+    const tabs = this.getTabsByRole(role);
+
+    this.setData({
+      role,
+      tabs
+    });
+
     // 如果传入了状态参数，切换到对应标签
-    if (options.status) {
+    if (options.status && tabs.some(t => t.key === options.status)) {
       this.setData({ activeTab: options.status });
     }
+
     this.loadOrders();
   },
 
@@ -30,6 +37,34 @@ Page({
     if (this.data.orders.length > 0) {
       this.refreshOrders();
     }
+
+    // 更新自定义 tabBar 选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().updateTabBar();
+    }
+  },
+
+  /**
+   * 根据角色获取标签配置
+   */
+  getTabsByRole(role) {
+    // 技师角色
+    if (role === 'STORE_TECHNICIAN') {
+      return [
+        { key: 'all', label: '全部' },
+        { key: 'pending', label: '待处理' },
+        { key: 'processing', label: '处理中' },
+        { key: 'completed', label: '已完成' }
+      ];
+    }
+
+    // 其他角色（司机、车队管理员、平台运营）
+    return [
+      { key: 'all', label: '全部' },
+      { key: 'pending', label: '待处理' },
+      { key: 'processing', label: '处理中' },
+      { key: 'completed', label: '已完成' }
+    ];
   },
 
   /**
@@ -53,35 +88,55 @@ Page({
    * 加载订单列表
    */
   async loadOrders() {
-    if (this.data.loading || !this.data.hasMore) return;
+    if (this.data.loading) return;
 
     this.setData({ loading: true });
 
     try {
-      const status = this.data.activeTab === 'all' ? '' : this.getStatusParam(this.data.activeTab);
+      const { activeTab, role } = this.data;
+      let status = '';
 
-      const res = await request.get('/orders', {
-        status,
-        page: this.data.page,
-        limit: 10
-      });
+      // 根据角色和标签设置状态参数
+      if (role === 'STORE_TECHNICIAN') {
+        // 技师角色
+        if (activeTab === 'pending') {
+          status = 'pending_assessment';
+        } else if (activeTab === 'processing') {
+          status = 'awaiting_approval,in_repair,awaiting_addon_approval';
+        } else if (activeTab === 'completed') {
+          status = 'completed';
+        }
+      } else {
+        // 其他角色
+        if (activeTab === 'pending') {
+          status = 'awaiting_fleet_approval,pending_assessment';
+        } else if (activeTab === 'processing') {
+          status = 'awaiting_approval,in_repair,awaiting_addon_approval';
+        } else if (activeTab === 'completed') {
+          status = 'completed';
+        }
+      }
 
-      const orders = this.formatOrders(res.data);
+      const res = await request.get('/orders', { status });
+
+      // 修复：正确处理返回的数据格式
+      // 后端返回格式：{ success: true, data: { orders: [...], total: N } }
+      const ordersData = res.data?.orders || res.data || [];
+
+      const orders = this.formatOrders(ordersData);
 
       this.setData({
-        orders: this.data.page === 1 ? orders : [...this.data.orders, ...orders],
-        hasMore: orders.length >= 10,
-        page: this.data.page + 1
+        orders,
+        loading: false
       });
 
     } catch (error) {
       console.error('加载订单失败:', error);
+      this.setData({ loading: false });
       wx.showToast({
         title: error.message || '加载失败',
         icon: 'none'
       });
-    } finally {
-      this.setData({ loading: false });
     }
   },
 
@@ -89,11 +144,6 @@ Page({
    * 刷新订单列表
    */
   refreshOrders() {
-    this.setData({
-      orders: [],
-      page: 1,
-      hasMore: true
-    });
     this.loadOrders();
   },
 
@@ -101,58 +151,59 @@ Page({
    * 格式化订单数据
    */
   formatOrders(orders) {
+    if (!Array.isArray(orders)) return [];
+
     return orders.map(order => {
       // 判断是否已确认
       const isConfirmed = order.completion && order.completion.confirmedBy;
 
+      // 判断是否已评价
+      const isReviewed = !!order.reviewed;
+
+      // 判断是否可以追评（15天内）
+      const completedAt = order.completion?.completedAt || order.completedAt;
+      let canReview = false;
+      if (completedAt) {
+        const daysDiff = (Date.now() - new Date(completedAt).getTime()) / (1000 * 60 * 60 * 24);
+        canReview = daysDiff <= 15 && !isReviewed;
+      }
+
       const statusMap = {
-        'awaiting_fleet_approval': { text: '待车队审批', showProgress: true, progress: 5, progressText: '等待车队审批' },
-        'pending_assessment': { text: '待评估', showProgress: true, progress: 10, progressText: '等待门店评估' },
-        'awaiting_approval': { text: '待审批', showProgress: true, progress: 35, progressText: '等待审批报价' },
-        'in_repair': { text: '维修中', showProgress: true, progress: 60, progressText: '正在维修' },
-        'awaiting_addon_approval': { text: '增项审批', showProgress: true, progress: 70, progressText: '等待增项审批' },
-        'completed': {
-          text: isConfirmed ? '已完成' : '待确认',
-          showProgress: !isConfirmed,
-          progress: isConfirmed ? 100 : 90,
-          progressText: isConfirmed ? '订单已完成' : '维修完成待确认'
-        },
-        'confirmed': { text: '已完成', showProgress: false },
-        'rejected': { text: '已拒绝', showProgress: false }
+        'awaiting_fleet_approval': { text: '待车队审批', type: 'warning' },
+        'pending_assessment': { text: '待评估', type: 'warning' },
+        'awaiting_approval': { text: '待审批', type: 'info' },
+        'in_repair': { text: '维修中', type: 'primary' },
+        'awaiting_addon_approval': { text: '增项审批', type: 'warning' },
+        'completed': { text: isConfirmed ? '已完成' : '待确认', type: 'success' },
+        'confirmed': { text: '已完成', type: 'success' },
+        'rejected': { text: '已拒绝', type: 'error' }
       };
 
-      const statusInfo = statusMap[order.status] || { text: '未知', showProgress: false };
-
-      // 获取保养订单信息
-      const maint = order.maintenanceOrder || {};
+      const statusInfo = statusMap[order.status] || { text: '未知', type: 'default' };
 
       return {
         ...order,
         statusText: statusInfo.text,
-        showProgress: statusInfo.showProgress,
-        progress: statusInfo.progress || 0,
-        progressText: statusInfo.progressText || '',
-        isConfirmed: isConfirmed, // 添加是否已确认的字段
-        type: order.type || 'repair', // 添加订单类型
-        // 保养订单字段
-        maintenanceTypeName: maint.maintenanceTypeName,
-        packageName: maint.packageName,
-        selectedTier: maint.selectedTier,
-        finalAmount: maint.finalAmount,
+        statusType: statusInfo.type,
+        isConfirmed,
+        isReviewed,
+        canReview,
         vehicleInfo: {
-          plateNumber: order.vehicleId && order.vehicleId.plateNumber ? order.vehicleId.plateNumber : '未知车牌',
-          brand: order.vehicleId && order.vehicleId.brand ? order.vehicleId.brand : '',
-          model: order.vehicleId && order.vehicleId.model ? order.vehicleId.model : ''
+          plateNumber: order.vehicleId?.plateNumber || '未知车牌',
+          brand: order.vehicleId?.brand || '',
+          model: order.vehicleId?.model || ''
         },
-        createdAtText: this.formatTime(order.createdAt)
+        createdAtText: this.formatTime(order.createdAt),
+        createdAt: this.formatDate(order.createdAt)
       };
     });
   },
 
   /**
-   * 格式化时间
+   * 格式化时间（相对时间）
    */
   formatTime(timestamp) {
+    if (!timestamp) return '';
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now - date;
@@ -170,20 +221,39 @@ Page({
     } else if (diff < 7 * day) {
       return `${Math.floor(diff / day)}天前`;
     } else {
-      return `${date.getMonth() + 1}-${date.getDate()}`;
+      return this.formatDate(timestamp);
     }
   },
 
   /**
-   * 获取状态参数
+   * 格式化日期（绝对时间）
    */
-  getStatusParam(tab) {
-    const statusMap = {
-      'pending': 'awaiting_fleet_approval,pending_assessment',
-      'processing': 'awaiting_approval,in_repair,awaiting_addon_approval',
-      'completed': 'completed' // 已完成列表筛选 completed 状态的订单
+  formatDate(timestamp) {
+    if (!timestamp) return '';
+    const d = new Date(timestamp);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hour = String(d.getHours()).padStart(2, '0');
+    const minute = String(d.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+  },
+
+  /**
+   * 获取状态类型（用于样式）
+   */
+  getStatusType(status) {
+    const typeMap = {
+      'awaiting_fleet_approval': 'warning',
+      'pending_assessment': 'warning',
+      'awaiting_approval': 'info',
+      'in_repair': 'primary',
+      'awaiting_addon_approval': 'warning',
+      'completed': 'success',
+      'confirmed': 'success',
+      'rejected': 'error'
     };
-    return statusMap[tab] || '';
+    return typeMap[status] || '';
   },
 
   /**
@@ -191,13 +261,22 @@ Page({
    */
   onOrderTap(e) {
     const id = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/order-detail/order-detail?id=${id}`
-    });
+    const { role } = this.data;
+
+    // 根据角色跳转到不同的详情页
+    if (role === 'STORE_TECHNICIAN') {
+      wx.navigateTo({
+        url: `/pages/store/order-detail/order-detail?id=${id}`
+      });
+    } else {
+      wx.navigateTo({
+        url: `/pages/order-detail/order-detail?id=${id}`
+      });
+    }
   },
 
   /**
-   * 点击去审批按钮
+   * 点击去审批按钮（车队管理员、平台运营）
    */
   onApproveOrder(e) {
     const id = e.currentTarget.dataset.id;
@@ -207,12 +286,22 @@ Page({
   },
 
   /**
-   * 点击去确认按钮
+   * 点击去确认按钮（司机）
    */
   onConfirmOrder(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({
       url: `/pages/order-detail/order-detail?id=${id}&action=confirm`
+    });
+  },
+
+  /**
+   * 点击去评价按钮（司机）
+   */
+  onReviewOrder(e) {
+    const id = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/driver/review/review?id=${id}`
     });
   },
 
@@ -224,12 +313,5 @@ Page({
     setTimeout(() => {
       wx.stopPullDownRefresh();
     }, 1000);
-  },
-
-  /**
-   * 触底加载更多
-   */
-  onReachBottom() {
-    this.loadOrders();
   }
 });
