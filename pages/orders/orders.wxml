@@ -120,35 +120,48 @@
           <text class="price-label">金额：</text>
           <text class="price-value">¥{{item.finalAmount || '-'}}</text>
         </view>
-        <!-- 待车队审批订单显示去审批按钮 -->
+        <!-- 待车队审批订单显示去审批按钮（仅车队管理员、平台运营） -->
         <button
           class="approve-btn"
-          wx:if="{{item.status === 'awaiting_fleet_approval'}}"
+          wx:if="{{role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && item.status === 'awaiting_fleet_approval'}}"
           catchtap="onApproveOrder"
           data-id="{{item._id}}"
         >
           去审批
         </button>
-        <!-- 待报价审批订单显示去审批按钮 -->
+        <!-- 待报价审批订单显示去审批按钮（仅车队管理员、平台运营） -->
         <button
           class="approve-btn"
-          wx:if="{{item.status === 'awaiting_approval'}}"
+          wx:if="{{role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && item.status === 'awaiting_approval'}}"
           catchtap="onApproveOrder"
           data-id="{{item._id}}"
         >
           去审批
         </button>
-        <!-- 待确认订单显示去确认按钮 -->
+        <!-- 待确认订单显示去确认按钮（仅司机） -->
         <button
           class="confirm-btn"
-          wx:if="{{item.status === 'completed' && !item.isConfirmed}}"
+          wx:if="{{role === 'DRIVER' && item.status === 'completed' && !item.isConfirmed}}"
           catchtap="onConfirmOrder"
           data-id="{{item._id}}"
         >
           去确认
         </button>
+        <!-- 可评价订单显示去评价按钮（仅司机，15天内） -->
+        <button
+          class="review-btn"
+          wx:if="{{role === 'DRIVER' && item.canReview}}"
+          catchtap="onReviewOrder"
+          data-id="{{item._id}}"
+        >
+          去评价
+        </button>
         <!-- 其他状态显示箭头 -->
-        <view class="order-arrow" wx:if="{{item.status !== 'awaiting_fleet_approval' && item.status !== 'awaiting_approval' && !(item.status === 'completed' && !item.isConfirmed)}}">›</view>
+        <view class="order-arrow" wx:if="
+          {{!(role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && (item.status === 'awaiting_fleet_approval' || item.status === 'awaiting_approval'))}} &&
+          {{!(role === 'DRIVER' && item.status === 'completed' && !item.isConfirmed)}} &&
+          {{!(role === 'DRIVER' && item.canReview)}}
+        ">›</view>
       </view>
     </view>
 

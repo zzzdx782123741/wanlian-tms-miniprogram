@@ -64,11 +64,33 @@
         </view>
         <text class="arrow-icon">›</text>
       </view>
-      <!-- 车队信息 -->
+        <!-- 车队信息 -->
       <view class="fleet-info" wx:if="{{order.fleetId}}">
         <text class="fleet-label">归属车队：</text>
         <text class="fleet-name">{{order.fleetId.name}}</text>
       </view>
+    </view>
+
+    <!-- 司机信息（提交人信息） -->
+    <view class="info-card" wx:if="{{order.reporterId}}">
+      <view class="card-title">提交人信息</view>
+      <view class="reporter-detail">
+        <view class="reporter-name-row">
+          <text class="reporter-name">{{order.reporterId.nickname}}</text>
+          <text class="reporter-role" wx:if="{{order.reporterId.role}}">
+            {{order.reporterId.role.type === 'DRIVER' ? '司机' : ''}}
+          </text>
+        </view>
+        <view class="reporter-contact" wx:if="{{order.reporterId.phone}}">
+          <text class="contact-icon">📞</text>
+          <text class="contact-phone">{{order.reporterId.phone}}</text>
+        </view>
+      </view>
+      <!-- 联系司机按钮 -->
+      <button class="contact-btn" wx:if="{{order.reporterId.phone && userRole === 'FLEET_MANAGER'}}" bindtap="onContactReporter">
+        <text class="btn-icon">📞</text>
+        联系司机
+      </button>
     </view>
 
     <!-- 故障描述（维修订单） -->
@@ -88,6 +110,15 @@
           data-url="{{image}}"
           data-urls="{{order.faultImages}}"
         />
+      </view>
+    </view>
+
+    <!-- 车辆位置（所有订单都显示） -->
+    <view class="info-card" wx:if="{{order.serviceLocation && order.serviceLocation.address}}">
+      <view class="card-title">车辆位置</view>
+      <view class="service-location-info">
+        <text class="location-icon">📍</text>
+        <text class="location-text">{{order.serviceLocation.address}}</text>
       </view>
     </view>
 
@@ -154,8 +185,7 @@
     </view>
 
     <!-- 接车检查信息（门店检查后显示） -->
-    <view class="info-card" wx:if="{{order.receiveCheck}}">
-      <view class="card-title">接车检查</view>
+    <view class="info-card" wx:if="{{order.receiveCheck && (order.receiveCheck.mileage || order.receiveCheck.diagnosis || order.receiveCheck.checkinPhotos)}}">
       <view class="check-info">
         <view class="info-row" wx:if="{{order.receiveCheck.mileage}}">
           <text class="info-label">当前里程</text>
@@ -183,7 +213,7 @@
     </view>
 
     <!-- 维修报价（已报价后显示） -->
-    <view class="info-card" wx:if="{{order.quote}}">
+    <view class="info-card" wx:if="{{order.quote && order.quote.items && order.quote.items.length > 0}}">
       <view class="card-title">维修报价</view>
       <view class="quote-items">
         <view class="quote-item" wx:for="{{order.quote.items}}" wx:key="item">
@@ -273,25 +303,55 @@
 
     <!-- 底部操作按钮 -->
     <view class="action-bar">
-      <!-- 车队管理员审批按钮 - 待车队审批状态 -->
-      <button
-        class="action-btn approve"
-        wx:if="{{order.status === 'awaiting_fleet_approval' && userRole === 'FLEET_MANAGER'}}"
-        bindtap="onFleetApproveOrder"
-        data-approved="{{true}}"
-      >
-        <text class="btn-icon">✓</text>
-        审批通过
-      </button>
-      <button
-        class="action-btn reject"
-        wx:if="{{order.status === 'awaiting_fleet_approval' && userRole === 'FLEET_MANAGER'}}"
-        bindtap="onFleetApproveOrder"
-        data-approved="{{false}}"
-      >
-        <text class="btn-icon">✕</text>
-        审批拒绝
-      </button>
+      <!-- 车队管理员审批区域 - 待车队审批状态 -->
+      <view class="fleet-approve-section" wx:if="{{order.status === 'awaiting_fleet_approval' && userRole === 'FLEET_MANAGER'}}">
+        <!-- 门店选择提示 -->
+        <view class="approve-tip" wx:if="{{!order.storeId && !selectedStoreId}}">
+          <text class="tip-icon">💡</text>
+          <text class="tip-text">请先为订单分配门店，再进行审批</text>
+        </view>
+
+        <!-- 选择门店按钮（未分配门店时显示） -->
+        <button
+          class="action-btn select-store"
+          wx:if="{{!order.storeId && !selectedStoreId}}"
+          bindtap="onSelectStore"
+        >
+          <text class="btn-icon">🏪</text>
+          选择门店
+        </button>
+
+        <!-- 已选门店提示（点击可重选） -->
+        <view class="selected-store-tip" wx:if="{{order.storeId || selectedStoreId}}" bindtap="onSelectStore">
+          <view class="selected-store-content">
+            <text class="store-icon">🏪</text>
+            <view class="selected-store-info">
+              <text class="store-name">{{selectedStoreName || order.storeId.name}}</text>
+              <text class="store-hint">点击可更换门店</text>
+            </view>
+            <text class="store-change-icon">›</text>
+          </view>
+        </view>
+
+        <!-- 审批按钮（已分配门店后显示） -->
+        <button
+          class="action-btn approve"
+          wx:if="{{order.storeId || selectedStoreId}}"
+          bindtap="onFleetApproveWithStore"
+        >
+          <text class="btn-icon">✓</text>
+          审批通过
+        </button>
+
+        <!-- 拒绝按钮（随时可用） -->
+        <button
+          class="action-btn reject"
+          bindtap="onFleetRejectOrder"
+        >
+          <text class="btn-icon">✕</text>
+          审批拒绝
+        </button>
+      </view>
 
       <!-- 车队管理员审批按钮 - 待审批报价状态 -->
       <button
@@ -341,6 +401,16 @@
         确认完工
       </button>
 
+      <!-- 司机去评价按钮（已完成且已确认但未评价，15天内） -->
+      <button
+        class="action-btn review"
+        wx:if="{{order.status === 'completed' && userRole === 'DRIVER' && order.completion && order.completion.confirmedBy && !order.reviewed && order.canReview}}"
+        bindtap="onReviewOrder"
+      >
+        <text class="btn-icon">⭐</text>
+        去评价
+      </button>
+
       <!-- 司机重新提交按钮（被拒绝的订单） -->
       <button
         class="action-btn resubmit"
@@ -365,6 +435,135 @@
       <view class="confirmed-notice" wx:if="{{order.status === 'completed' && order.completion && order.completion.confirmedBy}}">
         <text class="notice-icon">✓</text>
         <text class="notice-text">您已确认完工</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 门店选择弹窗 -->
+  <view class="store-picker-mask" wx:if="{{showStorePicker}}" bindtap="onCloseStorePicker">
+    <view class="store-picker-popup" catchtap="">
+      <view class="store-picker-header">
+        <text class="store-picker-title">选择门店</text>
+        <text class="store-picker-close" bindtap="onCloseStorePicker">✕</text>
+      </view>
+      <scroll-view class="store-picker-list" scroll-y>
+        <view
+          class="store-picker-item {{selectedStoreId === item._id ? 'active' : ''}}"
+          wx:for="{{storeList}}"
+          wx:key="_id"
+        >
+          <view class="store-item-main" bindtap="onSelectStoreItem" data-store-id="{{item._id}}" data-store-name="{{item.name}}">
+            <view class="store-item-header">
+              <view class="store-item-name">{{item.name}}</view>
+              <view class="store-item-check" wx:if="{{selectedStoreId === item._id}}">✓</view>
+            </view>
+            <view class="store-item-info">
+              <text class="store-item-distance" wx:if="{{item.distance !== undefined}}">{{item.distance}}km</text>
+              <text class="store-item-location" wx:if="{{item.address && item.address.district}}">📍 {{item.address.district}}</text>
+              <text class="store-item-rating" wx:if="{{item.ratingStats && item.ratingStats.overallRating > 0}}">
+                {{item.ratingStats.overallRating}}分
+                <text wx:if="{{item.ratingStats.reviewCount > 0}}">（{{item.ratingStats.reviewCount}}条）</text>
+              </text>
+              <text class="store-item-rating" wx:else>暂无评价</text>
+            </view>
+            <view class="store-item-details">
+              <view class="store-item-detail" wx:if="{{item.businessHours}}">
+                <text class="detail-icon">🕐</text>
+                <text class="detail-text">{{item.businessHours}}</text>
+              </view>
+              <view class="store-item-detail" wx:if="{{item.contact && item.contact.phone}}">
+                <text class="detail-icon">📞</text>
+                <text class="detail-text">{{item.contact.phone}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="store-item-actions">
+            <button class="store-detail-btn" catchtap="onViewStoreDetail" data-store="{{item}}">查看详情</button>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="store-picker-footer">
+        <button class="store-picker-cancel" bindtap="onCloseStorePicker">取消</button>
+        <button class="store-picker-confirm" bindtap="onConfirmStoreSelect" disabled="{{!selectedStoreId}}">确认</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 门店详情弹窗 -->
+  <view class="store-detail-mask" wx:if="{{showStoreDetail}}" bindtap="onCloseStoreDetail">
+    <view class="store-detail-popup" catchtap="">
+      <view class="store-detail-header">
+        <view class="store-detail-title">{{storeDetail.name}}</view>
+        <text class="store-detail-close" bindtap="onCloseStoreDetail">✕</text>
+      </view>
+
+      <scroll-view class="store-detail-content" scroll-y>
+        <!-- 评分概览 -->
+        <view class="detail-rating-card">
+          <view class="rating-overview">
+            <text class="rating-score">{{storeDetail.ratingStats.overallRating || 0}}</text>
+            <view class="rating-stars">
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 1 ? '★' : '☆'}}</text>
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 2 ? '★' : '☆'}}</text>
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 3 ? '★' : '☆'}}</text>
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 4 ? '★' : '☆'}}</text>
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 5 ? '★' : '☆'}}</text>
+            </view>
+            <text class="rating-count">{{storeDetail.ratingStats.reviewCount || 0}}条评价</text>
+          </view>
+        </view>
+
+        <!-- 门店信息 -->
+        <view class="detail-section">
+          <view class="detail-section-title">门店信息</view>
+          <view class="detail-info-list">
+            <view class="detail-info-item" wx:if="{{storeDetail.address}}">
+              <text class="info-icon">📍</text>
+              <text class="info-text">{{storeDetail.address.city}} {{storeDetail.address.district}} {{storeDetail.address.detail}}</text>
+            </view>
+            <view class="detail-info-item" wx:if="{{storeDetail.businessHours}}">
+              <text class="info-icon">🕐</text>
+              <text class="info-text">{{storeDetail.businessHours}}</text>
+            </view>
+            <view class="detail-info-item" wx:if="{{storeDetail.contact.phone}}">
+              <text class="info-icon">📞</text>
+              <text class="info-text">{{storeDetail.contact.phone}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 最近评价 -->
+        <view class="detail-section" wx:if="{{storeDetailReviews && storeDetailReviews.length > 0}}">
+          <view class="detail-section-title">最近评价</view>
+          <view class="review-list">
+            <view class="review-item" wx:for="{{storeDetailReviews}}" wx:key="_id" wx:for-item="review">
+              <view class="review-header">
+                <view class="review-author">{{review.anonymous ? '匿名用户' : review.reviewerId.nickname}}</view>
+                <view class="review-rating">
+                  <text class="review-star" wx:for="{{5}}" wx:for-item="star" wx:key="*this">
+                    {{star <= review.overallRating ? '★' : '☆'}}
+                  </text>
+                </view>
+              </view>
+              <view class="review-comment" wx:if="{{review.comment}}">{{review.comment}}</view>
+              <view class="review-time">{{review.createdAtText}}</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 暂无评价提示 -->
+        <view class="detail-section" wx:else>
+          <view class="no-reviews">
+            <text class="no-reviews-icon">💬</text>
+            <text class="no-reviews-text">暂无评价</text>
+            <text class="no-reviews-hint">成为第一个评价的人</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 底部操作 -->
+      <view class="store-detail-footer">
+        <button class="detail-close-btn" bindtap="onCloseStoreDetail">关闭</button>
       </view>
     </view>
   </view>

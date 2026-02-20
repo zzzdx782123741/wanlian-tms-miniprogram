@@ -355,6 +355,23 @@
   }
 }
 
+/* 去评价按钮 */
+.review-btn {
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  border-radius: 32rpx;
+  border: none;
+  margin-left: auto;
+  box-shadow: 0 4rpx 12rpx rgba(139, 92, 246, 0.3);
+}
+
+.review-btn::after {
+  border: none;
+}
+
 /* 空状态 */
 .empty-state {
   display: flex;
