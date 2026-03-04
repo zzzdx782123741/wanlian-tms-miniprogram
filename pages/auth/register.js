@@ -57,6 +57,22 @@ Page({
   async handleRegister() {
     const { phone, password, confirmPassword, username, role } = this.data;
 
+    // 如果选择的是车队管理员或门店，跳转到完整注册页面
+    if (role === 'FLEET_MANAGER') {
+      wx.navigateTo({
+        url: '/pages/auth/fleet-register/fleet-register'
+      });
+      return;
+    }
+
+    if (role === 'STORE') {
+      wx.navigateTo({
+        url: '/pages/auth/store-register/store-register'
+      });
+      return;
+    }
+
+    // 司机注册流程保持不变
     // 表单验证
     if (!username) {
       wx.showToast({

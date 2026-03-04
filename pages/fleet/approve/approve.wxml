@@ -1,56 +1,81 @@
-<!--pages/fleet/approve/approve.wxml-->
+<!--pages/fleet/approve/approve.wxml - 车队管理员审批订单页面-->
 <view class="approve-container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">待审批订单</text>
+    <text class="page-subtitle">司机提交的报修/保养申请</text>
+  </view>
+
   <!-- 订单列表 -->
   <view class="orders-list">
     <block wx:if="{{orders.length > 0}}">
       <view
-        class="order-card glass-card"
+        class="order-card"
         wx:for="{{orders}}"
         wx:key="_id"
+        bindtap="viewDetail"
+        data-id="{{item._id}}"
       >
-        <view class="order-header" bindtap="viewDetail" data-id="{{item._id}}">
-          <text class="order-id">订单号：{{item.orderNumber}}</text>
-          <view class="status-badge">待审核</view>
+        <!-- 订单头部 -->
+        <view class="order-header">
+          <view class="order-number">{{item.orderNumber}}</view>
+          <view class="order-time">{{item.createdAtText}}</view>
         </view>
 
-        <view class="order-info" bindtap="viewDetail" data-id="{{item._id}}">
-          <view class="info-row">
-            <text class="label">起点</text>
-            <text class="value">{{item.origin}}</text>
-          </view>
-          <view class="info-row">
-            <text class="label">终点</text>
-            <text class="value">{{item.destination}}</text>
-          </view>
-          <view class="info-row">
-            <text class="label">报价</text>
-            <text class="value price">¥{{item.quotedPrice}}</text>
-          </view>
+        <!-- 车辆信息 -->
+        <view class="vehicle-info">
+          <text class="vehicle-plate">{{item.vehicleId.plateNumber}}</text>
+          <text class="vehicle-model">{{item.vehicleId.brand}} {{item.vehicleId.model}}</text>
         </view>
 
-        <view class="order-actions">
-          <button
-            class="action-btn glass-btn"
-            bindtap="approveOrder"
-            data-id="{{item._id}}"
-          >
-            通过
-          </button>
-          <button
-            class="action-btn glass-btn-secondary"
-            bindtap="rejectOrder"
-            data-id="{{item._id}}"
-          >
-            拒绝
+        <!-- 故障/保养信息 -->
+        <view class="fault-info">
+          <text class="fault-label">{{item.type === 'maintenance' ? '保养' : '故障'}}描述：</text>
+          <text class="fault-text">{{item.faultDescription}}</text>
+        </view>
+
+        <!-- 服务地址 -->
+        <view class="location-info" wx:if="{{item.serviceLocation}}">
+          <text class="location-icon">📍</text>
+          <text class="location-text">{{item.serviceLocation.address}}</text>
+        </view>
+
+        <!-- 司机信息 -->
+        <view class="reporter-info">
+          <view class="reporter-header">
+            <text class="reporter-icon">👤</text>
+            <text class="reporter-label">提交人</text>
+          </view>
+          <view class="reporter-detail">
+            <text class="reporter-name">{{item.reporterId.nickname}}</text>
+            <text class="reporter-phone" wx:if="{{item.reporterId.phone}}">{{item.reporterId.phone}}</text>
+          </view>
+          <!-- 联系按钮 -->
+          <button class="call-reporter-btn" wx:if="{{item.reporterId.phone}}" catchtap="onCallReporter" data-phone="{{item.reporterId.phone}}">
+            <text class="btn-icon">📞</text>
+            联系司机
           </button>
         </view>
+
+        <!-- 门店信息 -->
+        <view class="store-info" wx:if="{{item.storeId}}">
+          <text class="store-label">已选门店：</text>
+          <text class="store-name">{{item.storeId.name}}</text>
+        </view>
+        <view class="store-info empty" wx:else>
+          <text class="store-label">门店：</text>
+          <text class="store-name">待分配</text>
+        </view>
+
+        <!-- 状态标记 -->
+        <view class="status-badge awaiting-fleet-approval">待审批</view>
       </view>
     </block>
 
     <!-- 空状态 -->
     <view wx:else class="empty-state">
-      <image class="empty-icon" src="/images/icons/empty-approve.png"></image>
-      <text class="empty-text">暂无待审核订单</text>
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无待审批订单</text>
     </view>
   </view>
 

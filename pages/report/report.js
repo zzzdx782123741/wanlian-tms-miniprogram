@@ -32,7 +32,7 @@ Page({
     submitting: false,
     type: 'repair', // repair 或 maintenance
 
-    // 服务地址
+    // 我的位置
     serviceLocation: {
       address: '',
       latitude: null,
@@ -40,7 +40,7 @@ Page({
     },
 
     // 车队配置
-    allowDriverSelectStore: false, // 是否允许司机选择门店
+    allowDriverSelectStore: false, // 是否允许司机选择门店（报修默认管理员选，保养默认司机选）
 
     // 故障标签
     faultTags: [
@@ -57,26 +57,82 @@ Page({
     ],
     selectedTags: [],
 
+    // ===== 保养相关字段 =====
+    // 保养类型
+    maintenanceTypes: [],
+    selectedMaintenanceTypeIndex: -1,
+
+    // 推荐套餐
+    recommendedPackages: [],
+    selectedPackageIndex: -1,
+    expandedPackageIds: [], // 已展开商品详情的套餐ID列表
+
+    // 车队配置（保养）
+    fleetConfig: {
+      allowDriverSelectStore: false,
+      maintenanceProductPermission: 'fleet_control',
+      showMaintenancePrice: true
+    },
+
+    // 司机备注（保养专用）
+    driverRemark: '',
+
     // 显示选择器弹窗
     showVehiclePicker: false,
     showStorePicker: false,
     showDatePicker: false,
     showTimePicker: false,
     showDateTimePicker: false,
-    showLocationPicker: false, // 服务地址选择弹窗
+    showLocationPicker: false, // 位置选择弹窗
+
+    // 期望到店时间（新字段：日期+时间段）
+    expectedDate: '', // 期望日期 YYYY-MM-DD
+    expectedTimeSlot: '', // 期望时间段 08:00-10:00, 10:00-12:00, 14:00-16:00, 16:00-18:00, 18:00-20:00
+    expectedTimeSlotIndex: -1, // 选中的时间段索引，-1表示未选择
+    showExpectedDatePicker: false,
+    showExpectedTimeSlotPicker: false,
+
+    // 时间段选项
+    timeSlotOptions: [
+      { label: '上午 08:00-10:00', value: '08:00-10:00' },
+      { label: '上午 10:00-12:00', value: '10:00-12:00' },
+      { label: '下午 14:00-16:00', value: '14:00-16:00' },
+      { label: '下午 16:00-18:00', value: '16:00-18:00' },
+      { label: '晚上 18:00-20:00', value: '18:00-20:00' }
+    ],
 
     // 时间选择列表（半小时为单位，7:00-22:00）
     timeSlots: [],
 
     // 显示媒体选择弹窗
-    showMediaPicker: false
+    showMediaPicker: false,
+
+    // 常用地址列表
+    savedAddresses: [],
+
+    // 默认地址列表（从配置加载）
+    defaultLocations: mapConfig.defaultLocations || [],
+
+    // 门店详情相关（复用订单详情页功能）
+    showStoreDetail: false,
+    storeDetail: null,
+    storeDetailReviews: []
   },
 
   onLoad(options) {
-    // 处理业务类型
-    if (options.type === 'maintenance') {
-      this.setData({ type: 'maintenance' });
+    // 处理业务类型，确保type被正确设置
+    const requestType = options.type || 'repair'; // 默认为报修
+    this.setData({ type: requestType });
+
+    // 根据订单类型设置默认值
+    if (requestType === 'maintenance') {
+      // 保养申请：默认司机选门店
+      this.setData({ allowDriverSelectStore: true });
       wx.setNavigationBarTitle({ title: '保养申请' });
+    } else {
+      // 报修申请：默认管理员选门店
+      this.setData({ allowDriverSelectStore: false });
+      wx.setNavigationBarTitle({ title: '报修申请' });
     }
 
     // 如果从车辆页面跳转过来，预选车辆
@@ -102,11 +158,27 @@ Page({
     this.setData({
       today: `${year}-${month}-${day}`,
       appointmentDate: `${year}-${month}-${day}`, // 默认选中今天
+      expectedDate: `${year}-${month}-${day}`, // 默认期望日期为今天
+      expectedTimeSlot: '09:00-11:00', // 默认时间段
+      expectedTimeSlotIndex: -1, // 默认不选中任何卡片
       timeSlots: timeSlots
     });
 
     this.loadVehicles();
     this.getCurrentLocation();
+    this.loadSavedAddresses(); // 加载常用地址
+
+    // 如果是保养申请，加载保养相关数据（使用已设置的type）
+    if (requestType === 'maintenance') {
+      this.loadFleetConfig();
+      // 优化：直接加载推荐套餐，不显示保养类型选择
+      // this.loadMaintenanceTypes(); // 移除保养类型选择
+    }
+  },
+
+  onShow() {
+    // 从地址管理页面返回时，重新加载常用地址
+    this.loadSavedAddresses();
   },
 
   /**
@@ -130,38 +202,9 @@ Page({
       fail: (err) => {
         console.error('获取位置失败:', err);
         // 使用默认地址作为降级方案
-        that.useDefaultLocation();
+        that.useDefaultLocation('无法获取当前位置');
       }
     });
-  },
-
-  /**
-   * 使用默认地址（降级方案）
-   */
-  useDefaultLocation() {
-    const that = this;
-
-    // 从配置中获取默认地址
-    const defaultLocation = mapConfig.defaultLocations.find(loc => loc.isDefault) ||
-                         mapConfig.defaultLocations[0];
-
-    if (defaultLocation) {
-      that.setData({
-        'serviceLocation.address': defaultLocation.address,
-        'serviceLocation.latitude': defaultLocation.latitude,
-        'serviceLocation.longitude': defaultLocation.longitude
-      });
-
-      wx.showToast({
-        title: '已使用默认地址',
-        icon: 'none',
-        duration: 2000
-      });
-    }
-
-    // 仍需加载门店和车队配置
-    that.loadStores();
-    that.loadFleetConfig();
   },
 
   /**
@@ -170,78 +213,163 @@ Page({
   loadAddress(latitude, longitude) {
     const that = this;
 
-    // 如果腾讯地图SDK可用，使用逆地理编码
-    if (qqmapsdk && mapConfig.tencentMap.key !== 'YOUR_TENCENT_MAP_KEY') {
-      qqmapsdk.reverseGeocoder({
-        location: { latitude, longitude },
-        success: (res) => {
-          const address = res.result.address;
-          that.setData({
-            'serviceLocation.address': address,
-            'serviceLocation.latitude': latitude,
-            'serviceLocation.longitude': longitude
-          });
-        },
-        fail: () => {
-          // 逆地理编码失败，使用坐标作为地址
-          that.setData({
-            'serviceLocation.address': `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
-            'serviceLocation.latitude': latitude,
-            'serviceLocation.longitude': longitude
-          });
-        }
-      });
-    } else {
-      // SDK未配置，使用默认地址或坐标
-      const defaultLocation = mapConfig.defaultLocations.find(loc => loc.isDefault) ||
-                           mapConfig.defaultLocations[0];
+    console.log('========== 开始地址解析 ==========');
+    console.log('SDK状态:', qqmapsdk ? '已加载' : '未加载');
+    console.log('API Key:', mapConfig.tencentMap.key ? '已配置' : '未配置');
+    console.log('获取到的坐标:', { latitude: latitude, longitude: longitude });
 
-      if (defaultLocation) {
+    // 检查SDK是否加载
+    if (!qqmapsdk) {
+      console.error('❌ 腾讯地图SDK未加载');
+      this.useDefaultLocation('SDK未加载');
+      return;
+    }
+
+    // 检查API Key是否配置
+    if (mapConfig.tencentMap.key === 'YOUR_TENCENT_MAP_KEY') {
+      console.error('❌ API Key未配置');
+      this.useDefaultLocation('API Key未配置');
+      return;
+    }
+
+    // 调用逆地理编码
+    console.log('正在调用腾讯地图逆地理编码API...');
+    qqmapsdk.reverseGeocoder({
+      location: { latitude: latitude, longitude: longitude },
+      get_poi: 1, // 获取周边POI信息
+      success: (res) => {
+        console.log('✅ 地址解析成功');
+        console.log('=== SDK完整响应结构 ===');
+        console.log('res:', res);
+        console.log('res.status:', res.status);
+        console.log('res.message:', res.message);
+        console.log('res.result:', res.result);
+
+        // 尝试多种方式获取地址
+        let address = '';
+
+        // 方式1：直接访问res的属性
+        if (res.formatted_addresses && res.formatted_addresses.recommend) {
+          address = res.formatted_addresses.recommend;
+          console.log('方式1成功 - res.formatted_addresses.recommend');
+        } else if (res.formatted_addresses && res.formatted_addresses.standard_address) {
+          address = res.formatted_addresses.standard_address;
+          console.log('方式1成功 - res.formatted_addresses.standard_address');
+        } else if (res.address) {
+          address = res.address;
+          console.log('方式2成功 - res.address:', address);
+        } else if (res.result) {
+          // 方式3：从result中获取
+          console.log('res.result存在，检查其属性');
+          console.log('res.result.formatted_addresses:', res.result.formatted_addresses);
+          console.log('res.result.address:', res.result.address);
+          console.log('res.result.address_component:', res.result.address_component);
+
+          if (res.result.formatted_addresses && res.result.formatted_addresses.recommend) {
+            address = res.result.formatted_addresses.recommend;
+            console.log('方式3成功 - result.formatted_addresses.recommend');
+          } else if (res.result.formatted_addresses && res.result.formatted_addresses.standard_address) {
+            address = res.result.formatted_addresses.standard_address;
+            console.log('方式3成功 - result.formatted_addresses.standard_address');
+          } else if (res.result.address) {
+            address = res.result.address;
+            console.log('方式3成功 - result.address:', address);
+            // 检查是否还是坐标
+            if (address.includes('.') && address.includes(',')) {
+              console.warn('⚠️ result.address仍然是坐标格式，尝试其他方式');
+              address = ''; // 清空，尝试下一个方式
+            }
+          }
+        }
+
+        // 最后降级：使用地址组件组合
+        if (!address) {
+          console.log('尝试使用地址组件组合...');
+          const components = res.result ? res.result.address_component : res.address_component;
+          if (components) {
+            address = `${components.province || ''}${components.city || ''}${components.district || ''}${components.street || ''}`;
+            console.log('方式4成功 - 组件组合:', address);
+          }
+        }
+
+        // 如果所有方式都失败，使用默认地址
+        if (!address || (address.includes('.') && address.includes(','))) {
+          console.error('❌ 所有方式都失败，使用默认地址');
+          that.useDefaultLocation('无法解析详细地址');
+          return;
+        }
+
+        console.log('✅ 最终解析出的地址:', address);
+
         that.setData({
-          'serviceLocation.address': defaultLocation.address,
-          'serviceLocation.latitude': defaultLocation.latitude,
-          'serviceLocation.longitude': defaultLocation.longitude
-        });
-      } else {
-        // 没有默认地址，使用坐标
-        that.setData({
-          'serviceLocation.address': `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+          'serviceLocation.address': address,
           'serviceLocation.latitude': latitude,
           'serviceLocation.longitude': longitude
         });
+      },
+      fail: (err) => {
+        console.error('❌ 地址解析失败');
+        console.error('错误类型:', err.constructor.name);
+        console.error('错误信息:', err.message);
+        console.error('错误详情:', JSON.stringify(err));
+
+        // 显示友好的错误提示
+        const errorMsg = err.message || '未知错误';
+        wx.showModal({
+          title: '地址解析失败',
+          content: `无法获取详细地址：${errorMsg}\n\n可能原因：\n1. API Key未开通逆地理编码权限\n2. 网络连接问题\n\n已使用默认地址，您可以点击"修改"重新选择`,
+          confirmText: '我知道了',
+          showCancel: false,
+          success: () => {
+            that.useDefaultLocation('地址解析失败');
+          }
+        });
       }
-    }
+    });
   },
 
   /**
-   * 加载车队配置
+   * 使用默认地址（统一降级方案）
    */
-  async loadFleetConfig() {
-    try {
-      // 获取司机所属车队ID
-      const userRes = await request.get('/user/me');
-      const fleetId = userRes.data.fleetInfo?.fleetId;
-      if (!fleetId) {
-        return;
+  useDefaultLocation(reason) {
+    const defaultLocation = this.data.defaultLocations?.find(loc => loc.isDefault) ||
+                         this.data.defaultLocations?.[0] ||
+                         mapConfig.defaultLocations.find(loc => loc.isDefault) ||
+                         mapConfig.defaultLocations[0];
+
+    if (defaultLocation) {
+      console.log(`📍 使用默认地址: ${defaultLocation.address}`);
+      this.setData({
+        'serviceLocation.address': defaultLocation.address,
+        'serviceLocation.latitude': defaultLocation.latitude,
+        'serviceLocation.longitude': defaultLocation.longitude
+      });
+
+      // 降级成功时不需要显示错误提示，地址已正确显示
+      // 记录日志用于调试
+      if (reason) {
+        console.log(`降级原因: ${reason}`);
       }
-
-      // 获取车队配置
-      const fleetRes = await request.get(`/fleet/${fleetId}`);
-      const allowDriverSelectStore = fleetRes.data.allowDriverSelectStore || false;
-
-      this.setData({ allowDriverSelectStore });
-
-      // 如果不允许司机选择门店，清空门店选择
-      if (!allowDriverSelectStore) {
-        this.setData({ selectedStoreIndex: -1 });
-      }
-    } catch (error) {
-      console.error('加载车队配置失败:', error);
+    } else {
+      // 如果连默认地址都没有
+      console.warn('⚠️ 没有可用的默认地址');
+      this.setData({
+        'serviceLocation.address': '请在地图上选择服务地址',
+        'serviceLocation.latitude': this.data.serviceLocation.latitude || 22.531721,
+        'serviceLocation.longitude': this.data.serviceLocation.longitude || 113.943526
+      });
     }
+
+    // 仍需加载门店和车队配置
+    this.loadNearbyStores(
+      this.data.serviceLocation.latitude,
+      this.data.serviceLocation.longitude
+    );
+    this.loadFleetConfig();
   },
 
   /**
-   * 加载附近门店（推荐门店）
+   * 加载附近门店（推荐门店）- 复用订单详情页的丰富UI数据
    */
   async loadNearbyStores(latitude, longitude) {
     const radii = [10, 20, 30, 50]; // 逐级扩展半径
@@ -260,9 +388,11 @@ Page({
             label: s.name,
             sublabel: `${s.address.city || ''} ${s.address.district || s.address || ''}`,
             distance: s.distance,
+            address: s.address,
             businessHours: s.businessHours || '8:00-20:00',
             contactPhone: s.contact?.phone || '',
             contactName: s.contact?.name || '',
+            ratingStats: s.ratingStats || { overallRating: 0, reviewCount: 0 },
             ...s
           }));
 
@@ -282,7 +412,7 @@ Page({
   },
 
   /**
-   * 加载所有门店（附近没有门店时的降级方案）
+   * 加载所有门店（附近没有门店时的降级方案）- 复用订单详情页的丰富UI数据
    */
   async loadAllStores() {
     try {
@@ -294,9 +424,11 @@ Page({
         _id: s._id,
         label: s.name,
         sublabel: `${s.address.city || ''} ${s.address.district || s.address || ''}`,
+        address: s.address,
         businessHours: s.businessHours || '8:00-20:00',
         contactPhone: s.contact?.phone || '',
         contactName: s.contact?.name || '',
+        ratingStats: s.ratingStats || { overallRating: 0, reviewCount: 0 },
         ...s
       }));
 
@@ -353,21 +485,21 @@ Page({
   },
 
   /**
-   * 打开服务地址选择器
+   * 打开位置选择器
    */
   openLocationPicker() {
     this.setData({ showLocationPicker: true });
   },
 
   /**
-   * 关闭服务地址选择器
+   * 关闭位置选择器
    */
   closeLocationPicker() {
     this.setData({ showLocationPicker: false });
   },
 
   /**
-   * 选择服务地址
+   * 选择位置
    */
   onLocationSelect() {
     const that = this;
@@ -392,6 +524,66 @@ Page({
   onLocationInput(e) {
     this.setData({
       'serviceLocation.address': e.detail.value
+    });
+  },
+
+  /**
+   * 加载常用地址列表
+   */
+  async loadSavedAddresses() {
+    // 注意：后端暂未实现 /user/addresses 接口，暂时只使用本地缓存
+    // const cachedAddresses = wx.getStorageSync('savedAddresses') || [];
+    // this.setData({
+    //   savedAddresses: cachedAddresses
+    // });
+
+    // TODO: 等后端实现接口后，取消下面的注释
+    // try {
+    //   const res = await request.get('/user/addresses');
+    //   this.setData({
+    //     savedAddresses: res.data.addresses || []
+    //   });
+    // } catch (error) {
+    //   const cachedAddresses = wx.getStorageSync('savedAddresses') || [];
+    //   this.setData({
+    //     savedAddresses: cachedAddresses
+    //   });
+    // }
+  },
+
+  /**
+   * 选择常用地址
+   */
+  onSelectSavedAddress(e) {
+    const { address } = e.currentTarget.dataset;
+
+    this.setData({
+      'serviceLocation.address': address.address,
+      'serviceLocation.latitude': address.latitude,
+      'serviceLocation.longitude': address.longitude,
+      showLocationPicker: false
+    });
+
+    // 重新加载附近门店（基于选中的地址）
+    if (address.latitude && address.longitude) {
+      this.loadNearbyStores(address.latitude, address.longitude);
+    }
+
+    wx.showToast({
+      title: '已选择服务地址',
+      icon: 'success',
+      duration: 1500
+    });
+  },
+
+  /**
+   * 跳转到地址管理页面
+   */
+  onManageAddresses() {
+    this.setData({ showLocationPicker: false });
+
+    wx.navigateTo({
+      url: '/pages/address-list/address-list'
     });
   },
 
@@ -425,6 +617,11 @@ Page({
       selectedVehicleIndex: index,
       showVehiclePicker: false
     });
+
+    // 如果是保养申请，自动加载推荐套餐
+    if (this.data.type === 'maintenance') {
+      this.loadRecommendedPackages();
+    }
   },
 
   /**
@@ -449,13 +646,74 @@ Page({
   },
 
   /**
-   * 选择门店
+   * 选择门店（选中但不关闭弹窗，需要点击确认按钮）
    */
   onStoreSelect(e) {
     const index = parseInt(e.currentTarget.dataset.index);
     this.setData({
-      selectedStoreIndex: index,
+      selectedStoreIndex: index
+    });
+  },
+
+  /**
+   * 确认选择门店
+   */
+  onConfirmStoreSelect() {
+    if (this.data.selectedStoreIndex === -1) {
+      wx.showToast({
+        title: '请选择门店',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.setData({
       showStorePicker: false
+    });
+
+    // 选择成功提示
+    const storeName = this.data.stores[this.data.selectedStoreIndex]?.label || '';
+    wx.showToast({
+      title: `已选择：${storeName}`,
+      icon: 'success'
+    });
+  },
+
+  /**
+   * 查看门店详情
+   */
+  async onViewStoreDetail(e) {
+    const store = e.currentTarget.dataset.store;
+
+    // 获取门店评价
+    try {
+      const reviewsRes = await request.get(`/store-reviews/store/${store._id}`, {
+        limit: 5
+      });
+
+      this.setData({
+        storeDetail: store,
+        storeDetailReviews: reviewsRes.data.reviews || [],
+        showStoreDetail: true
+      });
+
+    } catch (error) {
+      // 获取评价失败不影响显示门店详情
+      console.error('获取门店评价失败:', error);
+      this.setData({
+        storeDetail: store,
+        storeDetailReviews: [],
+        showStoreDetail: true
+      });
+    }
+  },
+
+  /**
+   * 关闭门店详情弹窗
+   */
+  onCloseStoreDetail() {
+    this.setData({
+      showStoreDetail: false
     });
   },
 
@@ -509,14 +767,51 @@ Page({
   },
 
   /**
-   * 日期时间选择器中的时间选择
+   * 选择期望到店时间（简化版）
    */
-  onDateTimeTimeSelect(e) {
+  onSelectTime(e) {
     const time = e.currentTarget.dataset.time;
     this.setData({
-      appointmentTime: time,
-      showDateTimePicker: false
+      preferredTime: time
     });
+    console.log('选择期望到店时间:', time);
+  },
+
+  /**
+   * 选择期望时间段（点击卡片）
+   */
+  onSelectTimeSlot(e) {
+    const index = parseInt(e.currentTarget.dataset.index);
+    const timeSlot = this.data.timeSlotOptions[index];
+    this.setData({
+      expectedTimeSlot: timeSlot.value,
+      expectedTimeSlotIndex: index
+    });
+    console.log('选择期望时间段:', timeSlot);
+  },
+
+  /**
+   * 打开期望日期选择器
+   */
+  openExpectedDatePicker() {
+    this.setData({ showExpectedDatePicker: true });
+  },
+
+  /**
+   * 关闭期望日期选择器
+   */
+  closeExpectedDatePicker() {
+    this.setData({ showExpectedDatePicker: false });
+  },
+
+  /**
+   * 选择期望日期
+   */
+  onExpectedDateChange(e) {
+    this.setData({
+      expectedDate: e.detail.value
+    });
+    console.log('选择期望日期:', e.detail.value);
   },
 
   /**
@@ -587,8 +882,12 @@ Page({
    * 输入当前里程
    */
   onMileageInput(e) {
+    // 只允许输入数字，过滤掉非数字字符
+    let value = e.detail.value;
+    value = value.replace(/[^\d]/g, ''); // 移除所有非数字字符
+
     this.setData({
-      mileage: e.detail.value
+      mileage: value
     });
   },
 
@@ -820,7 +1119,7 @@ Page({
   },
 
   /**
-   * 提交报修申请
+   * 提交报修/保养申请
    */
   async onSubmit() {
     // 验证表单
@@ -841,10 +1140,18 @@ Page({
       return;
     }
 
-    // 验证预约到店时间（仅司机选择门店时必填）
-    if (this.data.allowDriverSelectStore && (!this.data.appointmentDate || !this.data.appointmentTime)) {
+    // 验证期望到店时间（必填）
+    if (!this.data.expectedDate) {
       wx.showToast({
-        title: '请选择预约到店时间',
+        title: '请选择期望到店日期',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (!this.data.expectedTimeSlot) {
+      wx.showToast({
+        title: '请选择期望到店时间段',
         icon: 'none'
       });
       return;
@@ -868,25 +1175,38 @@ Page({
       return;
     }
 
-    // 故障描述验证：如果有标签，或者手动输入超过3个字
-    const hasTags = this.data.selectedTags.length > 0;
-    const hasEnoughText = this.data.faultDescription.trim().length >= 3;
+    // ===== 保养订单特殊验证 =====
+    if (this.data.type === 'maintenance') {
+      // 验证保养套餐（必选）
+      if (this.data.selectedPackageIndex === -1) {
+        wx.showToast({
+          title: '请选择保养套餐',
+          icon: 'none'
+        });
+        return;
+      }
+    } else {
+      // ===== 维修订单特殊验证 =====
+      // 故障描述验证：如果有标签，或者手动输入超过3个字
+      const hasTags = this.data.selectedTags.length > 0;
+      const hasEnoughText = this.data.faultDescription.trim().length >= 3;
 
-    if (!hasTags && !hasEnoughText) {
-      wx.showToast({
-        title: '请选择标签或输入至少3个字',
-        icon: 'none'
-      });
-      return;
-    }
+      if (!hasTags && !hasEnoughText) {
+        wx.showToast({
+          title: '请选择标签或输入至少3个字',
+          icon: 'none'
+        });
+        return;
+      }
 
-    // 必须上传图片或视频
-    if (this.data.faultImages.length === 0 && this.data.faultVideos.length === 0) {
-      wx.showToast({
-        title: '请至少上传一张图片或视频',
-        icon: 'none'
-      });
-      return;
+      // 必须上传图片或视频
+      if (this.data.faultImages.length === 0 && this.data.faultVideos.length === 0) {
+        wx.showToast({
+          title: '请至少上传一张图片或视频',
+          icon: 'none'
+        });
+        return;
+      }
     }
 
     this.setData({ submitting: true });
@@ -903,7 +1223,7 @@ Page({
         }
       }
 
-      // 上传图片
+      // 上传图片（维修专用）
       const uploadedImages = [];
       for (let imagePath of this.data.faultImages) {
         try {
@@ -914,7 +1234,7 @@ Page({
         }
       }
 
-      // 上传视频
+      // 上传视频（维修专用）
       const uploadedVideos = [];
       for (let videoPath of this.data.faultVideos) {
         try {
@@ -928,26 +1248,55 @@ Page({
       // 提交订单
       const vehicle = this.data.vehicles[this.data.selectedVehicleIndex];
 
-      // 组装预约时间
-      let appointmentAt = null;
-      if (this.data.appointmentDate && this.data.appointmentTime) {
-        appointmentAt = `${this.data.appointmentDate} ${this.data.appointmentTime}`;
+      let orderData, apiUrl, successMessage;
+
+      if (this.data.type === 'maintenance') {
+        // ===== 保养订单提交 =====
+        apiUrl = '/maintenance/driver/apply';
+
+        const selectedPackage = this.data.recommendedPackages[this.data.selectedPackageIndex];
+
+        orderData = {
+          vehicleId: vehicle._id,
+          packageId: selectedPackage._id,
+          milestone: parseFloat(this.data.mileage),
+          milestonePhotos: uploadedMileagePhotos,
+          appointment: {
+            expectedDate: this.data.expectedDate,
+            expectedTimeSlot: this.data.expectedTimeSlot
+          },
+          driverRemark: this.data.driverRemark || ''
+        };
+
+        // 如果司机选择了门店，添加门店ID
+        if (this.data.allowDriverSelectStore && this.data.selectedStoreIndex !== -1) {
+          const store = this.data.stores[this.data.selectedStoreIndex];
+          orderData.storeId = store._id;
+        }
+
+        successMessage = '保养申请已提交，等待车队审批';
+      } else {
+        // ===== 维修订单提交 =====
+        apiUrl = '/orders';
+        successMessage = '报修申请已提交，等待车队审批';
+
+        orderData = {
+          type: 'repair',
+          vehicleId: vehicle._id,
+          faultDescription: this.data.faultDescription,
+          faultImages: uploadedImages,
+          faultVideos: uploadedVideos,
+          appointment: {
+            expectedDate: this.data.expectedDate,
+            expectedTimeSlot: this.data.expectedTimeSlot
+          },
+          milestone: parseFloat(this.data.mileage),
+          milestonePhotos: uploadedMileagePhotos,
+          remark: this.data.remark || ''
+        };
       }
 
-      // 构建订单数据
-      const orderData = {
-        type: this.data.type,
-        vehicleId: vehicle._id,
-        faultDescription: this.data.faultDescription,
-        faultImages: uploadedImages,
-        faultVideos: uploadedVideos,
-        appointmentAt: appointmentAt,
-        milestone: parseFloat(this.data.mileage),
-        milestonePhotos: uploadedMileagePhotos,
-        remark: this.data.remark || ''
-      };
-
-      // 添加服务地址
+      // 添加位置信息
       if (this.data.serviceLocation.latitude && this.data.serviceLocation.longitude) {
         orderData.serviceLocation = this.data.serviceLocation;
       }
@@ -958,7 +1307,7 @@ Page({
         orderData.storeId = store._id;
       }
 
-      const orderResult = await request.post('/orders', orderData);
+      const orderResult = await request.post(apiUrl, orderData);
 
       wx.showToast({
         title: '提交成功',
@@ -968,8 +1317,8 @@ Page({
       // 显示提示并跳转
       setTimeout(() => {
         const tipMessage = this.data.allowDriverSelectStore
-          ? '订单已提交，请等待车队审批'
-          : '订单已提交，车队管理员将为您选择门店并审批';
+          ? successMessage
+          : successMessage + '，车队管理员将为您选择门店';
 
         wx.showModal({
           title: '温馨提示',
@@ -978,7 +1327,7 @@ Page({
           confirmText: '我知道了',
           success: () => {
             // 跳转到订单详情页
-            const orderId = orderResult.data._id;
+            const orderId = orderResult.data.order?._id || orderResult.data._id;
             wx.redirectTo({
               url: `/pages/order-detail/order-detail?id=${orderId}`
             });
@@ -1023,6 +1372,179 @@ Page({
         },
         fail: reject
       });
+    });
+  },
+
+  // ===== 保养相关函数 =====
+
+  /**
+   * 加载车队配置
+   */
+  async loadFleetConfig() {
+    try {
+      const res = await request.get('/user/me');
+
+      // 调试日志
+      console.log('🔍 /user/me 响应数据:', res.data);
+      console.log('🔍 fleets 字段:', res.data.fleets);
+      console.log('🔍 fleetInfo 字段:', res.data.fleetInfo);
+
+      // 司机使用 fleets 数组，车队管理员使用 fleetInfo
+      let fleetId = null;
+
+      if (res.data.fleets && res.data.fleets.length > 0) {
+        // 司机：从 fleets 数组获取第一个正常状态的车队
+        const normalFleet = res.data.fleets.find(f => f.status === 'normal');
+        if (normalFleet) {
+          fleetId = normalFleet.fleetId;
+          console.log('✅ 从 fleets 数组找到车队:', fleetId);
+        }
+      } else if (res.data.fleetInfo?.fleetId) {
+        // 车队管理员：从 fleetInfo 获取
+        fleetId = res.data.fleetInfo.fleetId;
+        console.log('✅ 从 fleetInfo 找到车队:', fleetId);
+      }
+
+      if (!fleetId) {
+        console.warn('用户未关联车队');
+        return;
+      }
+
+      const fleetRes = await request.get('/fleets/' + fleetId);
+      const fleet = fleetRes.data.fleet || {};
+
+      // 重要：保养申请始终允许司机选择门店
+      // 报修申请才根据车队配置决定
+      let allowDriverSelectStore;
+      if (this.data.type === 'maintenance') {
+        // 保养申请：强制允许司机选门店
+        allowDriverSelectStore = true;
+      } else {
+        // 报修申请：根据车队配置决定
+        allowDriverSelectStore = fleet.allowDriverSelectStore || false;
+      }
+
+      this.setData({
+        allowDriverSelectStore: allowDriverSelectStore,
+        'fleetConfig.allowDriverSelectStore': allowDriverSelectStore,
+        'fleetConfig.maintenanceProductPermission': fleet.maintenanceProductPermission || 'fleet_control',
+        'fleetConfig.showMaintenancePrice': fleet.showMaintenancePrice !== false
+      });
+
+      // 如果不允许司机选择门店，清空门店选择
+      if (!allowDriverSelectStore) {
+        this.setData({ selectedStoreIndex: -1 });
+      }
+
+      console.log('车队配置 allowDriverSelectStore =', allowDriverSelectStore, '（类型：', this.data.type, '）');
+    } catch (error) {
+      console.error('加载车队配置失败:', error);
+    }
+  },
+
+  /**
+   * 加载保养类型
+   */
+  async loadMaintenanceTypes() {
+    try {
+      const res = await request.get('/maintenance/types?enabled=true');
+
+      this.setData({
+        maintenanceTypes: res.data.types || [],
+        selectedMaintenanceTypeIndex: -1
+      });
+    } catch (error) {
+      console.error('加载保养类型失败:', error);
+    }
+  },
+
+  /**
+   * 加载推荐套餐（根据车辆里程智能推荐）
+   */
+  async loadRecommendedPackages() {
+    const vehicle = this.data.vehicles[this.data.selectedVehicleIndex];
+
+    if (!vehicle) {
+      return;
+    }
+
+    try {
+      const res = await request.get('/maintenance/recommendations', {
+        vehicleGroupId: vehicle.group || '牵引车',
+        mileage: vehicle.mileage || 50000
+      });
+
+      // 预处理套餐数据，添加格式化后的价格字段
+      const packages = (res.data.packages || []).map(pkg => ({
+        ...pkg,
+        formattedPrice: (pkg.price / 100).toFixed(2),
+        formattedOriginalPrice: (pkg.originalPrice / 100).toFixed(2),
+        formattedSavePrice: ((pkg.originalPrice - pkg.price) / 100).toFixed(2)
+      }));
+
+      this.setData({
+        recommendedPackages: packages
+      });
+
+      console.log('✅ 已加载推荐套餐:', packages.length, '个');
+    } catch (error) {
+      console.error('加载推荐套餐失败:', error);
+      wx.showToast({
+        title: '加载套餐失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  /**
+   * 选择保养类型
+   */
+  onSelectMaintenanceType(e) {
+    const index = parseInt(e.currentTarget.dataset.index);
+    this.setData({
+      selectedMaintenanceTypeIndex: index
+    });
+
+    this.loadRecommendedPackages();
+  },
+
+  /**
+   * 选择套餐
+   */
+  onSelectPackage(e) {
+    const index = parseInt(e.currentTarget.dataset.index);
+    this.setData({
+      selectedPackageIndex: index
+    });
+  },
+
+  /**
+   * 切换商品详情展开/收起
+   */
+  toggleProductDetail(e) {
+    const packageId = e.currentTarget.dataset.id;
+    const expandedList = this.data.expandedPackageIds || [];
+    const index = expandedList.indexOf(packageId);
+
+    if (index !== -1) {
+      // 已展开，收起
+      expandedList.splice(index, 1);
+    } else {
+      // 未展开，展开
+      expandedList.push(packageId);
+    }
+
+    this.setData({
+      expandedPackageIds: expandedList
+    });
+  },
+
+  /**
+   * 输入保养备注
+   */
+  onDriverRemarkInput(e) {
+    this.setData({
+      driverRemark: e.detail.value
     });
   }
 });

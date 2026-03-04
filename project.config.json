@@ -2,7 +2,7 @@
   "setting": {
     "es6": true,
     "postcss": true,
-    "minified": false,
+    "minified": true,
     "uglifyFileName": false,
     "enhance": true,
     "packNpmRelationList": [],
@@ -12,11 +12,11 @@
       "outputPath": ""
     },
     "useCompilerPlugins": false,
-    "minifyWXML": false,
     "compileWorklet": false,
-    "uploadWithSourceMap": true,
+    "uploadWithSourceMap": false,
     "packNpmManually": false,
-    "minifyWXSS": false,
+    "minifyWXSS": true,
+    "minifyWXML": true,
     "localPlugins": false,
     "disableUseStrict": false,
     "condition": false
@@ -24,7 +24,80 @@
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "pages/example"
+      },
+      {
+        "type": "folder",
+        "value": "docs"
+      },
+      {
+        "type": "folder",
+        "value": ".trae"
+      },
+      {
+        "type": "file",
+        "value": "seed-temp.js"
+      },
+      {
+        "type": "file",
+        "value": "pages/report/report.wxml.bak"
+      },
+      {
+        "type": "file",
+        "value": "pages/report/report.wxml.backup2"
+      },
+      {
+        "type": "file",
+        "value": "pages/maintenance/maintenance.wxml.bak"
+      },
+      {
+        "type": "file",
+        "value": "images/create_cbr.png"
+      },
+      {
+        "type": "file",
+        "value": "images/create_cbrf.png"
+      },
+      {
+        "type": "file",
+        "value": "images/ai_example1.png"
+      },
+      {
+        "type": "file",
+        "value": "images/ai_example2.png"
+      },
+      {
+        "type": "file",
+        "value": "images/env-select.png"
+      },
+      {
+        "type": "file",
+        "value": "images/database.png"
+      },
+      {
+        "type": "file",
+        "value": "images/create_env.png"
+      },
+      {
+        "type": "file",
+        "value": "images/function_deploy.png"
+      },
+      {
+        "type": "file",
+        "value": "images/database_add.png"
+      },
+      {
+        "type": "file",
+        "value": "images/scf-enter.png"
+      },
+      {
+        "type": "file",
+        "value": "images/cloud_dev.png"
+      }
+    ],
     "include": []
   },
   "appid": "wx3747de92cef978cc",

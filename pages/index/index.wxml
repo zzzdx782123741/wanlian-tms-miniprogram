@@ -1,4 +1,4 @@
-<!--index.wxml - 万联驿站TMS首页 - 现代化设计-->
+<!--index.wxml - 万联驿站2.0首页 - 现代化设计-->
 <view class="page">
   <!-- 顶部装饰背景 -->
   <view class="header-bg"></view>
@@ -34,17 +34,7 @@
   </view>
 
   <!-- 快捷操作区域 -->
-  <view class="quick-actions">
-    <!-- 开发模式：角色切换按钮 -->
-    <view
-      wx:if="{{isDevMode}}"
-      class="action-btn dev-mode-btn"
-      bindtap="onShowRoleSwitcher"
-    >
-      <text class="action-icon">🔄</text>
-      <text class="action-text">切换角色（开发）</text>
-    </view>
-
+  <view class="quick-actions" wx:if="{{false}}">
     <view class="action-btn" bindtap="onLogout">
       <text class="action-icon">🚪</text>
       <text class="action-text">退出登录</text>
@@ -53,74 +43,6 @@
 
   <!-- 底部版本信息 -->
   <view class="footer">
-    <text class="version">万联驿站TMS v1.0.0</text>
-  </view>
-
-  <!-- 角色切换弹窗（开发模式） -->
-  <view class="role-switcher-mask" wx:if="{{showRoleSwitcher}}" bindtap="onHideRoleSwitcher">
-    <view class="role-switcher-content" catchtap="stopPropagation">
-      <view class="role-switcher-header">
-        <text class="role-switcher-title">切换角色</text>
-        <text class="role-switcher-subtitle">开发调试专用</text>
-      </view>
-
-      <view class="role-list">
-        <view
-          class="role-item {{role === 'DRIVER' ? 'role-item-active' : ''}}"
-          data-role="DRIVER"
-          bindtap="onSwitchRole"
-        >
-          <view class="role-item-icon">🚚</view>
-          <view class="role-item-info">
-            <view class="role-item-name">司机</view>
-            <view class="role-item-desc">创建报修单</view>
-          </view>
-          <view class="role-item-check" wx:if="{{role === 'DRIVER'}}">✓</view>
-        </view>
-
-        <view
-          class="role-item {{role === 'STORE_TECHNICIAN' ? 'role-item-active' : ''}}"
-          data-role="STORE_TECHNICIAN"
-          bindtap="onSwitchRole"
-        >
-          <view class="role-item-icon">🔧</view>
-          <view class="role-item-info">
-            <view class="role-item-name">门店技师</view>
-            <view class="role-item-desc">接单报价维修</view>
-          </view>
-          <view class="role-item-check" wx:if="{{role === 'STORE_TECHNICIAN'}}">✓</view>
-        </view>
-
-        <view
-          class="role-item {{role === 'PLATFORM_OPERATOR' ? 'role-item-active' : ''}}"
-          data-role="PLATFORM_OPERATOR"
-          bindtap="onSwitchRole"
-        >
-          <view class="role-item-icon">👔</view>
-          <view class="role-item-info">
-            <view class="role-item-name">平台运营</view>
-            <view class="role-item-desc">审核订单</view>
-          </view>
-          <view class="role-item-check" wx:if="{{role === 'PLATFORM_OPERATOR'}}">✓</view>
-        </view>
-
-        <view
-          class="role-item {{role === 'FLEET_MANAGER' ? 'role-item-active' : ''}}"
-          data-role="FLEET_MANAGER"
-          bindtap="onSwitchRole"
-        >
-          <view class="role-item-icon">🏢</view>
-          <view class="role-item-info">
-            <view class="role-item-name">车队管理员</view>
-            <view class="role-item-desc">终审支付</view>
-          </view>
-          <view class="role-item-check" wx:if="{{role === 'FLEET_MANAGER'}}">✓</view>
-        </view>
-      </view>
-
-      <view class="role-switcher-close" bindtap="onHideRoleSwitcher">
-        <text>关闭</text>
-      </view>
-    </view>
+    <text class="version">万联驿站2.0 v1.0.0</text>
   </view>
 </view>

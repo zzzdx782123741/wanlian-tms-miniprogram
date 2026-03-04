@@ -1,0 +1,83 @@
+<!--pages/auth/activate/activate.wxml-->
+<view class="activate-container">
+  <!-- 顶部标题 -->
+  <view class="header-section">
+    <text class="header-title">激活司机账号</text>
+    <text class="header-subtitle">请使用手机号激活您的账号</text>
+  </view>
+
+  <!-- 提示信息 -->
+  <view class="tips-card glass-card">
+    <view class="tips-icon">ℹ️</view>
+    <view class="tips-content">
+      <text class="tips-title">首次登录需要激活</text>
+      <text class="tips-text">请输入车队管理员为您添加司机信息时使用的手机号</text>
+    </view>
+  </view>
+
+  <!-- 激活表单 -->
+  <view class="form-card glass-card">
+    <view class="form-item">
+      <text class="label required">手机号</text>
+      <input
+        class="input-field"
+        type="number"
+        placeholder="请输入手机号"
+        maxlength="11"
+        value="{{phone}}"
+        bindinput="onPhoneInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label {{codeRequired ? 'required' : ''}}">
+        验证码{{codeRequired ? '' : '（可选）'}}
+      </text>
+      <view class="code-input-group">
+        <input
+          class="code-input"
+          type="number"
+          placeholder="请输入验证码"
+          maxlength="6"
+          value="{{code}}"
+          bindinput="onCodeInput"
+        />
+        <button
+          class="code-btn"
+          disabled="{{countdown > 0}}"
+          bindtap="sendCode"
+        >
+          {{countdown > 0 ? countdown + 's' : '获取验证码'}}
+        </button>
+      </view>
+      <text class="form-hint" wx:if="{{!codeRequired}}">
+        开发环境可选，生产环境必填
+      </text>
+    </view>
+
+    <button
+      class="activate-btn glass-btn-cta"
+      loading="{{activating}}"
+      disabled="{{activating}}"
+      bindtap="handleActivate"
+    >
+      立即激活
+    </button>
+  </view>
+
+  <!-- 帮助信息 -->
+  <view class="help-card glass-card">
+    <view class="help-title">找不到账号？</view>
+    <view class="help-content">
+      <text class="help-text">1. 确认车队管理员已在后台添加您的信息</text>
+      <text class="help-text">2. 确认手机号填写正确</text>
+      <text class="help-text">3. 如有问题请联系车队管理员</text>
+    </view>
+  </view>
+
+  <!-- 重新登录按钮 -->
+  <view class="relogin-section">
+    <text class="relogin-text">账号已激活？</text>
+    <text class="relogin-link" bindtap="relogin">返回登录</text>
+  </view>
+</view>

@@ -1,13 +1,25 @@
 <!--pages/vehicle/vehicle.wxml - 我的车辆页面-->
 <view class="page">
-  <!-- 顶部标题栏 -->
-  <view class="header">
-    <view class="header-title">我的车辆</view>
-    <view class="header-subtitle">查看和管理您的车辆信息</view>
+  <!-- 无权限提示 -->
+  <view class="no-permission" wx:if="{{!hasPermission}}">
+    <text class="no-permission-icon">🔒</text>
+    <text class="no-permission-title">暂无访问权限</text>
+    <text class="no-permission-text">技师角色无法访问车辆管理功能</text>
+    <button class="back-home-btn" bindtap="goHome">
+      返回首页
+    </button>
   </view>
 
-  <!-- 车辆列表 -->
-  <view class="vehicle-list">
+  <!-- 有权限时显示内容 -->
+  <view wx:else>
+    <!-- 顶部标题栏 -->
+    <view class="header">
+      <view class="header-title">我的车辆</view>
+      <view class="header-subtitle">查看和管理您的车辆信息</view>
+    </view>
+
+    <!-- 车辆列表 -->
+    <view class="vehicle-list">
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{!loading && vehicles.length === 0}}">
       <text class="empty-icon">🚚</text>
@@ -71,6 +83,7 @@
           class="action-btn secondary"
           bindtap="onViewOrders"
           data-vehicle-id="{{item._id}}"
+          data-vehicle-plate="{{item.plateNumber}}"
         >
           <text class="btn-icon">📋</text>
           <text>维修记录</text>
@@ -83,5 +96,6 @@
       <view class="loading-spinner"></view>
       <text class="loading-text">加载中...</text>
     </view>
+  </view>
   </view>
 </view>

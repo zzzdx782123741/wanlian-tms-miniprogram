@@ -5,17 +5,55 @@ const request = require('../../utils/request');
 Page({
   data: {
     vehicles: [],
-    loading: false
+    loading: false,
+    hasPermission: true // 权限标志
   },
 
   onLoad() {
+    // 检查用户权限（保留安全检查）
+    const userInfo = wx.getStorageSync('userInfo');
+    const role = userInfo?.role?.type;
+
+    // 技师角色无权访问车辆管理（理论上不可能通过 tabBar 进入，保留检查以防万一）
+    if (role === 'STORE_TECHNICIAN') {
+      wx.switchTab({
+        url: '/pages/index/index'
+      });
+      return;
+    }
+
     this.loadVehicles();
+  },
+
+  onShow() {
+    // 安全检查（理论上不可能通过 tabBar 进入，保留检查以防万一）
+    const userInfo = wx.getStorageSync('userInfo');
+    const role = userInfo?.role?.type;
+
+    if (role === 'STORE_TECHNICIAN') {
+      wx.switchTab({
+        url: '/pages/index/index'
+      });
+      return;
+    }
+
+    // 更新自定义 tabBar 选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().updateTabBar();
+    }
   },
 
   /**
    * 加载车辆列表
    */
   async loadVehicles() {
+    // 再次检查权限
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo?.role?.type === 'STORE_TECHNICIAN') {
+      this.setData({ hasPermission: false });
+      return;
+    }
+
     this.setData({ loading: true });
 
     try {
@@ -65,8 +103,23 @@ Page({
    */
   onViewOrders(e) {
     const vehicleId = e.currentTarget.dataset.vehicleId;
-    wx.navigateTo({
-      url: `/pages/orders/orders?vehicleId=${vehicleId}`
+    const vehiclePlate = e.currentTarget.dataset.vehiclePlate || '';
+    wx.setStorageSync('ordersVehicleFilter', {
+      vehicleId,
+      vehiclePlate,
+      from: 'vehicle',
+      ts: Date.now()
+    });
+
+    wx.switchTab({
+      url: '/pages/orders/orders',
+      fail: (err) => {
+        console.error('跳转订单页失败:', err);
+        wx.showToast({
+          title: '打开维修记录失败',
+          icon: 'none'
+        });
+      }
     });
   },
 
@@ -78,5 +131,14 @@ Page({
     setTimeout(() => {
       wx.stopPullDownRefresh();
     }, 1000);
+  },
+
+  /**
+   * 返回首页
+   */
+  goHome() {
+    wx.switchTab({
+      url: '/pages/index/index'
+    });
   }
 });

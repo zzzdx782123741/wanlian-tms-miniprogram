@@ -1,4 +1,4 @@
-// pages/fleet/approve/approve.js
+// pages/fleet/approve/approve.js - 车队管理员审批订单页面
 const request = require('../../../utils/request');
 
 Page({
@@ -21,14 +21,22 @@ Page({
     });
   },
 
-  // 加载待审核订单
+  /**
+   * 加载待审批订单（awaiting_fleet_approval 状态）
+   */
   async loadOrders() {
     try {
       this.setData({ loading: true });
 
-      const orders = await request.get('/orders', {
-        status: 'PENDING_APPROVAL'
+      const res = await request.get('/orders', {
+        status: 'awaiting_fleet_approval'
       });
+
+      // 格式化订单数据
+      const orders = (res.data || []).map(order => ({
+        ...order,
+        createdAtText: this.formatTime(order.createdAt)
+      }));
 
       this.setData({
         orders,
@@ -44,87 +52,53 @@ Page({
     }
   },
 
-  // 审核通过
-  approveOrder(e) {
-    const { id } = e.currentTarget.dataset;
-
-    wx.showModal({
-      title: '确认通过',
-      content: '确定要通过该订单吗？',
-      success: async (res) => {
-        if (res.confirm) {
-          try {
-            wx.showLoading({ title: '处理中...' });
-
-            await request.put(`/orders/${id}/approve`, {
-              action: 'approve'
-            });
-
-            wx.hideLoading();
-
-            wx.showToast({
-              title: '已通过',
-              icon: 'success'
-            });
-
-            // 刷新列表
-            this.loadOrders();
-
-          } catch (error) {
-            wx.hideLoading();
-            wx.showToast({
-              title: error.message || '操作失败',
-              icon: 'none'
-            });
-          }
-        }
-      }
-    });
+  /**
+   * 格式化时间
+   */
+  formatTime(timestamp) {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    return `${month}-${day} ${hour}:${minute}`;
   },
 
-  // 审核拒绝
-  rejectOrder(e) {
-    const { id } = e.currentTarget.dataset;
-
-    wx.showModal({
-      title: '确认拒绝',
-      content: '确定要拒绝该订单吗？',
-      success: async (res) => {
-        if (res.confirm) {
-          try {
-            wx.showLoading({ title: '处理中...' });
-
-            await request.put(`/orders/${id}/approve`, {
-              action: 'reject'
-            });
-
-            wx.hideLoading();
-
-            wx.showToast({
-              title: '已拒绝',
-              icon: 'success'
-            });
-
-            // 刷新列表
-            this.loadOrders();
-
-          } catch (error) {
-            wx.hideLoading();
-            wx.showToast({
-              title: error.message || '操作失败',
-              icon: 'none'
-            });
-          }
-        }
-      }
-    });
-  },
-
-  // 查看详情
+  /**
+   * 查看详情并审批
+   */
   viewDetail(e) {
     const { id } = e.currentTarget.dataset;
     wx.navigateTo({
-      url: `/pages/store/order-detail/order-detail?id=${id}`
+      url: `/pages/order-detail/order-detail?id=${id}`
+    });
+  },
+
+  /**
+   * 联系司机
+   */
+  onCallReporter(e) {
+    const phone = e.currentTarget.dataset.phone;
+    if (!phone) {
+      wx.showToast({
+        title: '暂无联系电话',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.showModal({
+      title: '联系司机',
+      content: `电话：${phone}`,
+      confirmText: '拨打电话',
+      success: (res) => {
+        if (res.confirm) {
+          wx.makePhoneCall({
+            phoneNumber: phone
+          });
+        }
+      }
     });
   }
 });

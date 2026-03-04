@@ -1359,3 +1359,176 @@
   font-size: 26rpx;
 }
 
+/* 预约时间卡片 - 紧凑样式 */
+.appointment-compact {
+  padding: 20rpx 24rpx !important;
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border: 1rpx solid #FCD34D;
+}
+
+/* 期望时间主要显示区 */
+.appointment-main {
+  margin-bottom: 12rpx;
+}
+
+.appointment-header {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.appointment-icon {
+  font-size: 28rpx;
+}
+
+.appointment-title {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #92400E;
+}
+
+.appointment-status-tag {
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+}
+
+.appointment-status-tag.appointment-pending {
+  background: rgba(146, 64, 14, 0.1);
+  color: #92400E;
+}
+
+.appointment-status-tag.appointment-confirmed {
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+}
+
+.appointment-status-tag.appointment-adjusted {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563EB;
+}
+
+/* 时间显示 */
+.appointment-time-display {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  padding-left: 36rpx;
+}
+
+.time-date {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #78350F;
+  line-height: 1.2;
+}
+
+.time-slot {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #92400E;
+}
+
+/* 确认时间 */
+.appointment-confirmed {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 12rpx 16rpx;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8rpx;
+  margin-bottom: 8rpx;
+}
+
+.confirmed-label {
+  font-size: 24rpx;
+  color: #059669;
+  font-weight: 500;
+}
+
+.confirmed-time {
+  font-size: 26rpx;
+  color: #059669;
+  font-weight: 600;
+}
+
+/* 备注 */
+.appointment-remark {
+  padding: 12rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8rpx;
+  margin-bottom: 8rpx;
+}
+
+.remark-text {
+  font-size: 24rpx;
+  color: #78350F;
+  line-height: 1.5;
+}
+
+/* 提示信息 */
+.appointment-hint {
+  text-align: center;
+  font-size: 22rpx;
+  color: #92400E;
+  padding: 8rpx 12rpx;
+  background: rgba(251, 191, 36, 0.15);
+  border-radius: 6rpx;
+}
+
+.appointment-hint.adjusted {
+  color: #1E40AF;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* 司机期望时间信息 */
+.expected-time-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 20rpx;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border: 2rpx solid #F59E0B;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.time-info-title {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.time-icon {
+  font-size: 28rpx;
+}
+
+.time-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #92400E;
+}
+
+.time-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  padding-left: 36rpx;
+}
+
+.time-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #78350F;
+  line-height: 1.4;
+}
+
+.time-slot {
+  font-size: 28rpx;
+  color: #92400E;
+  font-weight: 500;
+}
+

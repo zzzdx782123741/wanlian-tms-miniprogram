@@ -1,4 +1,4 @@
-// index.js - 万联驿站TMS首页 - 现代化设计
+// index.js - 万联驿站2.0首页 - 现代化设计
 const app = getApp();
 
 Page({
@@ -7,9 +7,7 @@ Page({
     role: '',
     roleText: '',
     roleShortText: '',
-    menuList: [],
-    isDevMode: false, // 开发模式标识
-    showRoleSwitcher: false // 角色切换弹窗显示状态
+    menuList: []
   },
 
   onLoad() {
@@ -19,6 +17,11 @@ Page({
   onShow() {
     // 每次显示页面时刷新用户信息
     this.initPage();
+
+    // 更新自定义 tabBar 选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().updateTabBar();
+    }
   },
 
   /**
@@ -36,90 +39,15 @@ Page({
       return;
     }
 
-    // 检测开发模式（根据API地址或版本号判断）
-    const isDevMode = this.checkDevMode();
-
     this.setData({
       userInfo,
       role,
       roleText: this.getRoleText(role),
-      roleShortText: this.getRoleShortText(role),
-      isDevMode
+      roleShortText: this.getRoleShortText(role)
     });
 
     // 根据角色设置菜单
     this.setupMenu(role);
-  },
-
-  /**
-   * 检查是否为开发模式
-   */
-  checkDevMode() {
-    // 方式1: 检查API地址
-    const apiHost = app.globalData.baseUrl;
-    if (apiHost.includes('localhost') || apiHost.includes('127.0.0.1')) {
-      return true;
-    }
-
-    // 方式2: 检查小程序版本（开发版/体验版）
-    const accountInfo = wx.getAccountInfoSync();
-    if (accountInfo.miniProgram.envVersion === 'develop' ||
-        accountInfo.miniProgram.envVersion === 'trial') {
-      return true;
-    }
-
-    return false;
-  },
-
-  /**
-   * 显示角色切换弹窗
-   */
-  onShowRoleSwitcher() {
-    this.setData({
-      showRoleSwitcher: true
-    });
-  },
-
-  /**
-   * 关闭角色切换弹窗
-   */
-  onHideRoleSwitcher() {
-    this.setData({
-      showRoleSwitcher: false
-    });
-  },
-
-  /**
-   * 切换角色（开发环境专用）
-   */
-  onSwitchRole(e) {
-    const { role } = e.currentTarget.dataset;
-
-    wx.showModal({
-      title: '切换角色',
-      content: `确定要切换到${this.getRoleText(role)}吗？`,
-      confirmColor: '#667eea',
-      success: (res) => {
-        if (res.confirm) {
-          // 临时切换角色（仅修改前端状态）
-          app.globalData.role = role;
-          wx.setStorageSync('role', role);
-
-          // 关闭弹窗并刷新页面
-          this.setData({
-            showRoleSwitcher: false
-          });
-
-          // 重新初始化页面
-          this.initPage();
-
-          wx.showToast({
-            title: `已切换到${this.getRoleText(role)}`,
-            icon: 'success'
-          });
-        }
-      }
-    });
   },
 
   /**
@@ -208,11 +136,11 @@ Page({
       case 'STORE_TECHNICIAN':
         menuList = [
           {
-            id: 'my-orders',
-            title: '我的订单',
+            id: 'store-orders',
+            title: '门店订单',
             icon: '🔧',
-            description: '查看和管理所有维修订单',
-            url: '/pages/my-orders/my-orders',
+            description: '查看和管理维修订单',
+            url: '/pages/orders/orders',
             color: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
           }
         ];
@@ -274,8 +202,8 @@ Page({
         '/pages/account/account'
       ];
 
-      // 判断是否为 tabBar 页面
-      const isTabBarPage = tabBarPages.some(tabBarUrl => url.includes(tabBarUrl));
+      // 判断是否为 tabBar 页面（精确匹配）
+      const isTabBarPage = tabBarPages.includes(url);
 
       if (isTabBarPage) {
         // tabBar 页面使用 switchTab
@@ -320,12 +248,5 @@ Page({
         }
       }
     });
-  },
-
-  /**
-   * 阻止事件冒泡
-   */
-  stopPropagation() {
-    // 空函数，仅用于阻止事件冒泡
   }
 });

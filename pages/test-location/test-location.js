@@ -70,7 +70,7 @@ Page({
 
     const that = this;
     qqmapsdk.reverseGeocoder({
-      location: { latitude, longitude },
+      location: { latitude: latitude, longitude: longitude },
       success: (res) => {
         console.log('逆地理编码成功:', res);
         const address = res.result.address;

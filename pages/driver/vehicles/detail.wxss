@@ -51,6 +51,15 @@
   margin-bottom: var(--spacing-md);
   padding-bottom: var(--spacing-sm);
   border-bottom: 1px solid var(--color-border-light);
+  display: flex;
+  align-items: baseline;
+}
+
+.record-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  margin-left: 8rpx;
+  font-weight: var(--font-weight-normal);
 }
 
 .info-item {
@@ -74,6 +83,162 @@
   font-size: var(--font-size-base);
   color: var(--color-text-primary);
   font-weight: var(--font-weight-medium);
+}
+
+/* 维修记录区域 */
+.repair-records-section {
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.empty-records {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+}
+
+.empty-icon {
+  font-size: 96rpx;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-tertiary);
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.record-item {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.record-type {
+  padding: 8rpx 16rpx;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.type-maintenance {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.type-repair {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+}
+
+.record-status {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-awaiting_fleet_approval,
+.status-pending_assessment,
+.status-awaiting_approval,
+.status-awaiting_addon_approval {
+  color: var(--color-warning);
+}
+
+.status-in_repair {
+  color: var(--color-primary);
+}
+
+.status-completed,
+.status-confirmed {
+  color: var(--color-success);
+}
+
+.status-rejected {
+  color: var(--color-error);
+}
+
+.record-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.record-number {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.record-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.record-amount {
+  display: flex;
+  align-items: baseline;
+  margin-top: 4rpx;
+}
+
+.amount-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.amount-value {
+  font-size: var(--font-size-lg);
+  color: var(--color-error);
+  font-weight: var(--font-weight-semibold);
+  margin-left: 8rpx;
+}
+
+.record-fault {
+  display: flex;
+  margin-top: 4rpx;
+}
+
+.fault-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.fault-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-arrow {
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 48rpx;
+  color: var(--color-border);
+  font-weight: 300;
 }
 
 /* 操作区域 */

@@ -16,15 +16,39 @@ Page({
     description: '',
     totalAmount: '0.00',
     loading: false,
-    submitting: false
+    submitting: false,
+    // 预约时间确认
+    appointmentConfirmed: false,
+    finalAppointmentTime: '',
+    showTimeAdjuster: false,
+    selectedTimeSlot: '',
+    availableTimeSlots: []
   },
 
   onLoad(options) {
+    // 技师角色隐藏底部导航栏的"车辆"标签
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo?.role?.type === 'STORE_TECHNICIAN') {
+      wx.hideTabBar({
+        animation: false
+      });
+    }
+
     if (options.id) {
       this.setData({
         orderId: options.id
       });
       this.loadOrderDetail();
+    }
+  },
+
+  onShow() {
+    // 技师角色每次显示页面时隐藏底部导航栏
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo?.role?.type === 'STORE_TECHNICIAN') {
+      wx.hideTabBar({
+        animation: false
+      });
     }
   },
 
@@ -41,6 +65,14 @@ Page({
         order.appointmentAtText = this.formatAppointmentTime(order.appointmentAt);
       }
 
+      // 处理司机的期望时间偏好
+      if (order.preferredTime) {
+        order.preferredTimeText = this.getPreferredTimeText(order.preferredTime);
+      }
+
+      // 生成可选时间段列表
+      this.generateTimeSlots();
+
       this.setData({
         order,
         loading: false
@@ -53,6 +85,16 @@ Page({
         icon: 'none'
       });
     }
+  },
+
+  // 获取期望时间文本
+  getPreferredTimeText(preferredTime) {
+    const map = {
+      'asap': '尽快安排',
+      'this_afternoon': '今天下午',
+      'tomorrow_morning': '明天上午'
+    };
+    return map[preferredTime] || '尽快安排';
   },
 
   // 格式化预约时间
@@ -166,10 +208,60 @@ Page({
   // 输入数量
   onQuantityInput(e) {
     const { index } = e.currentTarget.dataset;
-    const value = parseInt(e.detail.value) || 1;
+    let value = parseInt(e.detail.value) || 1;
+    if (value < 1) value = 1;
+
+    console.log('输入数量:', { index, value, selectedItems: this.data.selectedItems });
 
     const selectedItems = [...this.data.selectedItems];
+    if (!selectedItems[index]) {
+      console.error('项目不存在:', index);
+      return;
+    }
     selectedItems[index].quantity = value;
+
+    this.setData({ selectedItems });
+    this.updateTotal();
+  },
+
+  // 减少数量
+  onDecreaseQuantity(e) {
+    const { index } = e.currentTarget.dataset;
+    console.log('减少数量:', { index, selectedItems: this.data.selectedItems });
+
+    const selectedItems = [...this.data.selectedItems];
+    if (!selectedItems[index]) {
+      console.error('项目不存在:', index);
+      wx.showToast({
+        title: '项目不存在',
+        icon: 'none'
+      });
+      return;
+    }
+
+    if (selectedItems[index].quantity > 1) {
+      selectedItems[index].quantity -= 1;
+      this.setData({ selectedItems });
+      this.updateTotal();
+    }
+  },
+
+  // 增加数量
+  onIncreaseQuantity(e) {
+    const { index } = e.currentTarget.dataset;
+    console.log('增加数量:', { index, selectedItems: this.data.selectedItems });
+
+    const selectedItems = [...this.data.selectedItems];
+    if (!selectedItems[index]) {
+      console.error('项目不存在:', index);
+      wx.showToast({
+        title: '项目不存在',
+        icon: 'none'
+      });
+      return;
+    }
+
+    selectedItems[index].quantity += 1;
 
     this.setData({ selectedItems });
     this.updateTotal();
@@ -275,6 +367,16 @@ Page({
         quoteImages: uploadedQuoteImages
       };
 
+      // 如果确认了预约时间，则包含在报价数据中
+      if (this.data.appointmentConfirmed && this.data.order.appointmentAt) {
+        quoteData.confirmedAppointmentAt = this.data.order.appointmentAt;
+        console.log('========== 提交报价 ==========');
+        console.log('确认的预约时间:', this.data.order.appointmentAt);
+        console.log('预约时间文本:', this.data.order.appointmentAtText);
+        console.log('提交的数据:', quoteData);
+        console.log('============================');
+      }
+
       const response = await request.post(`/orders/${orderId}/quote`, quoteData);
 
       wx.hideLoading();
@@ -330,6 +432,191 @@ Page({
           reject(error);
         }
       });
+    });
+  },
+
+  // 生成可选时间段
+  generateTimeSlots() {
+    const now = new Date();
+    const slots = [];
+
+    // 今天下午（如果当前时间早于15点）
+    const thisAfternoon = new Date(now);
+    thisAfternoon.setHours(15, 0, 0, 0);
+    if (now.getHours() < 15) {
+      slots.push({
+        time: thisAfternoon.toISOString(),
+        displayTime: '今天 15:00',
+        description: '今天下午'
+      });
+    }
+
+    // 明天上午
+    const tomorrowMorning = new Date(now);
+    tomorrowMorning.setDate(tomorrowMorning.getDate() + 1);
+    tomorrowMorning.setHours(10, 0, 0, 0);
+    slots.push({
+      time: tomorrowMorning.toISOString(),
+      displayTime: '明天 10:00',
+      description: '明天上午'
+    });
+
+    // 明天下午
+    const tomorrowAfternoon = new Date(now);
+    tomorrowAfternoon.setDate(tomorrowAfternoon.getDate() + 1);
+    tomorrowAfternoon.setHours(15, 0, 0, 0);
+    slots.push({
+      time: tomorrowAfternoon.toISOString(),
+      displayTime: '明天 15:00',
+      description: '明天下午'
+    });
+
+    // 后天上午
+    const dayAfterMorning = new Date(now);
+    dayAfterMorning.setDate(dayAfterMorning.getDate() + 2);
+    dayAfterMorning.setHours(10, 0, 0, 0);
+    slots.push({
+      time: dayAfterMorning.toISOString(),
+      displayTime: '后天 10:00',
+      description: '后天上午'
+    });
+
+    // 后天下午
+    const dayAfterAfternoon = new Date(now);
+    dayAfterAfternoon.setDate(dayAfterAfternoon.getDate() + 2);
+    dayAfterAfternoon.setHours(15, 0, 0, 0);
+    slots.push({
+      time: dayAfterAfternoon.toISOString(),
+      displayTime: '后天 15:00',
+      description: '后天下午'
+    });
+
+    this.setData({
+      availableTimeSlots: slots
+    });
+  },
+
+  // 确认预约时间（使用系统建议时间）
+  onConfirmAppointment() {
+    const appointmentAt = this.data.order.appointmentAt;
+    const appointmentAtText = this.formatAppointmentTime(appointmentAt);
+
+    this.setData({
+      appointmentConfirmed: true,
+      finalAppointmentTime: appointmentAtText
+    });
+
+    wx.showToast({
+      title: '已确认预约时间',
+      icon: 'success'
+    });
+  },
+
+  // 打开时间调整器
+  onOpenTimeAdjuster() {
+    console.log('打开时间调整器');
+    console.log('当前订单时间:', this.data.order.appointmentAt);
+    console.log('当前订单时间类型:', typeof this.data.order.appointmentAt);
+
+    // 将当前时间转换为 ISO 字符串格式（与 generateTimeSlots 生成的格式一致）
+    let currentTimeSlot = '';
+    if (this.data.order.appointmentAt) {
+      const currentDate = new Date(this.data.order.appointmentAt);
+      currentTimeSlot = currentDate.toISOString();
+      console.log('转换后的ISO时间:', currentTimeSlot);
+    }
+
+    this.setData({
+      showTimeAdjuster: true,
+      selectedTimeSlot: currentTimeSlot
+    });
+
+    console.log('初始选择的时间段:', this.data.selectedTimeSlot);
+  },
+
+  // 关闭时间调整器
+  onCloseTimeAdjuster() {
+    console.log('关闭时间调整器');
+    this.setData({
+      showTimeAdjuster: false
+    });
+  },
+
+  // 选择时间段
+  onSelectTimeSlot(e) {
+    const { time } = e.currentTarget.dataset;
+    console.log('选择时间段:', time);
+
+    // 找到对应的时间段信息，用于显示
+    const timeSlot = this.data.availableTimeSlots.find(slot => slot.time === time);
+    const displayText = timeSlot ? timeSlot.displayTime : '';
+
+    this.setData({
+      selectedTimeSlot: time,
+      selectedTimeDisplayText: displayText
+    });
+
+    // 给用户一个提示，知道已经选中了
+    wx.showToast({
+      title: '已选择，请点击确定',
+      icon: 'success',
+      duration: 1000
+    });
+  },
+
+  // 确认调整时间
+  onConfirmAdjustTime() {
+    console.log('===== 点击了确定按钮 =====');
+
+    if (!this.data.selectedTimeSlot) {
+      console.log('错误：没有选择时间');
+      wx.showToast({
+        title: '请选择时间',
+        icon: 'none'
+      });
+      return;
+    }
+
+    console.log('========== 确认调整时间 ==========');
+    console.log('当前选择的时间段:', this.data.selectedTimeSlot);
+    console.log('当前选择的时间段类型:', typeof this.data.selectedTimeSlot);
+    console.log('当前的订单对象:', this.data.order);
+
+    if (!this.data.selectedTimeSlot) {
+      wx.showToast({
+        title: '请选择时间',
+        icon: 'none'
+      });
+      return;
+    }
+
+    const appointmentAtText = this.formatAppointmentTime(this.data.selectedTimeSlot);
+
+    console.log('格式化后的时间文本:', appointmentAtText);
+
+    // 更新订单数据和界面显示
+    const order = { ...this.data.order };
+    order.appointmentAt = this.data.selectedTimeSlot;  // 保存 ISO 字符串格式
+    order.appointmentAtText = appointmentAtText;
+
+    console.log('准备更新的订单对象:', order);
+
+    this.setData({
+      appointmentConfirmed: true,
+      finalAppointmentTime: appointmentAtText,
+      showTimeAdjuster: false,
+      order: order
+    }, () => {
+      // setData 回调中验证更新
+      console.log('setData成功，验证数据:');
+      console.log('更新后的order.appointmentAt:', this.data.order.appointmentAt);
+      console.log('更新后的order.appointmentAtText:', this.data.order.appointmentAtText);
+      console.log('==================================');
+    });
+
+    wx.showToast({
+      title: '预约时间已调整',
+      icon: 'success'
     });
   }
 });

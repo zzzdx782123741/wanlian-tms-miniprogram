@@ -3,139 +3,456 @@
 
 .detail-container {
   min-height: 100vh;
-  padding: var(--spacing-md);
-  background: var(--color-bg-page);
+  padding: 24rpx;
+  padding-bottom: 180rpx;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 /* 状态区域 */
 .status-section {
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-md);
+  background: white;
+  border-radius: 20rpx;
+  padding: 40rpx 32rpx;
+  margin-bottom: 24rpx;
   text-align: center;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
 }
 
 .status-badge {
   display: inline-block;
-  padding: 16rpx 32rpx;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--spacing-sm);
+  padding: 16rpx 40rpx;
+  border-radius: 40rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  margin-bottom: 16rpx;
 }
 
-.status-PENDING {
-  background: rgba(148, 163, 184, 0.1);
-  color: var(--color-text-tertiary);
+.status-warning {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
 }
 
-.status-QUOTED {
-  background: rgba(6, 182, 212, 0.1);
-  color: var(--color-info);
+.status-info {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
 }
 
-.status-PENDING_APPROVAL {
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--color-warning);
+.status-primary {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4338ca;
 }
 
-.status-APPROVED {
-  background: rgba(37, 99, 235, 0.1);
-  color: var(--color-primary);
+.status-success {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
 }
 
-.status-IN_TRANSIT {
-  background: rgba(37, 99, 235, 0.1);
-  color: var(--color-primary);
-}
-
-.status-COMPLETED {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--color-success);
-}
-
-.status-CANCELLED {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--color-error);
+.status-error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
 }
 
 .status-tip {
   display: block;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  font-size: 28rpx;
+  color: #64748b;
+  margin-top: 12rpx;
+  margin-bottom: 8rpx;
+  line-height: 1.6;
 }
 
-/* 信息区域 */
-.order-section,
-.quote-section,
-.transport-section {
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-md);
+.order-time {
+  display: block;
+  font-size: 24rpx;
+  color: #94a3b8;
+  margin-top: 8rpx;
+}
+
+/* 订单区块 */
+.order-section {
+  background: white;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
 }
 
 .section-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--color-border-light);
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 24rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+/* 车辆信息卡片 */
+.vehicle-card {
+  background: #f8fafc;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.vehicle-plate {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: #1e293b;
+  text-align: center;
+  letter-spacing: 4rpx;
+  margin-bottom: 20rpx;
+  padding: 16rpx;
+  background: white;
+  border-radius: 12rpx;
+  border: 2rpx solid #e2e8f0;
+}
+
+.vehicle-details {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 16rpx;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.detail-label {
+  font-size: 24rpx;
+  color: #64748b;
+}
+
+.detail-value {
+  font-size: 28rpx;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* 故障信息卡片 */
+.fault-card {
+  background: #f8fafc;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.fault-description {
+  font-size: 30rpx;
+  color: #334155;
+  line-height: 1.8;
+  margin-bottom: 20rpx;
+  padding: 20rpx;
+  background: white;
+  border-radius: 12rpx;
+  border-left: 6rpx solid #667eea;
+}
+
+/* 媒体网格 */
+.media-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.media-item {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 12rpx;
+  object-fit: cover;
+}
+
+/* 里程信息 */
+.mileage-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  background: white;
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.mileage-label {
+  font-size: 28rpx;
+  color: #64748b;
+}
+
+.mileage-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #667eea;
+}
+
+/* 照片网格 */
+.mileage-photos,
+.check-photos,
+.quote-photos,
+.log-images {
+  margin-top: 16rpx;
+}
+
+.photos-label {
+  font-size: 26rpx;
+  color: #64748b;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.photos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.mileage-photo,
+.check-photo,
+.quote-photo,
+.log-image {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 12rpx;
+  object-fit: cover;
+}
+
+/* 信息卡片 */
+.info-card {
+  background: #f8fafc;
+  border-radius: 16rpx;
+  padding: 8rpx 0;
 }
 
 .info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-sm) 0;
-  border-bottom: 1px solid var(--color-border-light);
+  padding: 20rpx 24rpx;
+  border-bottom: 1rpx solid #e2e8f0;
 }
 
 .info-row:last-child {
   border-bottom: none;
 }
 
-.info-row .label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+.info-label {
+  font-size: 28rpx;
+  color: #64748b;
 }
 
-.value-with-action {
+.info-value {
+  font-size: 28rpx;
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+  flex: 1;
+  margin-left: 24rpx;
+}
+
+.info-value.phone {
+  color: #667eea;
+}
+
+/* 接车检查卡片 */
+.check-card {
+  background: #f8fafc;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.check-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16rpx 20rpx;
+  background: white;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.check-label {
+  font-size: 28rpx;
+  color: #64748b;
+}
+
+.check-value {
+  font-size: 28rpx;
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+  flex: 1;
+  margin-left: 24rpx;
+  line-height: 1.6;
+}
+
+/* 报价卡片 */
+.quote-card {
+  background: #f8fafc;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.quote-items {
+  margin-bottom: 24rpx;
+}
+
+.quote-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  background: white;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.item-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.item-details {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 16rpx;
 }
 
-.info-row .value {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
+.item-price {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #dc2626;
 }
 
-.info-row .value.price {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-cta);
+.item-quantity {
+  font-size: 24rpx;
+  color: #64748b;
 }
 
-.copy-btn {
-  font-size: var(--font-size-xs);
-  color: var(--color-primary);
-  padding: 4rpx 12rpx;
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-sm);
+.quote-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12rpx;
+  margin-top: 16rpx;
 }
 
-/* 操作区域 */
+.total-label {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: white;
+}
+
+.total-price {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: white;
+}
+
+/* 维修日志卡片 */
+.logs-card {
+  background: #f8fafc;
+  border-radius: 16rpx;
+  padding: 20rpx;
+}
+
+.log-item {
+  background: white;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.log-item:last-child {
+  margin-bottom: 0;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+  padding-bottom: 12rpx;
+  border-bottom: 1rpx solid #f1f5f9;
+}
+
+.log-operator {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.log-time {
+  font-size: 24rpx;
+  color: #94a3b8;
+}
+
+.log-content {
+  font-size: 28rpx;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.log-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+/* 操作按钮区域 */
 .action-section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
+  gap: 16rpx;
+  padding: 24rpx;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 2rpx solid #e2e8f0;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
 }
 
 .action-btn {
   width: 100%;
-  font-size: var(--font-size-base);
-  padding: var(--spacing-md);
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+  transition: all 0.2s;
+}
+
+.action-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 8rpx 16rpx rgba(102, 126, 234, 0.3);
+}
+
+.action-btn-primary:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+.action-btn-secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 2rpx solid #e2e8f0;
+}
+
+.action-btn-secondary:active {
+  background: #e2e8f0;
 }
 
 /* 加载状态 */
@@ -143,6 +460,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--spacing-3xl);
-  color: var(--color-text-tertiary);
+  padding: 120rpx;
+  font-size: 28rpx;
+  color: #64748b;
 }

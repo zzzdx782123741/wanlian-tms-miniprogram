@@ -12,10 +12,28 @@ Page({
   },
 
   onLoad(options) {
+    // 技师角色隐藏底部导航栏的"车辆"标签
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo?.role?.type === 'STORE_TECHNICIAN') {
+      wx.hideTabBar({
+        animation: false
+      });
+    }
+
     this.setData({
       orderId: options.orderId
     });
     this.loadProducts();
+  },
+
+  onShow() {
+    // 技师角色每次显示页面时隐藏底部导航栏
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo?.role?.type === 'STORE_TECHNICIAN') {
+      wx.hideTabBar({
+        animation: false
+      });
+    }
   },
 
   // 搜索输入（带防抖）

@@ -1,0 +1,332 @@
+<!--pages/auth/store-register/store-register.wxml-->
+<view class="store-register-container">
+  <!-- 顶部标题 -->
+  <view class="header-section">
+    <text class="header-title">门店注册</text>
+    <text class="header-subtitle">完成以下步骤，加入万联驿站2.0</text>
+  </view>
+
+  <!-- 步骤指示器 -->
+  <view class="steps-container">
+    <view class="steps-wrapper">
+      <view class="step-item" wx:for="{{steps}}" wx:key="index">
+        <view class="step-circle {{currentStep >= index ? 'active' : ''}}">
+          <text wx:if="{{currentStep > index}}">✓</text>
+          <text wx:else>{{index + 1}}</text>
+        </view>
+        <view class="step-line" wx:if="{{index < steps.length - 1}}" class="{{currentStep > index ? 'active' : ''}}"></view>
+      </view>
+    </view>
+    <view class="step-labels">
+      <text class="step-label {{currentStep === index ? 'active' : ''}}" wx:for="{{steps}}" wx:key="index">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- 步骤1：基本信息 -->
+  <view class="form-container" wx:if="{{currentStep === 0}}">
+    <view class="form-card glass-card">
+      <view class="card-title">基本信息</view>
+
+      <view class="form-item">
+        <text class="label required">门店名称</text>
+        <input class="input-field" placeholder="请输入门店名称" value="{{formData.name}}" bindinput="onNameInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label required">门店类型</text>
+        <picker class="picker" mode="selector" range="{{storeTypes}}" range-key="label" value="{{storeTypeIndex}}" bindchange="onStoreTypeChange">
+          <view class="picker-text">{{storeTypes[storeTypeIndex].label}}</view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label required">联系人姓名</text>
+        <input class="input-field" placeholder="请输入联系人姓名" value="{{formData.contact.name}}" bindinput="onContactNameInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label required">联系电话</text>
+        <input class="input-field" type="number" placeholder="请输入联系电话" value="{{formData.contact.phone}}" bindinput="onContactPhoneInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">备用联系电话</text>
+        <input class="input-field" type="number" placeholder="请输入备用联系电话" value="{{formData.contact.backupPhone}}" bindinput="onBackupPhoneInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label required">详细地址</text>
+        <textarea class="textarea-field" placeholder="请输入详细地址" value="{{formData.address.detail}}" bindinput="onAddressInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label required">营业时间</text>
+        <input class="input-field" placeholder="如：8:00-18:00" value="{{formData.businessHours}}" bindinput="onBusinessHoursInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">服务范围（公里）</text>
+        <input class="input-field" type="number" placeholder="请输入服务范围" value="{{formData.serviceRange}}" bindinput="onServiceRangeInput" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤2：资质信息 -->
+  <view class="form-container" wx:if="{{currentStep === 1}}">
+    <view class="form-card glass-card">
+      <view class="card-title">资质信息</view>
+
+      <view class="form-item">
+        <text class="label required">营业执照号码</text>
+        <input class="input-field" placeholder="请输入营业执照号码" value="{{formData.businessLicense.number}}" bindinput="onLicenseNumberInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label required">营业执照照片</text>
+        <view class="upload-section">
+          <button class="upload-btn" wx:if="{{!formData.businessLicense.url}}" bindtap="chooseBusinessLicense">
+            <text class="icon">📷</text>
+            <text>点击上传</text>
+          </button>
+          <view class="uploaded-preview" wx:else>
+            <image class="preview-image" src="{{formData.businessLicense.url}}" mode="aspectFill" bindtap="previewImage" data-url="{{formData.businessLicense.url}}" />
+            <view class="remove-btn" bindtap="removeBusinessLicense">✕</view>
+          </view>
+          <text class="upload-tip">支持jpg/png格式，大小不超过5MB</text>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">组织机构代码证</text>
+        <input class="input-field" placeholder="选填，如有请填写" value="{{formData.organizationCode.number}}" bindinput="onOrgCodeNumberInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">道路运输许可证号</text>
+        <input class="input-field" placeholder="选填，如有请填写" value="{{formData.transportLicense.number}}" bindinput="onTransportNumberInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">维修资质备案表号</text>
+        <input class="input-field" placeholder="选填，如有请填写" value="{{formData.repairLicense.number}}" bindinput="onRepairLicenseNumberInput" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤3：服务能力 -->
+  <view class="form-container" wx:if="{{currentStep === 2}}">
+    <view class="form-card glass-card">
+      <view class="card-title">服务能力</view>
+
+      <view class="form-item">
+        <text class="label">服务类型</text>
+        <checkbox-group bindchange="onServiceTypeChange">
+          <label class="checkbox-label" wx:for="{{serviceTypes}}" wx:key="value">
+            <checkbox value="{{item.value}}" checked="{{formData.serviceCapabilities.serviceTypes.includes(item.value)}}" />
+            <text>{{item.label}}</text>
+          </label>
+        </checkbox-group>
+      </view>
+
+      <view class="form-item">
+        <text class="label">品牌专长</text>
+        <textarea class="textarea-field" placeholder="请输入品牌专长，多个用逗号分隔" value="{{brandSpecialtiesText}}" bindinput="onBrandSpecialtiesInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">主修车型</text>
+        <textarea class="textarea-field" placeholder="请输入主修车型，多个用逗号分隔" value="{{mainModelsText}}" bindinput="onMainModelsInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">人员配置</text>
+        <view class="staff-input-group">
+          <view class="staff-row">
+            <text class="staff-label">高级技师</text>
+            <input class="staff-input" type="number" value="{{formData.serviceCapabilities.staffing.seniorTechnicians}}" bindinput="onSeniorTechniciansInput" />
+            <text class="staff-unit">人</text>
+          </view>
+          <view class="staff-row">
+            <text class="staff-label">技师</text>
+            <input class="staff-input" type="number" value="{{formData.serviceCapabilities.staffing.technicians}}" bindinput="onTechniciansInput" />
+            <text class="staff-unit">人</text>
+          </view>
+          <view class="staff-row">
+            <text class="staff-label">技工</text>
+            <input class="staff-input" type="number" value="{{formData.serviceCapabilities.staffing.workers}}" bindinput="onWorkersInput" />
+            <text class="staff-unit">人</text>
+          </view>
+          <view class="staff-row">
+            <text class="staff-label">学徒</text>
+            <input class="staff-input" type="number" value="{{formData.serviceCapabilities.staffing.apprentices}}" bindinput="onApprenticesInput" />
+            <text class="staff-unit">人</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">日接车能力</text>
+        <view class="capacity-input-group">
+          <view class="capacity-row">
+            <text class="capacity-label">最大接车量</text>
+            <input class="capacity-input" type="number" value="{{formData.serviceCapabilities.dailyCapacity.maxOrders}}" bindinput="onMaxOrdersInput" />
+            <text class="capacity-unit">台/天</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤4：定价信息 -->
+  <view class="form-container" wx:if="{{currentStep === 3}}">
+    <view class="form-card glass-card">
+      <view class="card-title">定价信息</view>
+
+      <view class="form-item">
+        <text class="label">小修工时费</text>
+        <view class="price-input-group">
+          <input class="price-input" type="digit" placeholder="0.00" value="{{formData.pricingInfo.laborRates.minorRepair}}" bindinput="onMinorRepairInput" />
+          <text class="price-unit">元/小时</text>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">中修工时费</text>
+        <view class="price-input-group">
+          <input class="price-input" type="digit" placeholder="0.00" value="{{formData.pricingInfo.laborRates.mediumRepair}}" bindinput="onMediumRepairInput" />
+          <text class="price-unit">元/小时</text>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">大修工时费</text>
+        <view class="price-input-group">
+          <input class="price-input" type="digit" placeholder="0.00" value="{{formData.pricingInfo.laborRates.majorRepair}}" bindinput="onMajorRepairInput" />
+          <text class="price-unit">元/小时</text>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">服务费</text>
+        <view class="price-input-group">
+          <input class="price-input" type="digit" placeholder="0.00" value="{{formData.pricingInfo.serviceFee}}" bindinput="onServiceFeeInput" />
+          <text class="price-unit">元</text>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">附加费用说明</text>
+        <textarea class="textarea-field" placeholder="请输入附加费用说明" value="{{formData.pricingInfo.additionalFeeNote}}" bindinput="onAdditionalFeeNoteInput" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤5：结算信息 -->
+  <view class="form-container" wx:if="{{currentStep === 4}}">
+    <view class="form-card glass-card">
+      <view class="card-title">结算信息</view>
+
+      <view class="form-item">
+        <text class="label required">开户银行</text>
+        <input class="input-field" placeholder="请输入开户银行" value="{{formData.bankAccount.bankName}}" bindinput="onBankNameInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label required">银行账号</text>
+        <input class="input-field" placeholder="请输入银行账号" value="{{formData.bankAccount.accountNumber}}" bindinput="onAccountNumberInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label required">开户名称</text>
+        <input class="input-field" placeholder="请输入开户名称" value="{{formData.bankAccount.accountName}}" bindinput="onAccountNameInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">结算周期</text>
+        <radio-group bindchange="onSettlementCycleChange">
+          <label class="radio-label" wx:for="{{settlementCycles}}" wx:key="value">
+            <radio value="{{item.value}}" checked="{{formData.bankAccount.settlementCycle === item.value}}" />
+            <text>{{item.label}}</text>
+          </label>
+        </radio-group>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤6：管理员账号 -->
+  <view class="form-container" wx:if="{{currentStep === 5}}">
+    <view class="form-card glass-card">
+      <view class="card-title">管理员账号</view>
+
+      <view class="tips-info">
+        <text class="tips-icon">ℹ️</text>
+        <text class="tips-text">请填写门店管理员账号信息，审核通过后将使用此账号登录系统</text>
+      </view>
+
+      <view class="form-item">
+        <text class="label required">登录账号</text>
+        <input class="input-field" type="number" placeholder="请输入手机号作为登录账号" value="{{formData.adminPhone}}" bindinput="onAdminPhoneInput" />
+      </view>
+
+      <view class="form-item">
+        <text class="label required">管理员姓名</text>
+        <input class="input-field" placeholder="请输入管理员姓名" value="{{formData.adminName}}" bindinput="onAdminNameInput" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤7：确认提交 -->
+  <view class="form-container" wx:if="{{currentStep === 6}}">
+    <view class="form-card glass-card">
+      <view class="card-title">确认信息</view>
+
+      <view class="confirm-section">
+        <view class="confirm-item">
+          <text class="confirm-label">门店名称</text>
+          <text class="confirm-value">{{formData.name}}</text>
+        </view>
+
+        <view class="confirm-item">
+          <text class="confirm-label">门店类型</text>
+          <text class="confirm-value">{{storeTypes[storeTypeIndex].label}}</text>
+        </view>
+
+        <view class="confirm-item">
+          <text class="confirm-label">联系人</text>
+          <text class="confirm-value">{{formData.contact.name}} / {{formData.contact.phone}}</text>
+        </view>
+
+        <view class="confirm-item">
+          <text class="confirm-label">地址</text>
+          <text class="confirm-value">{{formData.address.detail}}</text>
+        </view>
+
+        <view class="confirm-item">
+          <text class="confirm-label">营业时间</text>
+          <text class="confirm-value">{{formData.businessHours}}</text>
+        </view>
+
+        <view class="confirm-item">
+          <text class="confirm-label">管理员账号</text>
+          <text class="confirm-value">{{formData.adminPhone}}</text>
+        </view>
+      </view>
+
+      <view class="agreement-section">
+        <checkbox-group bindchange="onAgreementChange">
+          <label class="agreement-label">
+            <checkbox value="agree" checked="{{agreedToTerms}}" />
+            <text>我已阅读并同意《万联驿站门店注册协议》</text>
+          </label>
+        </checkbox-group>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="action-btn secondary" wx:if="{{currentStep > 0}}" bindtap="handlePrev">上一步</button>
+    <button class="action-btn primary" wx:if="{{currentStep < 6}}" bindtap="handleNext">下一步</button>
+    <button class="action-btn primary" wx:if="{{currentStep === 6}}" loading="{{submitting}}" bindtap="handleSubmit">提交注册</button>
+  </view>
+</view>

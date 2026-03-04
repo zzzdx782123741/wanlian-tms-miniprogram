@@ -5,6 +5,7 @@ Page({
   data: {
     vehicleId: '',
     vehicle: null,
+    repairRecords: [],
     loading: false
   },
 
@@ -14,6 +15,7 @@ Page({
         vehicleId: options.id
       });
       this.loadVehicleDetail();
+      this.loadRepairRecords();
     }
   },
 
@@ -36,6 +38,59 @@ Page({
         icon: 'none'
       });
     }
+  },
+
+  // 加载维修记录
+  async loadRepairRecords() {
+    try {
+      const res = await request.get('/orders', { vehicleId: this.data.vehicleId });
+      const repairRecords = res.data?.orders || [];
+
+      this.setData({
+        repairRecords: this.formatRepairRecords(repairRecords)
+      });
+    } catch (error) {
+      console.error('加载维修记录失败:', error);
+    }
+  },
+
+  // 格式化维修记录
+  formatRepairRecords(records) {
+    const statusMap = {
+      'awaiting_fleet_approval': '待车队审批',
+      'pending_assessment': '待评估',
+      'awaiting_approval': '待审批报价',
+      'in_repair': '维修中',
+      'awaiting_addon_approval': '增项审批中',
+      'completed': '待确认',
+      'confirmed': '已完成',
+      'rejected': '已拒绝'
+    };
+
+    return records.map(record => ({
+      ...record,
+      statusText: statusMap[record.status] || record.status,
+      createdAtText: this.formatDate(record.createdAt),
+      typeText: record.type === 'maintenance' ? '保养' : '维修'
+    }));
+  },
+
+  // 格式化日期
+  formatDate(timestamp) {
+    if (!timestamp) return '';
+    const d = new Date(timestamp);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  },
+
+  // 查看订单详情
+  viewOrderDetail(e) {
+    const id = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/order-detail/order-detail?id=${id}`
+    });
   },
 
   // 编辑车辆

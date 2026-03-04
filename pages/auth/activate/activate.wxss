@@ -1,0 +1,206 @@
+/* pages/auth/activate/activate.wxss */
+.activate-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60rpx 30rpx 40rpx;
+}
+
+/* 顶部标题 */
+.header-section {
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.header-title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 16rpx;
+}
+
+.header-subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 提示卡片 */
+.tips-card {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  align-items: flex-start;
+  backdrop-filter: blur(10px);
+}
+
+.tips-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+}
+
+.tips-content {
+  flex: 1;
+}
+
+.tips-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 12rpx;
+}
+
+.tips-text {
+  display: block;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+/* 表单卡片 */
+.form-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 50rpx 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.form-item {
+  margin-bottom: 40rpx;
+}
+
+.form-item:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.label.required::before {
+  content: '*';
+  color: #ff4d4f;
+  margin-right: 8rpx;
+}
+
+.input-field {
+  width: 100%;
+  height: 88rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* 验证码输入组 */
+.code-input-group {
+  display: flex;
+  gap: 20rpx;
+}
+
+.code-input {
+  flex: 1;
+  height: 88rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+}
+
+.code-btn {
+  width: 200rpx;
+  height: 88rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.code-btn[disabled] {
+  background: #d9d9d9;
+  color: #999;
+}
+
+/* 激活按钮 */
+.activate-btn {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+  margin-top: 20rpx;
+}
+
+.activate-btn[disabled] {
+  background: #d9d9d9;
+  color: #999;
+}
+
+/* 帮助卡片 */
+.help-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.help-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.help-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.help-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+  padding-left: 20rpx;
+  position: relative;
+}
+
+.help-text::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #999;
+}
+
+/* 重新登录 */
+.relogin-section {
+  text-align: center;
+  margin-top: 40rpx;
+}
+
+.relogin-text {
+  font-size: 28rpx;
+  color: #fff;
+}
+
+.relogin-link {
+  font-size: 28rpx;
+  color: #fff;
+  text-decoration: underline;
+  margin-left: 8rpx;
+}

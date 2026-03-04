@@ -7,12 +7,18 @@ Page({
     // 车辆信息
     vehicle: null,
 
-    // 服务地址
+    // 我的位置
     serviceLocation: {
       address: '',
       latitude: null,
       longitude: null
     },
+
+    // 当前里程
+    milestone: '',
+
+    // 里程照片
+    milestonePhotos: [],
 
     // 保养类型
     maintenanceTypes: [],
@@ -39,7 +45,7 @@ Page({
 
     // 车队配置
     fleetConfig: {
-      allowDriverSelectStore: false,
+      allowDriverSelectStore: true, // 保养申请默认司机选门店
       maintenanceProductPermission: 'fleet_control',
       maintenanceBudgetThreshold: 5000
     },
@@ -210,7 +216,7 @@ Page({
   loadAddress(latitude, longitude) {
     const that = this;
 
-    // 使用微信原生API获取地址（如果可用）或使用经纬度
+    // 先设置默认地址（使用经纬度）
     that.setData({
       'serviceLocation.address': `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
       'serviceLocation.latitude': latitude,
@@ -219,22 +225,7 @@ Page({
 
     // 如果需要更精确的地址，可以使用微信的逆地理编码API
     // 这里简化处理，直接使用经纬度
-      location: { latitude, longitude },
-      success: (res) => {
-        that.setData({
-          'serviceLocation.address': res.result.address,
-          'serviceLocation.latitude': latitude,
-          'serviceLocation.longitude': longitude
-        });
-      },
-      fail: () => {
-        that.setData({
-          'serviceLocation.address': `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
-          'serviceLocation.latitude': latitude,
-          'serviceLocation.longitude': longitude
-        });
-      }
-    });
+    // 注意：真机环境下不支持对象属性简写语法
   },
 
   /**
@@ -309,7 +300,7 @@ Page({
   },
 
   /**
-   * 修改服务地址
+   * 修改我的位置
    */
   onChangeLocation() {
     const that = this;
@@ -323,6 +314,56 @@ Page({
           'serviceLocation.longitude': longitude
         });
       }
+    });
+  },
+
+  /**
+   * 输入里程
+   */
+  onMilestoneInput(e) {
+    this.setData({
+      milestone: e.detail.value
+    });
+  },
+
+  /**
+   * 添加里程照片
+   */
+  onAddMilestonePhoto() {
+    const that = this;
+    wx.chooseMedia({
+      count: 3 - that.data.milestonePhotos.length,
+      mediaType: ['image'],
+      sourceType: ['camera', 'album'],
+      success: (res) => {
+        const photos = res.tempFiles.map(file => file.tempFilePath);
+        that.setData({
+          milestonePhotos: that.data.milestonePhotos.concat(photos)
+        });
+      }
+    });
+  },
+
+  /**
+   * 删除里程照片
+   */
+  onDeletePhoto(e) {
+    const index = parseInt(e.currentTarget.dataset.index);
+    const photos = this.data.milestonePhotos;
+    photos.splice(index, 1);
+    this.setData({
+      milestonePhotos: photos
+    });
+  },
+
+  /**
+   * 预览照片
+   */
+  onPreviewPhoto(e) {
+    const url = e.currentTarget.dataset.url;
+    wx.previewImage({
+      current: url,
+      urls: this.data.milestonePhotos
     });
   },
 
@@ -416,6 +457,24 @@ Page({
       return;
     }
 
+    // 验证里程
+    if (!this.data.milestone || this.data.milestone <= 0) {
+      wx.showToast({
+        title: '请输入当前里程',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 验证里程照片
+    if (this.data.milestonePhotos.length === 0) {
+      wx.showToast({
+        title: '请拍摄里程照片',
+        icon: 'none'
+      });
+      return;
+    }
+
     // 验证保养类型
     if (this.data.selectedTypeIndex === -1) {
       wx.showToast({
@@ -437,32 +496,64 @@ Page({
     const type = this.data.maintenanceTypes[this.data.selectedTypeIndex];
     const pkg = this.data.recommendedPackages[this.data.selectedPackageIndex];
 
-    // 构建请求数据
-    const data = {
-      vehicleId: this.data.vehicle._id,
-      maintenanceTypeId: type._id,
-      serviceLocation: this.data.serviceLocation,
-      preferredTime: this.data.preferredDate && this.data.preferredTimeSlot
-        ? `${this.data.preferredDate} ${this.data.preferredTimeSlot}`
-        : undefined,
-      driverRemark: this.data.driverRemark
-    };
-
-    // 根据权限添加不同字段
-    if (this.data.fleetConfig.maintenanceProductPermission === 'driver_select') {
-      // 司机有商品选择权限
-      if (pkg) {
-        data.packageId = pkg._id;
-      }
-    } else {
-      // 司机无权限，选择档位
-      const tiers = ['基础', '标准', '高级', '尊享'];
-      data.selectedTier = tiers[this.data.selectedTierIndex];
-    }
-
-    this.setData({ submitting: true });
+    // 先上传照片
+    wx.showLoading({ title: '上传照片中...' });
 
     try {
+      const uploadedPhotos = [];
+
+      for (const photoPath of this.data.milestonePhotos) {
+        const uploadRes = await new Promise((resolve, reject) => {
+          wx.uploadFile({
+            url: request.getServerUrl() + '/api/upload',
+            filePath: photoPath,
+            name: 'file',
+            header: {
+              'Authorization': 'Bearer ' + wx.getStorageSync('token')
+            },
+            success: resolve,
+            fail: reject
+          });
+        });
+
+        const data = JSON.parse(uploadRes.data);
+        if (data.success && data.data.url) {
+          uploadedPhotos.push(data.data.url);
+        }
+      }
+
+      wx.hideLoading();
+
+      // 构建请求数据
+      const data = {
+        vehicleId: this.data.vehicle._id,
+        maintenanceTypeId: type._id,
+        milestone: parseInt(this.data.milestone),
+        milestonePhotos: uploadedPhotos,
+        serviceLocation: this.data.serviceLocation,
+        appointment: this.data.preferredDate && this.data.preferredTimeSlot
+          ? {
+              expectedDate: this.data.preferredDate,
+              expectedTimeSlot: this.data.preferredTimeSlot
+            }
+          : undefined,
+        driverRemark: this.data.driverRemark
+      };
+
+      // 根据权限添加不同字段
+      if (this.data.fleetConfig.maintenanceProductPermission === 'driver_select') {
+        // 司机有商品选择权限
+        if (pkg) {
+          data.packageId = pkg._id;
+        }
+      } else {
+        // 司机无权限，选择档位
+        const tiers = ['基础', '标准', '高级', '尊享'];
+        data.selectedTier = tiers[this.data.selectedTierIndex];
+      }
+
+      this.setData({ submitting: true });
+
       await request.post('/maintenance/driver/apply', data);
 
       wx.showToast({
@@ -475,6 +566,7 @@ Page({
       }, 1500);
     } catch (error) {
       console.error('提交失败:', error);
+      wx.hideLoading();
       wx.showToast({
         title: error.message || '提交失败',
         icon: 'none'

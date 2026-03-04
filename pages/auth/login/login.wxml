@@ -1,50 +1,21 @@
-<!--pages/auth/login.wxml-->
+<!-- pages/auth/login/login.wxml -->
 <view class="login-container">
-  <!-- Logo区域 -->
   <view class="logo-section">
-    <view class="logo-placeholder">
+    <view class="logo-placeholder" bindlongpress="onOpenTestLogin">
       <text class="logo-text">万联</text>
     </view>
-    <text class="app-name">万联TMS</text>
+    <text class="app-name">万联驿站2.0</text>
     <text class="app-slogan">智慧物流管理系统</text>
   </view>
 
-  <!-- 开发模式切换 -->
-  <view class="dev-mode-section">
-    <view class="dev-mode-row" bindtap="toggleDevMode">
-      <text class="dev-mode-label">开发模式</text>
-      <switch checked="{{devMode}}" color="#1890ff" />
-    </view>
-  </view>
-
-  <!-- 开发模式：测试账号选择 -->
-  <view class="test-account-section" wx:if="{{devMode}}">
-    <view class="section-title">选择测试账号</view>
-    <picker
-      class="account-picker"
-      mode="selector"
-      range="{{accountList}}"
-      value="{{selectedAccountIndex}}"
-      bindchange="onAccountChange"
-    >
-      <view class="picker-display">
-        <text class="picker-text">{{accountList[selectedAccountIndex]}}</text>
-        <text class="picker-arrow">▼</text>
-      </view>
-    </picker>
-    <button class="test-login-btn" bindtap="testLogin">测试登录</button>
-  </view>
-
-  <!-- 微信授权登录 -->
   <view class="login-section">
     <button
-      class="wechat-login-btn glass-btn-cta"
+      class="wechat-login-btn"
       open-type="getUserInfo"
       bindgetuserinfo="onGetUserInfo"
-      disabled="{{loading || devMode}}"
+      disabled="{{loading}}"
     >
-      <text class="wechat-icon">💬</text>
-      <text>{{devMode ? '请使用测试登录' : '微信一键登录'}}</text>
+      <text class="wechat-label">微信一键登录</text>
     </button>
 
     <view class="tips">
@@ -52,6 +23,32 @@
       <text class="link-text">《用户协议》</text>
       <text class="tips-text">和</text>
       <text class="link-text">《隐私政策》</text>
+    </view>
+  </view>
+
+  <view class="test-login-mask" wx:if="{{showTestLogin}}" bindtap="onCloseTestLogin">
+    <view class="test-login-panel" catchtap="noop">
+      <view class="test-login-title">测试登录</view>
+      <view class="test-login-subtitle">仅开发/测试环境可用</view>
+
+      <input
+        class="test-input"
+        placeholder="请输入测试账号"
+        value="{{testUsername}}"
+        bindinput="onTestUsernameInput"
+      />
+      <input
+        class="test-input"
+        type="password"
+        placeholder="请输入测试密码"
+        value="{{testPassword}}"
+        bindinput="onTestPasswordInput"
+      />
+
+      <view class="test-actions">
+        <button class="test-cancel-btn" bindtap="onCloseTestLogin">取消</button>
+        <button class="test-submit-btn" loading="{{testLoading}}" disabled="{{testLoading}}" bindtap="onTestLogin">登录</button>
+      </view>
     </view>
   </view>
 </view>

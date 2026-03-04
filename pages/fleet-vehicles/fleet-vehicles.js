@@ -84,8 +84,23 @@ Page({
    */
   onViewOrders(e) {
     const vehicleId = e.currentTarget.dataset.vehicleId;
-    wx.navigateTo({
-      url: `/pages/orders/orders?vehicleId=${vehicleId}`
+    const vehiclePlate = e.currentTarget.dataset.vehiclePlate || '';
+    wx.setStorageSync('ordersVehicleFilter', {
+      vehicleId,
+      vehiclePlate,
+      from: 'fleet-vehicles',
+      ts: Date.now()
+    });
+
+    wx.switchTab({
+      url: '/pages/orders/orders',
+      fail: (err) => {
+        console.error('跳转订单页失败:', err);
+        wx.showToast({
+          title: '打开维修记录失败',
+          icon: 'none'
+        });
+      }
     });
   },
 

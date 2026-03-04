@@ -1,6 +1,1 @@
-{
-  "navigationBarTitleText": "账户余额",
-  "enablePullDownRefresh": true,
-  "backgroundTextStyle": "dark",
-  "backgroundColor": "#F5F7FA"
-}
+{"navigationBarTitleText":"我的","enablePullDownRefresh":true,"backgroundTextStyle":"dark","backgroundColor":"#F5F7FA"}

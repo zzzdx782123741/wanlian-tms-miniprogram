@@ -1,13 +1,15 @@
-<!--pages/orders/orders.wxml - 订单列表页面 - 现代化设计-->
 <view class="page">
-  <!-- 顶部标题栏 -->
   <view class="header">
     <view class="header-title">订单中心</view>
     <view class="header-subtitle">管理和追踪您的订单</view>
   </view>
 
-  <!-- 状态筛选标签 -->
-  <view class="filter-tabs">
+  <view class="vehicle-filter-chip" wx:if="{{filterVehicleId}}">
+    <text class="chip-label">车辆：{{filterVehiclePlate || filterVehicleId}}</text>
+    <text class="chip-action" bindtap="onClearVehicleFilter">清除</text>
+  </view>
+
+  <view class="filter-tabs {{filterVehicleId ? 'with-chip' : ''}}">
     <view
       class="tab-item {{activeTab === 'all' ? 'active' : ''}}"
       data-tab="all"
@@ -29,7 +31,7 @@
       data-tab="processing"
       bindtap="onTabChange"
     >
-      <text class="tab-text">进行中</text>
+      <text class="tab-text">处理中</text>
       <text class="tab-badge" wx:if="{{counts.processing > 0}}">{{counts.processing}}</text>
     </view>
     <view
@@ -42,16 +44,13 @@
     </view>
   </view>
 
-  <!-- 订单列表 -->
   <view class="order-list">
-    <!-- 空状态 -->
     <view class="empty-state" wx:if="{{!loading && orders.length === 0}}">
       <text class="empty-icon">📋</text>
-      <text class="empty-text">暂无订单</text>
-      <text class="empty-hint">快去创建第一个维修订单吧</text>
+      <text class="empty-text">{{filterVehicleId ? '该车辆暂无记录' : '暂无订单'}}</text>
+      <text class="empty-hint">{{filterVehicleId ? '可切换标签查看该车辆其他状态订单，或清除筛选' : '快去创建第一个维修订单吧'}}</text>
     </view>
 
-    <!-- 订单卡片 -->
     <view
       class="order-card"
       wx:for="{{orders}}"
@@ -59,38 +58,33 @@
       bindtap="onOrderTap"
       data-id="{{item._id}}"
     >
-      <!-- 订单类型标签 -->
-      <view class="order-type-badge type-{{item.type}}">
-        {{item.type === 'maintenance' ? '保养' : '维修'}}
-      </view>
-
-      <!-- 订单状态标签 -->
-      <view class="order-status status-{{item.status}}">
-        {{item.statusText}}
-      </view>
-
-      <!-- 订单头部 -->
       <view class="order-header">
         <view class="order-number">订单号：{{item.orderNumber}}</view>
-        <view class="order-time">{{item.createdAtText}}</view>
+        <view class="order-meta">
+          <view class="order-type-badge type-{{item.type}}">
+            {{item.type === 'maintenance' ? '保养' : '维修'}}
+          </view>
+          <view class="order-status status-{{item.status}}">
+            {{item.statusText}}
+          </view>
+        </view>
       </view>
 
-      <!-- 车辆信息 -->
+      <view class="order-time">{{item.createdAtText}}</view>
+
       <view class="order-vehicle">
-        <text class="vehicle-icon">🚚</text>
+        <text class="vehicle-icon">🚗</text>
         <view class="vehicle-info">
           <view class="vehicle-plate">{{item.vehicleInfo.plateNumber}}</view>
           <view class="vehicle-model">{{item.vehicleInfo.brand}} {{item.vehicleInfo.model}}</view>
         </view>
       </view>
 
-      <!-- 维修订单：故障描述 -->
       <view class="order-fault" wx:if="{{item.type === 'repair' && item.faultDescription}}">
         <text class="fault-label">故障描述：</text>
         <text class="fault-text">{{item.faultDescription}}</text>
       </view>
 
-      <!-- 保养订单：保养类型和套餐 -->
       <view class="order-maintenance" wx:if="{{item.type === 'maintenance'}}">
         <text class="maint-label">保养类型：</text>
         <text class="maint-value">{{item.maintenanceTypeName || '-'}}</text>
@@ -100,7 +94,6 @@
         <text class="maint-value">{{item.packageName || item.selectedTier || '-'}}</text>
       </view>
 
-      <!-- 进度条（进行中的订单） -->
       <view class="order-progress" wx:if="{{item.showProgress}}">
         <view class="progress-bar">
           <view class="progress-fill" style="width: {{item.progress}}%"></view>
@@ -108,19 +101,70 @@
         <view class="progress-text">{{item.progressText}}</view>
       </view>
 
-      <!-- 订单底部信息 -->
+      <view class="appointment-confirm-section" wx:if="{{role === 'STORE_TECHNICIAN' && item.status === 'awaiting_time_confirmation'}}">
+        <view class="confirm-time-hint" catchtap="toggleConfirmTime" data-id="{{item._id}}">
+          <view class="hint-content">
+            <text class="hint-icon">⏰</text>
+            <text class="hint-text">待确认到店时间（点击展开）</text>
+            <text class="expand-icon">{{item.showConfirmTime ? '▼' : '▶'}}</text>
+          </view>
+        </view>
+
+        <view class="confirm-time-form" wx:if="{{item.showConfirmTime}}">
+          <view class="driver-preference" wx:if="{{item.appointment}}">
+            <view class="preference-label">司机期望时间</view>
+            <view class="preference-value">
+              <text class="preference-text">{{item.appointment.displayText}}</text>
+            </view>
+          </view>
+
+          <view class="confirm-actions">
+            <button
+              class="confirm-btn confirm-action"
+              catchtap="onConfirmAppointmentTime"
+              data-id="{{item._id}}"
+            >
+              确认时间
+            </button>
+            <button
+              class="confirm-btn adjust-action"
+              catchtap="onOpenTimeAdjuster"
+              data-id="{{item._id}}"
+            >
+              调整时间
+            </button>
+          </view>
+        </view>
+      </view>
+
       <view class="order-footer">
-        <!-- 维修订单：显示报价 -->
-        <view class="order-price" wx:if="{{item.type === 'repair' && item.quote}}">
+        <view class="order-price" wx:if="{{item.type === 'repair' && item.quote && item.quote.total}}">
           <text class="price-label">报价：</text>
           <text class="price-value">¥{{item.quote.total}}</text>
         </view>
-        <!-- 保养订单：显示金额 -->
-        <view class="order-price" wx:if="{{item.type === 'maintenance'}}">
+        <view class="order-price" wx:if="{{item.type === 'maintenance' && item.finalAmount}}">
           <text class="price-label">金额：</text>
-          <text class="price-value">¥{{item.finalAmount || '-'}}</text>
+          <text class="price-value">¥{{item.finalAmount}}</text>
         </view>
-        <!-- 待车队审批订单显示去审批按钮（仅车队管理员、平台运营） -->
+
+        <button
+          class="action-btn-primary"
+          wx:if="{{role === 'STORE_TECHNICIAN' && item.status === 'pending_assessment'}}"
+          catchtap="onQuoteOrder"
+          data-id="{{item._id}}"
+        >
+          去接车检查
+        </button>
+
+        <button
+          class="action-btn-primary"
+          wx:if="{{role === 'STORE_TECHNICIAN' && item.status === 'in_repair'}}"
+          catchtap="onCompleteOrder"
+          data-id="{{item._id}}"
+        >
+          提交完工
+        </button>
+
         <button
           class="approve-btn"
           wx:if="{{role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && item.status === 'awaiting_fleet_approval'}}"
@@ -129,7 +173,7 @@
         >
           去审批
         </button>
-        <!-- 待报价审批订单显示去审批按钮（仅车队管理员、平台运营） -->
+
         <button
           class="approve-btn"
           wx:if="{{role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && item.status === 'awaiting_approval'}}"
@@ -138,7 +182,15 @@
         >
           去审批
         </button>
-        <!-- 待确认订单显示去确认按钮（仅司机） -->
+
+        <button
+          class="approve-btn"
+          wx:if="{{role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && item.status === 'awaiting_addon_approval'}}"
+          catchtap="onApproveOrder"
+          data-id="{{item._id}}"
+        >
+          去审批
+        </button>
         <button
           class="confirm-btn"
           wx:if="{{role === 'DRIVER' && item.status === 'completed' && !item.isConfirmed}}"
@@ -147,7 +199,6 @@
         >
           去确认
         </button>
-        <!-- 可评价订单显示去评价按钮（仅司机，15天内） -->
         <button
           class="review-btn"
           wx:if="{{role === 'DRIVER' && item.canReview}}"
@@ -156,19 +207,55 @@
         >
           去评价
         </button>
-        <!-- 其他状态显示箭头 -->
-        <view class="order-arrow" wx:if="
-          {{!(role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && (item.status === 'awaiting_fleet_approval' || item.status === 'awaiting_approval'))}} &&
-          {{!(role === 'DRIVER' && item.status === 'completed' && !item.isConfirmed)}} &&
-          {{!(role === 'DRIVER' && item.canReview)}}
-        ">›</view>
+        <view
+          class="order-arrow"
+          wx:if="{{!(role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && (item.status === 'awaiting_fleet_approval' || item.status === 'awaiting_approval')) && !(role === 'DRIVER' && item.status === 'completed' && !item.isConfirmed) && !(role === 'DRIVER' && item.canReview) && !(role === 'STORE_TECHNICIAN' && (item.status === 'pending_assessment' || item.status === 'in_repair'))}}"
+        >&gt;</view>
       </view>
     </view>
 
-    <!-- 加载状态 -->
     <view class="loading-more" wx:if="{{loading}}">
       <view class="loading-spinner"></view>
       <text class="loading-text">加载中...</text>
+    </view>
+
+    <view class="time-adjuster-mask" wx:if="{{showTimeAdjuster}}" catchtap="onCloseTimeAdjuster">
+      <view class="time-adjuster-popup" catchtap="">
+        <view class="adjuster-header">
+          <text class="adjuster-title">调整到店时间</text>
+          <text class="adjuster-close" catchtap="onCloseTimeAdjuster">✕</text>
+        </view>
+
+        <view class="selected-time-display" wx:if="{{selectedTimeSlot}}">
+          <text class="display-label">已选择：</text>
+          <text class="display-value">{{selectedTimeDisplayText}}</text>
+        </view>
+
+        <view class="adjuster-content">
+          <view class="adjuster-tip">
+            <text class="tip-icon">💡</text>
+            <text class="tip-text">请选择时间后点击右下角“确定”按钮保存</text>
+          </view>
+
+          <view class="time-slots">
+            <view
+              class="time-slot-item {{selectedTimeSlot === item.time ? 'active' : ''}}"
+              wx:for="{{availableTimeSlots}}"
+              wx:key="time"
+              data-time="{{item.time}}"
+              catchtap="onSelectTimeSlot"
+            >
+              <view class="slot-time">{{item.displayTime}}</view>
+              <view class="slot-desc">{{item.description}}</view>
+            </view>
+          </view>
+        </view>
+
+        <view class="adjuster-footer">
+          <view class="adjuster-btn cancel-btn" catchtap="onCloseTimeAdjuster">取消</view>
+          <view class="adjuster-btn confirm-btn" catchtap="onConfirmAdjustTime">确定</view>
+        </view>
+      </view>
     </view>
   </view>
 </view>

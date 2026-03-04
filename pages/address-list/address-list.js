@@ -42,32 +42,51 @@ Page({
    * 加载模拟地址数据（用于测试）
    */
   loadMockAddresses() {
+    // 优先从本地存储加载
+    const localAddresses = wx.getStorageSync('savedAddresses');
+    if (localAddresses && localAddresses.length > 0) {
+      this.setData({
+        addressList: localAddresses
+      });
+      return;
+    }
+
+    // 如果本地没有，使用默认模拟数据
     const mockAddresses = [
       {
         _id: 'mock_1',
-        name: '万联驿站北京中心店',
-        phone: '010-12345678',
-        address: '北京市朝阳区大屯路东关号58号',
+        name: '宝安物流园',
+        phone: '0755-12345678',
+        address: '深圳市宝安区福永街道物流园路88号',
+        latitude: 22.6543,
+        longitude: 113.8234,
         isDefault: true,
-        remark: '总部'
+        remark: '目的地'
       },
       {
         _id: 'mock_2',
-        name: '万联驿站上海分拨中心',
-        phone: '021-87654321',
-        address: '上海市闵行区沪闵路号889号',
+        name: '龙岗配送中心',
+        phone: '0755-87654321',
+        address: '深圳市龙岗区坂田街道云里智能园',
+        latitude: 22.6234,
+        longitude: 114.0789,
         isDefault: false,
-        remark: '分拨中心'
+        remark: '常用地址'
       },
       {
         _id: 'mock_3',
-        name: '万联驿站广州维修站',
-        phone: '020-66668888',
-        address: '广州市白云区机场路号1688号',
+        name: '盐田港仓库',
+        phone: '0755-66668888',
+        address: '深圳市盐田区盐田港大道西168号',
+        latitude: 22.5432,
+        longitude: 114.2567,
         isDefault: false,
         remark: ''
       }
     ];
+
+    // 保存到本地存储
+    wx.setStorageSync('savedAddresses', mockAddresses);
 
     this.setData({
       addressList: mockAddresses

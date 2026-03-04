@@ -2,12 +2,16 @@
   "pages": [
     "pages/auth/login/login",
     "pages/auth/register",
+    "pages/auth/activate/activate",
+    "pages/auth/fleet-register/fleet-register",
+    "pages/auth/store-register/store-register",
     "pages/index/index",
     "pages/driver/vehicles/vehicles",
     "pages/driver/vehicles/add",
     "pages/driver/vehicles/detail",
     "pages/driver/report/report",
     "pages/driver/progress/progress",
+    "pages/driver/review/review",
     "pages/maintenance/maintenance",
     "pages/fleet/vehicles/vehicles",
     "pages/fleet/report/report",
@@ -36,16 +40,13 @@
     "backgroundColor": "#F5F7FA",
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#667eea",
-    "navigationBarTitleText": "万联驿站TMS",
+    "navigationBarTitleText": "万联驿站2.0",
     "navigationBarTextStyle": "white",
     "enablePullDownRefresh": false
   },
   "permission": {
     "scope.userLocation": {
-      "desc": "您的位置信息将用于获取附近维修门店和显示服务地址"
-    },
-    "scope.userLocationBackground": {
-      "desc": "您的位置信息将用于后台定位服务"
+      "desc": "您的位置信息将用于获取附近维修门店和显示当前位置"
     }
   },
   "requiredPrivateInfos": [
@@ -54,6 +55,7 @@
     "chooseAddress"
   ],
   "tabBar": {
+    "custom": true,
     "color": "#8C8C8C",
     "selectedColor": "#667eea",
     "backgroundColor": "#FFFFFF",

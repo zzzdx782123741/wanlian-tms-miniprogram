@@ -1,6 +1,21 @@
-// pages/account/account.js - 司机：我的页面
 const app = getApp();
 const request = require('../../utils/request');
+
+function extractOrders(response) {
+  if (Array.isArray(response?.data?.orders)) return response.data.orders;
+  if (Array.isArray(response?.orders)) return response.orders;
+  if (Array.isArray(response?.data)) return response.data;
+  if (Array.isArray(response)) return response;
+  return [];
+}
+
+function extractVehicles(response) {
+  if (Array.isArray(response?.data)) return response.data;
+  if (Array.isArray(response?.data?.vehicles)) return response.data.vehicles;
+  if (Array.isArray(response?.vehicles)) return response.vehicles;
+  if (Array.isArray(response)) return response;
+  return [];
+}
 
 Page({
   data: {
@@ -8,6 +23,7 @@ Page({
     roleText: '',
     stats: {
       totalOrders: 0,
+      vehicleCount: 0,
       completedOrders: 0,
       pendingOrders: 0
     }
@@ -15,79 +31,99 @@ Page({
 
   onLoad() {
     this.initUserProfile();
-    this.loadOrderStats();
+    this.loadStats();
   },
 
   onShow() {
     this.initUserProfile();
-  },
+    this.loadStats();
 
-  /**
-   * 初始化用户信息
-   */
-  initUserProfile() {
-    const userInfo = app.globalData.userInfo;
-    const role = app.globalData.role;
-
-    if (userInfo) {
-      const roleMap = {
-        'DRIVER': '司机',
-        'FLEET_MANAGER': '车队管理员',
-        'STORE_TECHNICIAN': '门店技师',
-        'PLATFORM_OPERATOR': '平台运营'
-      };
-
-      this.setData({
-        userInfo,
-        roleText: roleMap[role] || '用户'
-      });
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().updateTabBar();
     }
   },
 
-  /**
-   * 加载订单统计
-   */
+  onPullDownRefresh() {
+    this.loadStats().finally(() => {
+      wx.stopPullDownRefresh();
+    });
+  },
+
+  initUserProfile() {
+    const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+    const role = app.globalData.role || wx.getStorageSync('role') || userInfo?.role?.type;
+
+    if (!userInfo) return;
+
+    const roleMap = {
+      DRIVER: '司机',
+      FLEET_MANAGER: '车队管理员',
+      STORE_TECHNICIAN: '门店技师',
+      PLATFORM_OPERATOR: '平台运营'
+    };
+
+    this.setData({
+      userInfo,
+      roleText: roleMap[role] || '用户'
+    });
+  },
+
+  async loadStats() {
+    await Promise.allSettled([
+      this.loadOrderStats(),
+      this.loadVehicleStats()
+    ]);
+  },
+
   async loadOrderStats() {
     try {
-      const res = await request.get('/orders', {
-        page: 1,
-        limit: 100
+      const res = await request.get('/orders', { page: 1, limit: 100 });
+      const orders = extractOrders(res);
+
+      const totalOrders = orders.length;
+      const completedOrders = orders.filter((o) => o.status === 'completed' || o.status === 'refunded').length;
+
+      this.setData({
+        stats: {
+          ...this.data.stats,
+          totalOrders,
+          completedOrders,
+          pendingOrders: totalOrders - completedOrders
+        }
       });
-
-      const orders = res.data || [];
-      const stats = {
-        totalOrders: orders.length,
-        completedOrders: orders.filter(o => o.status === 'completed' || o.status === 'refunded').length,
-        pendingOrders: orders.filter(o => o.status !== 'completed' && o.status !== 'refunded').length
-      };
-
-      this.setData({ stats });
     } catch (error) {
       console.error('加载订单统计失败:', error);
     }
   },
 
-  /**
-   * 跳转到我的订单
-   */
+  async loadVehicleStats() {
+    try {
+      const res = await request.get('/vehicles');
+      const vehicles = extractVehicles(res);
+
+      this.setData({
+        stats: {
+          ...this.data.stats,
+          vehicleCount: vehicles.length
+        }
+      });
+    } catch (error) {
+      console.error('加载车辆统计失败:', error);
+    }
+  },
+
   onMyOrders() {
     wx.switchTab({
       url: '/pages/orders/orders'
     });
   },
 
-  /**
-   * 跳转到车辆管理
-   */
   onMyVehicles() {
     wx.switchTab({
       url: '/pages/vehicle/vehicle'
     });
   },
 
-  /**
-   * 联系客服
-   */
   onContactService() {
     wx.showModal({
       title: '联系客服',
@@ -95,43 +131,44 @@ Page({
       confirmText: '拨打电话',
       success: (res) => {
         if (res.confirm) {
-          wx.makePhoneCall({
-            phoneNumber: '400-888-8888'
-          });
+          wx.makePhoneCall({ phoneNumber: '400-888-8888' });
         }
       }
     });
   },
 
-  /**
-   * 关于我们
-   */
+  onAddressManage() {
+    wx.navigateTo({
+      url: '/pages/address-list/address-list'
+    });
+  },
+
   onAbout() {
     wx.showModal({
-      title: '关于万联驿站',
-      content: '万联驿站TMS系统 v1.0\n为物流车队提供专业的车辆维修管理服务',
+      title: '关于万联驿站2.0',
+      content: '万联驿站2.0系统 v1.0\n为物流车队提供专业的车辆维修管理服务',
       showCancel: false
     });
   },
 
-  /**
-   * 退出登录
-   */
   onLogout() {
     wx.showModal({
       title: '退出登录',
       content: '确定要退出登录吗？',
       success: (res) => {
-        if (res.confirm) {
-          // 清除登录信息
+        if (!res.confirm) return;
+
+        if (typeof app.clearUserInfo === 'function') {
+          app.clearUserInfo();
+        } else {
           wx.removeStorageSync('token');
           wx.removeStorageSync('userInfo');
-
-          // 重新跳转到登录页
-          wx.reLaunch({
-            url: '/pages/auth/login/login'
-          });
+          wx.removeStorageSync('role');
         }
+
+        wx.reLaunch({
+          url: '/pages/auth/login/login'
+        });
       }
     });
   }

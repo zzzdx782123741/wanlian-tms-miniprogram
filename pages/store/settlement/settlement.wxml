@@ -1,0 +1,102 @@
+<!--pages/store/settlement/settlement.wxml-->
+<view class="settlement-page">
+  <!-- 统计信息卡片 -->
+  <view class="stats-card">
+    <view class="stats-title">结算概览</view>
+    <view class="stats-row">
+      <view class="stats-item">
+        <view class="stats-label">累计结算金额</view>
+        <view class="stats-value">¥{{ stats.totalSettledAmount.toFixed(2) }}</view>
+      </view>
+    </view>
+    <view class="stats-row">
+      <view class="stats-item">
+        <view class="stats-label">平台服务费</view>
+        <view class="stats-value fee">¥{{ stats.totalPlatformFee.toFixed(2) }}</view>
+      </view>
+    </view>
+    <view class="stats-row">
+      <view class="stats-item">
+        <view class="stats-label">待结算金额</view>
+        <view class="stats-value pending">¥{{ stats.pendingAmount.toFixed(2) }}</view>
+      </view>
+    </view>
+    <view class="stats-row">
+      <view class="stats-item">
+        <view class="stats-label">待结算笔数</view>
+        <view class="stats-value">{{ stats.pendingSettlements }}笔</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 结算规则说明 -->
+  <view class="rules-card">
+    <view class="rules-title">
+      <text class="icon">💡</text>
+      <text>结算规则说明</text>
+    </view>
+    <view class="rules-content">
+      <view class="rule-item">• T+1结算：订单完成后第2个工作日自动结算</view>
+      <view class="rule-item">• 平台服务费：根据金额分档</view>
+      <view class="rule-item">  - 0-1000元：5%（最低50元）</view>
+      <view class="rule-item">  - 1000-5000元：4%</view>
+      <view class="rule-item">  - 5000元以上：3%（最高150元封顶）</view>
+      <view class="rule-item">• 结算金额 = 维修金额 - 平台服务费</view>
+      <view class="rule-item">• 资金通过易宝支付自动转账到门店账户</view>
+    </view>
+  </view>
+
+  <!-- 结算记录列表 -->
+  <view class="settlements-section">
+    <view class="section-title">结算记录</view>
+    <view class="settlement-list">
+      <view
+        class="settlement-item"
+        wx:for="{{ settlements }}"
+        wx:key="_id"
+        bindtap="viewDetail"
+        data-id="{{ item._id }}"
+      >
+        <view class="settlement-header">
+          <view class="order-number">订单号：{{ item.orderNumber }}</view>
+          <view class="status" style="color: {{ getStatusColor(item.status) }}">
+            {{ getStatusText(item.status) }}
+          </view>
+        </view>
+        <view class="settlement-info">
+          <view class="info-row">
+            <text class="label">维修金额：</text>
+            <text class="value">¥{{ formatAmount(item.repairAmount) }}</text>
+          </view>
+          <view class="info-row">
+            <text class="label">平台服务费：</text>
+            <text class="value fee">-¥{{ formatAmount(item.platformFee) }}</text>
+          </view>
+          <view class="info-row total">
+            <text class="label">结算金额：</text>
+            <text class="value amount">¥{{ formatAmount(item.settlementAmount) }}</text>
+          </view>
+        </view>
+        <view class="settlement-footer">
+          <text class="time">{{ item.createdAt }}</text>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{ settlements.length === 0 && !loading }}">
+        <text class="empty-icon">💰</text>
+        <text class="empty-text">暂无结算记录</text>
+        <text class="empty-hint">完成订单后会自动创建结算记录</text>
+      </view>
+
+      <!-- 加载更多 -->
+      <view class="loading-more" wx:if="{{ loading }}">
+        <text>加载中...</text>
+      </view>
+
+      <view class="no-more" wx:if="{{ !hasMore && settlements.length > 0 }}">
+        <text>没有更多了</text>
+      </view>
+    </view>
+  </view>
+</view>

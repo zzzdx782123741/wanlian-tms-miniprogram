@@ -1,6 +1,4 @@
-<!--pages/account/account.wxml - 司机：我的页面-->
 <view class="page">
-  <!-- 用户信息卡片 -->
   <view class="user-profile-card">
     <image
       class="user-avatar"
@@ -13,7 +11,6 @@
     </view>
   </view>
 
-  <!-- 统计信息 -->
   <view class="stats-container">
     <view class="stat-item" bindtap="onMyOrders">
       <view class="stat-value">{{stats.totalOrders}}</view>
@@ -21,7 +18,7 @@
     </view>
     <view class="stat-divider"></view>
     <view class="stat-item" bindtap="onMyVehicles">
-      <view class="stat-value">-</view>
+      <view class="stat-value">{{stats.vehicleCount}}</view>
       <view class="stat-label">我的车辆</view>
     </view>
     <view class="stat-divider"></view>
@@ -31,11 +28,15 @@
     </view>
   </view>
 
-  <!-- 功能列表 -->
   <view class="function-list">
     <view class="function-item" bindtap="onContactService">
       <text class="function-icon">📞</text>
       <view class="function-title">联系客服</view>
+      <text class="function-arrow">›</text>
+    </view>
+    <view class="function-item" bindtap="onAddressManage">
+      <text class="function-icon">📍</text>
+      <view class="function-title">常用地址</view>
       <text class="function-arrow">›</text>
     </view>
     <view class="function-item" bindtap="onAbout">

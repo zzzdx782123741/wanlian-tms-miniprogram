@@ -80,6 +80,7 @@
           class="action-btn"
           bindtap="onViewOrders"
           data-vehicle-id="{{item._id}}"
+          data-vehicle-plate="{{item.plateNumber}}"
           catchtap="true"
         >
           <text class="btn-icon">📋</text>

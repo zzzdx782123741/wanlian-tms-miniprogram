@@ -47,7 +47,7 @@ Page({
       const mockAddresses = [
         {
           _id: 'mock_1',
-          name: '万联驿站北京中心店',
+          name: '万联驿站2.0北京中心店',
           contactName: '张经理',
           phone: '010-12345678',
           address: '北京市朝阳区大屯路东关58号',
@@ -56,7 +56,7 @@ Page({
         },
         {
           _id: 'mock_2',
-          name: '万联驿站上海分拨中心',
+          name: '万联驿站2.0上海分拨中心',
           contactName: '李主管',
           phone: '021-87654321',
           address: '上海市闵行区沪闵路889号',
@@ -65,7 +65,7 @@ Page({
         },
         {
           _id: 'mock_3',
-          name: '万联驿站广州维修站',
+          name: '万联驿站2.0广州维修站',
           contactName: '王师傅',
           phone: '020-66668888',
           address: '广州市白云区机场路1688号',

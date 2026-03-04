@@ -99,43 +99,43 @@
       </view>
       <view class="tags-container">
         <view
-          class="tag-item {{selectedTags.includes('技术专业') ? 'active' : ''}}"
-          bindtap="onToggleTag"
+          class="tag-item {{tagsStatus['技术专业'] ? 'active' : ''}}"
+          catchtap="onToggleTag"
           data-tag="技术专业"
         >🔧 技术专业</view>
         <view
-          class="tag-item {{selectedTags.includes('服务热情') ? 'active' : ''}}"
-          bindtap="onToggleTag"
+          class="tag-item {{tagsStatus['服务热情'] ? 'active' : ''}}"
+          catchtap="onToggleTag"
           data-tag="服务热情"
         >😊 服务热情</view>
         <view
-          class="tag-item {{selectedTags.includes('完工迅速') ? 'active' : ''}}"
-          bindtap="onToggleTag"
+          class="tag-item {{tagsStatus['完工迅速'] ? 'active' : ''}}"
+          catchtap="onToggleTag"
           data-tag="完工迅速"
         >⚡ 完工迅速</view>
         <view
-          class="tag-item {{selectedTags.includes('价格公道') ? 'active' : ''}}"
-          bindtap="onToggleTag"
+          class="tag-item {{tagsStatus['价格公道'] ? 'active' : ''}}"
+          catchtap="onToggleTag"
           data-tag="价格公道"
         >💰 价格公道</view>
         <view
-          class="tag-item {{selectedTags.includes('环境整洁') ? 'active' : ''}}"
-          bindtap="onToggleTag"
+          class="tag-item {{tagsStatus['环境整洁'] ? 'active' : ''}}"
+          catchtap="onToggleTag"
           data-tag="环境整洁"
         >✨ 环境整洁</view>
         <view
-          class="tag-item {{selectedTags.includes('响应及时') ? 'active' : ''}}"
-          bindtap="onToggleTag"
+          class="tag-item {{tagsStatus['响应及时'] ? 'active' : ''}}"
+          catchtap="onToggleTag"
           data-tag="响应及时"
         >📞 响应及时</view>
         <view
-          class="tag-item {{selectedTags.includes('收费透明') ? 'active' : ''}}"
-          bindtap="onToggleTag"
+          class="tag-item {{tagsStatus['收费透明'] ? 'active' : ''}}"
+          catchtap="onToggleTag"
           data-tag="收费透明"
         >📋 收费透明</view>
         <view
-          class="tag-item {{selectedTags.includes('值得信赖') ? 'active' : ''}}"
-          bindtap="onToggleTag"
+          class="tag-item {{tagsStatus['值得信赖'] ? 'active' : ''}}"
+          catchtap="onToggleTag"
           data-tag="值得信赖"
         >⭐ 值得信赖</view>
       </view>

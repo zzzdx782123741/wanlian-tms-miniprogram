@@ -9,6 +9,48 @@
   padding-bottom: 40rpx;
 }
 
+/* 无权限提示 */
+.no-permission {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 60rpx;
+}
+
+.no-permission-icon {
+  font-size: 160rpx;
+  margin-bottom: 40rpx;
+  opacity: 0.5;
+}
+
+.no-permission-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 20rpx;
+}
+
+.no-permission-text {
+  font-size: 30rpx;
+  color: #64748b;
+  margin-bottom: 60rpx;
+  text-align: center;
+}
+
+.back-home-btn {
+  width: 400rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+}
+
 /* 顶部标题栏 */
 .header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

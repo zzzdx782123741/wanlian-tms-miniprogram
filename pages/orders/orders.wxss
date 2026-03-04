@@ -29,6 +29,31 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+/* 车辆筛选提示 */
+.vehicle-filter-chip {
+  margin: 16rpx 32rpx 0;
+  padding: 14rpx 18rpx;
+  border-radius: 999rpx;
+  background: #eef2ff;
+  border: 1rpx solid #c7d2fe;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chip-label {
+  font-size: 24rpx;
+  color: #3730a3;
+  font-weight: 600;
+}
+
+.chip-action {
+  font-size: 24rpx;
+  color: #4f46e5;
+  font-weight: 700;
+  padding: 2rpx 10rpx;
+}
+
 /* 筛选标签 */
 .filter-tabs {
   display: flex;
@@ -39,6 +64,10 @@
   box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.1);
   position: relative;
   z-index: 1;
+}
+
+.filter-tabs.with-chip {
+  margin-top: 12rpx;
 }
 
 .tab-item {
@@ -93,6 +122,7 @@
   background: #fff;
   border-radius: 24rpx;
   padding: 32rpx;
+  padding-top: 24rpx;
   margin-bottom: 24rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
@@ -103,26 +133,45 @@
   box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
 }
 
+/* 订单头部 */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.order-number {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2D3748;
+  flex: 1;
+}
+
+/* 订单元信息容器 */
+.order-meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
 /* 订单状态标签 */
 .order-status {
-  position: absolute;
-  top: 32rpx;
-  right: 32rpx;
-  padding: 8rpx 20rpx;
-  border-radius: 20rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
   font-size: 22rpx;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 /* 订单类型徽章 */
 .order-type-badge {
-  position: absolute;
-  top: 32rpx;
-  left: 32rpx;
   padding: 6rpx 16rpx;
-  border-radius: 12rpx;
+  border-radius: 16rpx;
   font-size: 22rpx;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .type-repair {
@@ -153,24 +202,11 @@
   color: #065F46;
 }
 
-/* 订单头部 */
-.order-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24rpx;
-  padding-right: 100rpx;
-}
-
-.order-number {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: #2D3748;
-}
-
+/* 订单时间 */
 .order-time {
   font-size: 22rpx;
   color: #A0AEC0;
+  margin-bottom: 20rpx;
 }
 
 /* 车辆信息 */
@@ -372,6 +408,23 @@
   border: none;
 }
 
+/* 技师操作按钮 */
+.action-btn-primary {
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+  border-radius: 32rpx;
+  border: none;
+  margin-left: auto;
+  box-shadow: 0 4rpx 12rpx rgba(16, 185, 129, 0.3);
+}
+
+.action-btn-primary::after {
+  border: none;
+}
+
 /* 空状态 */
 .empty-state {
   display: flex;
@@ -427,3 +480,279 @@
   font-size: 26rpx;
   color: #A0AEC0;
 }
+
+/* 确认时间模块 */
+.appointment-confirm-section {
+  margin-top: 24rpx;
+  border-top: 2rpx solid #f1f5f9;
+}
+
+.confirm-time-hint {
+  padding: 24rpx;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border-radius: 12rpx;
+}
+
+.hint-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hint-icon {
+  font-size: 36rpx;
+  margin-right: 12rpx;
+}
+
+.hint-text {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #92400E;
+}
+
+.expand-icon {
+  font-size: 24rpx;
+  color: #92400E;
+}
+
+.confirm-time-form {
+  margin-top: 16rpx;
+  padding: 24rpx;
+  background: #f8fafc;
+  border-radius: 12rpx;
+}
+
+.driver-preference,
+.suggested-time {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  background: white;
+  border-radius: 12rpx;
+}
+
+.preference-label,
+.suggestion-label {
+  font-size: 26rpx;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.preference-value,
+.suggestion-value {
+  font-size: 28rpx;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.preference-text {
+  color: #F59E0B;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.confirm-btn {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+}
+
+.confirm-action {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+}
+
+.confirm-action:active {
+  opacity: 0.8;
+}
+
+.adjust-action {
+  background: white;
+  color: #F59E0B;
+  border: 2rpx solid #F59E0B;
+}
+
+.adjust-action:active {
+  background: #FFFBEB;
+}
+
+/* 时间调整弹窗 */
+.time-adjuster-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.time-adjuster-popup {
+  width: 100%;
+  max-height: 80vh;
+  background: white;
+  border-radius: 32rpx 32rpx 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.adjuster-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 2rpx solid #f1f5f9;
+}
+
+.adjuster-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+.adjuster-close {
+  font-size: 40rpx;
+  color: #94a3b8;
+  padding: 8rpx;
+}
+
+.selected-time-display {
+  padding: 24rpx 32rpx;
+  background: #ECFDF5;
+  margin: 24rpx 32rpx 0;
+  border-radius: 12rpx;
+}
+
+.display-label {
+  font-size: 24rpx;
+  color: #059669;
+  margin-right: 8rpx;
+}
+
+.display-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #059669;
+}
+
+.adjuster-content {
+  flex: 1;
+  padding: 24rpx 32rpx;
+  overflow-y: auto;
+}
+
+.adjuster-tip {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  background: #FFFBEB;
+  border-radius: 8rpx;
+  margin-bottom: 24rpx;
+}
+
+.tip-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.tip-text {
+  font-size: 24rpx;
+  color: #92400E;
+}
+
+.time-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.time-slot-item {
+  padding: 24rpx;
+  background: white;
+  border: 3rpx solid #e2e8f0;
+  border-radius: 12rpx;
+  transition: all 0.2s;
+}
+
+.time-slot-item.active {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border-color: #10B981;
+}
+
+.slot-time {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8rpx;
+}
+
+.time-slot-item.active .slot-time {
+  color: #059669;
+}
+
+.slot-desc {
+  font-size: 24rpx;
+  color: #64748b;
+}
+
+.adjuster-footer {
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx 32rpx;
+  border-top: 2rpx solid #f1f5f9;
+}
+
+.adjuster-btn {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.cancel-btn {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.cancel-btn:active {
+  background: #e2e8f0;
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+}
+
+.confirm-btn:active {
+  opacity: 0.8;
+}
+

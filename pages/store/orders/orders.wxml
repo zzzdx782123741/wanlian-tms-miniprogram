@@ -1,64 +1,204 @@
-<!--pages/store/orders/orders.wxml-->
-<view class="orders-container">
+<!--pages/store/orders/orders.wxml - 门店技师接单大厅-->
+<view class="page">
+  <!-- 🔴🔴🔴 强制刷新标识 v2 - 删除本行会触发重新编译 🔴🔴🔴 -->
+  <view style="background: #ff0000; color: #ffffff; padding: 30rpx; text-align: center; font-size: 32rpx; font-weight: bold; border: 4rpx solid #000; margin: 20rpx;">
+    ⚠️⚠️⚠️ 强制刷新 - 订单数量: {{orders.length}} - 删除此行可触发WXML重新编译 ⚠️⚠️⚠️
+  </view>
+
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <view class="header-title">门店订单</view>
+    <view class="header-subtitle">维修订单管理</view>
+  </view>
+
+  <!-- 标签切换 -->
+  <view class="tabs-container">
+    <view
+      class="tab-item {{activeTab === 'all' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="all"
+    >
+      全部
+    </view>
+    <view
+      class="tab-item {{activeTab === 'processing' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="processing"
+    >
+      处理中
+    </view>
+    <view
+      class="tab-item {{activeTab === 'completed' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="completed"
+    >
+      已完成
+    </view>
+  </view>
+
   <!-- 订单列表 -->
-  <view class="orders-list">
+  <view class="orders-container">
+    <!-- 调试信息 -->
+    <view style="padding: 20rpx; background: #f0f0f0; margin-bottom: 20rpx;">
+      <text>订单数量: {{orders.length}}</text>
+    </view>
+
     <block wx:if="{{orders.length > 0}}">
       <view
-        class="order-card glass-card"
+        class="order-card"
         wx:for="{{orders}}"
         wx:key="_id"
       >
+        <!-- 订单头部 -->
         <view class="order-header" bindtap="viewDetail" data-id="{{item._id}}">
-          <text class="order-id">订单号：{{item.orderNumber}}</text>
-          <view class="status-badge status-{{item.status}}">
+          <view class="order-number">{{item.orderNumber}}</view>
+          <view class="status-badge status-{{item.statusType}}">
             {{item.statusText}}
           </view>
         </view>
 
-        <view class="order-route" bindtap="viewDetail" data-id="{{item._id}}">
-          <view class="route-point">
-            <text class="point-label">起点</text>
-            <text class="point-value">{{item.origin}}</text>
-          </view>
-          <view class="route-arrow">↓</view>
-          <view class="route-point">
-            <text class="point-label">终点</text>
-            <text class="point-value">{{item.destination}}</text>
+        <!-- 订单元信息 -->
+        <view class="order-meta">
+          <text class="order-time">{{item.createdAtAgo}} · {{item.createdAt}}</text>
+          <!-- 调试信息：显示原始状态 -->
+          <text class="order-debug" wx:if="{{item.status}}">[{{item.status}}]</text>
+        </view>
+
+        <!-- 车辆信息 -->
+        <view class="order-section" bindtap="viewDetail" data-id="{{item._id}}">
+          <view class="section-title">🚛 车辆信息</view>
+          <view class="vehicle-info">
+            <text class="vehicle-plate">{{item.vehicleId.plateNumber}}</text>
+            <text class="vehicle-model">{{item.vehicleId.brand}} {{item.vehicleId.model}}</text>
           </view>
         </view>
 
-        <view class="order-info" bindtap="viewDetail" data-id="{{item._id}}">
-          <view class="info-row">
-            <text class="label">货物</text>
-            <text class="value">{{item.goodsName}}</text>
-          </view>
-          <view class="info-row">
-            <text class="label">重量</text>
-            <text class="value">{{item.weight}}吨</text>
-          </view>
-          <view class="info-row">
-            <text class="label">发布时间</text>
-            <text class="value">{{item.createdAt}}</text>
+        <!-- 故障描述 -->
+        <view class="order-section" bindtap="viewDetail" data-id="{{item._id}}">
+          <view class="section-title">🔧 故障描述</view>
+          <view class="fault-description">{{item.faultDescription}}</view>
+          <view class="fault-images" wx:if="{{item.faultImages && item.faultImages.length > 0}}">
+            <image
+              class="fault-image"
+              wx:for="{{item.faultImages}}"
+              wx:for-item="img"
+              wx:key="*this"
+              src="{{img}}"
+              mode="aspectFill"
+              bindtap="onPreviewImage"
+              data-url="{{img}}"
+            />
           </view>
         </view>
 
-        <view class="order-actions">
-          <!-- 第103行：填写报价按钮 -->
+        <!-- 订单信息 -->
+        <view class="order-section" bindtap="viewDetail" data-id="{{item._id}}">
+          <view class="info-row">
+            <text class="info-label">报修人</text>
+            <text class="info-value">{{item.reporterId.nickname}} {{item.reporterId.phone}}</text>
+          </view>
+          <view class="info-row" wx:if="{{item.appointment && item.appointment.expectedDate}}">
+            <text class="info-label">期望到店</text>
+            <text class="info-value">{{item.appointment.expectedDate}} {{item.appointment.expectedTimeSlot || ''}}</text>
+          </view>
+          <view class="info-row" wx:if="{{!item.appointment || !item.appointment.expectedDate}}">
+            <text class="info-label">期望到店</text>
+            <text class="info-value">{{item.appointmentAt || '待确认'}}</text>
+          </view>
+          <view class="info-row" wx:if="{{item.milestone}}">
+            <text class="info-label">当前里程</text>
+            <text class="info-value">{{item.milestone}} 公里</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">报修时间</text>
+            <text class="info-value">{{item.createdAt}}</text>
+          </view>
+        </view>
+
+        <!-- 确认时间模块（待确认时间状态） -->
+        <view class="appointment-confirm-section" wx:if="{{item.status === 'awaiting_time_confirmation'}}">
+          <!-- 折叠/展开提示条 -->
+          <view class="confirm-time-hint" bindtap="toggleConfirmTime" data-id="{{item._id}}">
+            <view class="hint-content">
+              <text class="hint-icon">⏰</text>
+              <text class="hint-text">请确认到店时间（点击展开）</text>
+              <text class="expand-icon">{{item.showConfirmTime ? '▼' : '▶'}}</text>
+            </view>
+          </view>
+
+          <!-- 展开的确认时间表单 -->
+          <view class="confirm-time-form" wx:if="{{item.showConfirmTime}}">
+            <!-- 司机期望时间 -->
+            <view class="driver-preference" wx:if="{{item.appointment}}">
+              <view class="preference-label">司机期望</view>
+              <view class="preference-value">
+                <text class="preference-text">{{item.appointment.expectedDate}} {{item.appointment.expectedTimeSlot || ''}}</text>
+              </view>
+            </view>
+
+            <!-- 当前确认时间 -->
+            <view class="suggested-time" wx:if="{{item.appointment && item.appointment.expectedDate}}">
+              <view class="suggestion-label">系统建议</view>
+              <view class="suggestion-value">{{item.appointment.expectedDate}} {{item.appointment.expectedTimeSlot || ''}}</view>
+            </view>
+
+            <!-- 确认/调整按钮 -->
+            <view class="confirm-actions">
+              <button
+                class="confirm-btn confirm-action"
+                bindtap="onConfirmAppointmentTime"
+                data-id="{{item._id}}"
+                data-date="{{item.appointment.expectedDate}}"
+                data-slot="{{item.appointment.expectedTimeSlot}}"
+              >
+                确认时间
+              </button>
+              <button
+                class="confirm-btn adjust-action"
+                bindtap="onOpenTimeAdjuster"
+                data-id="{{item._id}}"
+              >
+                调整时间
+              </button>
+            </view>
+          </view>
+        </view>
+
+        <!-- 操作按钮：只在该角色有业务动作时显示 -->
+        <view class="order-actions" wx:if="{{item.status}}">
+          <!-- 待确认时间：优先显示此按钮 -->
+          <block wx:if="{{item.status === 'awaiting_time_confirmation'}}">
+            <view class="action-hint">⚠️ 需要确认到店时间</view>
+            <button
+              class="action-btn action-btn-warning"
+              bindtap="toggleConfirmTime"
+              data-id="{{item._id}}"
+            >
+              <text class="btn-icon">⏰</text>
+              确认到店时间
+            </button>
+          </block>
+
+          <!-- 待接车检查：技师需要填写报价 -->
           <button
-            wx:if="{{item.status === 'PENDING'}}"
-            class="action-btn glass-btn-cta"
+            wx:if="{{item.status === 'pending_assessment'}}"
+            class="action-btn action-btn-primary"
             bindtap="quoteOrder"
             data-id="{{item._id}}"
           >
-            填写报价
+            <text class="btn-icon">🔍</text>
+            去接车检查
           </button>
+
+          <!-- 维修中：技师可以提交完工 -->
           <button
-            wx:else
-            class="action-btn glass-btn"
-            bindtap="viewDetail"
+            wx:if="{{item.status === 'in_repair'}}"
+            class="action-btn action-btn-primary"
+            bindtap="submitComplete"
             data-id="{{item._id}}"
           >
-            查看详情
+            <text class="btn-icon">✅</text>
+            提交完工
           </button>
         </view>
       </view>
@@ -66,13 +206,55 @@
 
     <!-- 空状态 -->
     <view wx:else class="empty-state">
-      <image class="empty-icon" src="/images/icons/empty-order.png"></image>
+      <text class="empty-icon">📋</text>
       <text class="empty-text">暂无订单</text>
+      <text class="empty-hint">当前标签下没有订单</text>
     </view>
   </view>
 
   <!-- 加载状态 -->
   <view wx:if="{{loading}}" class="loading-state">
     <text>加载中...</text>
+  </view>
+
+  <!-- 时间调整弹窗 -->
+  <view class="time-adjuster-mask" wx:if="{{showTimeAdjuster}}" bindtap="onCloseTimeAdjuster">
+    <view class="time-adjuster-popup" catchtap="">
+      <view class="adjuster-header">
+        <text class="adjuster-title">调整到店时间</text>
+        <text class="adjuster-close" bindtap="onCloseTimeAdjuster">✕</text>
+      </view>
+
+      <!-- 显示当前选择的时间 -->
+      <view class="selected-time-display" wx:if="{{selectedTimeSlot}}">
+        <text class="display-label">已选择：</text>
+        <text class="display-value">{{selectedTimeDisplayText}}</text>
+      </view>
+
+      <view class="adjuster-content">
+        <view class="adjuster-tip">
+          <text class="tip-icon">💡</text>
+          <text class="tip-text">请选择时间后点击右下角"确定"按钮保存</text>
+        </view>
+
+        <view class="time-slots">
+          <view
+            class="time-slot-item {{selectedTimeSlot === item.time ? 'active' : ''}}"
+            wx:for="{{availableTimeSlots}}"
+            wx:key="time"
+            data-time="{{item.time}}"
+            catchtap="onSelectTimeSlot"
+          >
+            <view class="slot-time">{{item.displayTime}}</view>
+            <view class="slot-desc">{{item.description}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="adjuster-footer">
+        <view class="adjuster-btn cancel-btn" bindtap="onCloseTimeAdjuster">取消</view>
+        <view class="adjuster-btn confirm-btn" bindtap="onConfirmAdjustTime">确定</view>
+      </view>
+    </view>
   </view>
 </view>

@@ -17,20 +17,58 @@
       </view>
     </view>
 
-    <!-- 服务地址 -->
+    <!-- 车辆位置 -->
     <view class="card">
-      <view class="card-title">服务地址</view>
+      <view class="card-title">车辆位置</view>
       <view class="location-info">
         <text class="location-icon">📍</text>
         <view class="location-content">
           <view class="location-address">{{serviceLocation.address}}</view>
-          <view class="location-tip">点击修改服务地址</view>
+          <view class="location-tip">点击修改车辆位置</view>
         </view>
         <button class="location-change-btn" catchtap="onChangeLocation">
           <text class="location-change-icon">📍</text>
           <text>修改地址</text>
         </button>
       </view>
+    </view>
+
+    <!-- 当前里程（必填） -->
+    <view class="card">
+      <view class="card-title">
+        <text>当前里程</text>
+        <text class="required">*</text>
+      </view>
+      <view class="mileage-input-wrapper">
+        <input
+          class="mileage-input"
+          type="digit"
+          placeholder="请输入当前里程"
+          value="{{milestone}}"
+          bindinput="onMilestoneInput"
+        />
+        <text class="mileage-unit">km</text>
+      </view>
+    </view>
+
+    <!-- 里程照片（必填，1-3张） -->
+    <view class="card">
+      <view class="card-title">
+        <text>里程照片</text>
+        <text class="required">*</text>
+        <text class="title-tip">（请拍摄仪表盘里程照片，1-3张）</text>
+      </view>
+      <view class="milestone-photos">
+        <view class="photo-item" wx:for="{{milestonePhotos}}" wx:key="*this">
+          <image class="photo-image" src="{{item}}" mode="aspectFill" bindtap="onPreviewPhoto" data-url="{{item}}" />
+          <view class="photo-delete" catchtap="onDeletePhoto" data-index="{{index}}">✕</view>
+        </view>
+        <view class="photo-add" wx:if="{{milestonePhotos.length < 3}}" bindtap="onAddMilestonePhoto">
+          <text class="photo-add-icon">+</text>
+          <text class="photo-add-text">添加照片</text>
+        </view>
+      </view>
+      <view class="photos-tip">已上传 {{milestonePhotos.length}}/3 张</view>
     </view>
 
     <!-- 保养类型 -->
@@ -225,7 +263,7 @@
     <view class="picker-mask" wx:if="{{showLocationPicker}}" bindtap="closeLocationPicker">
       <view class="location-picker-popup" catchtap="">
         <view class="picker-header">
-          <text class="picker-title">修改服务地址</text>
+          <text class="picker-title">修改车辆位置</text>
           <text class="picker-close" bindtap="closeLocationPicker">✕</text>
         </view>
 

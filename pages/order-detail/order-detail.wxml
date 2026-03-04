@@ -54,6 +54,47 @@
       </view>
     </view>
 
+    <!-- 预约时间信息 -->
+    <view class="info-card appointment-compact" wx:if="{{order.appointment && (order.appointment.expectedDate || order.appointment.expectedTimeSlot || order.appointment.confirmedDate)}}">
+      <!-- 期望时间 - 主要显示 -->
+      <view class="appointment-main" wx:if="{{order.appointment.expectedDate || order.appointment.expectedTimeSlot}}">
+        <view class="appointment-header">
+          <text class="appointment-icon">⏰</text>
+          <text class="appointment-title">司机期望到店时间</text>
+          <text class="appointment-status-tag appointment-{{order.appointment.status}}" wx:if="{{order.appointment.status}}">
+            {{order.appointment.status === 'pending' ? '待确认' : ''}}
+            {{order.appointment.status === 'confirmed' ? '已确认' : ''}}
+            {{order.appointment.status === 'adjusted' ? '已调整' : ''}}
+          </text>
+        </view>
+        <view class="appointment-time-display">
+          <text class="time-date">{{order.appointment.expectedDate}}</text>
+          <text class="time-slot">{{order.appointment.expectedTimeSlot}}</text>
+        </view>
+      </view>
+
+      <!-- 确认时间 -->
+      <view class="appointment-confirmed" wx:if="{{(order.appointment.status === 'confirmed' || order.appointment.status === 'adjusted') && order.appointment.confirmedDate}}">
+        <view class="confirmed-label">门店已确认</view>
+        <view class="confirmed-time">{{order.appointment.confirmedDate}} {{order.appointment.confirmedTimeSlot || ''}}</view>
+      </view>
+
+      <!-- 备注 -->
+      <view class="appointment-remark" wx:if="{{order.appointment.remark}}">
+        <text class="remark-text">{{order.appointment.remark}}</text>
+      </view>
+
+      <!-- 待确认提示 - 仅司机可见 -->
+      <view class="appointment-hint" wx:if="{{order.appointment.status === 'pending' && userRole === 'DRIVER'}}">
+        门店确认时间后将通知您
+      </view>
+
+      <!-- 已调整提示 -->
+      <view class="appointment-hint adjusted" wx:if="{{order.appointment.status === 'adjusted'}}">
+        门店已调整您的期望时间
+      </view>
+    </view>
+
     <!-- 车辆信息 -->
     <view class="info-card" bindtap="onVehicleDetail" data-vehicle-id="{{order.vehicleId._id}}">
       <view class="card-title">车辆信息</view>

@@ -1,9 +1,9 @@
-<!--pages/report/report.wxml - 报修申请页面-->
+<!--pages/report/report.wxml - 报修/保养申请页面（统一）-->
 <view class="page">
   <!-- 顶部标题栏 -->
   <view class="header">
-    <view class="header-title">报修申请</view>
-    <view class="header-subtitle">填写车辆故障信息</view>
+    <view class="header-title">{{type === 'maintenance' ? '保养申请' : '报修申请'}}</view>
+    <view class="header-subtitle">{{type === 'maintenance' ? '选择保养套餐，预约保养时间' : '填写车辆故障信息'}}</view>
   </view>
 
   <!-- 表单区域 -->
@@ -71,52 +71,83 @@
       <view class="fleet-tip-card">
         <view class="tip-icon">ℹ️</view>
         <view class="tip-content">
-          <view class="tip-title">由车队管理员选择门店</view>
-          <view class="tip-text">提交订单后，车队管理员将为您安排门店，请留意订单状态并及时联系门店确认到店时间</view>
+          <view class="tip-title">由车队管理员安排门店</view>
+          <view class="tip-text">提交订单后，车队管理员将为您安排合适的门店，请留意订单状态更新</view>
         </view>
       </view>
     </view>
 
-    <!-- 预约到店时间 - 紧凑按钮 -->
-    <view class="form-group" wx:if="{{allowDriverSelectStore}}">
+    <!-- 期望到店时间 - 卡片式设计 -->
+    <view class="form-group">
       <view class="form-label">
         <text class="required">*</text>
-        预约到店时间
-        <text class="label-hint">（请先联系门店预约到店时间）</text>
+        期望到店时间
       </view>
 
-      <!-- 日期时间左右布局 - 紧凑按钮 -->
-      <view class="datetime-compact-row">
-        <!-- 左侧：日期按钮 -->
+      <!-- 期望日期选择 -->
+      <view class="date-selector">
+        <view class="date-selector-label">选择日期</view>
         <picker
           mode="date"
-          value="{{appointmentDate}}"
+          value="{{expectedDate}}"
           start="{{today}}"
-          bindchange="onDateChange"
-          class="datetime-compact-picker"
+          bindchange="onExpectedDateChange"
+          class="date-picker-btn"
         >
-          <view class="compact-select-btn datetime-btn">
-            <view class="compact-select-content" wx:if="{{appointmentDate}}">
-              <text class="compact-select-value">{{appointmentDate}}</text>
-            </view>
-            <view class="compact-select-placeholder" wx:else>
-              <text class="placeholder-icon-small">📅</text>
-              <text class="compact-select-text">选择日期</text>
-            </view>
+          <view class="date-picker-content">
+            <text class="date-icon">📅</text>
+            <text class="date-value">{{expectedDate || '请选择日期'}}</text>
+            <text class="picker-arrow">›</text>
           </view>
         </picker>
+      </view>
 
-        <!-- 右侧：时间按钮 -->
-        <view class="compact-select-btn datetime-btn" bindtap="openTimePicker">
-          <view class="compact-select-content" wx:if="{{appointmentTime}}">
-            <text class="compact-select-value">{{appointmentTime}}</text>
-          </view>
-          <view class="compact-select-placeholder" wx:else>
-            <text class="placeholder-icon-small">🕐</text>
-            <text class="compact-select-text">请选择时间</text>
-          </view>
-          <text class="compact-select-arrow">›</text>
+      <!-- 时间段选项标签 -->
+      <view class="time-slots">
+        <view
+          class="time-slot {{expectedTimeSlotIndex === 0 ? 'active' : ''}}"
+          bindtap="onSelectTimeSlot"
+          data-index="0"
+        >
+          <text class="time-slot-label">08:00-10:00</text>
+          <text class="time-slot-icon">🌅</text>
         </view>
+        <view
+          class="time-slot {{expectedTimeSlotIndex === 1 ? 'active' : ''}}"
+          bindtap="onSelectTimeSlot"
+          data-index="1"
+        >
+          <text class="time-slot-label">10:00-12:00</text>
+          <text class="time-slot-icon">☀️</text>
+        </view>
+        <view
+          class="time-slot {{expectedTimeSlotIndex === 2 ? 'active' : ''}}"
+          bindtap="onSelectTimeSlot"
+          data-index="2"
+        >
+          <text class="time-slot-label">14:00-16:00</text>
+          <text class="time-slot-icon">🌤</text>
+        </view>
+        <view
+          class="time-slot {{expectedTimeSlotIndex === 3 ? 'active' : ''}}"
+          bindtap="onSelectTimeSlot"
+          data-index="3"
+        >
+          <text class="time-slot-label">16:00-18:00</text>
+          <text class="time-slot-icon">🌇</text>
+        </view>
+        <view
+          class="time-slot {{expectedTimeSlotIndex === 4 ? 'active' : ''}}"
+          bindtap="onSelectTimeSlot"
+          data-index="4"
+        >
+          <text class="time-slot-label">18:00-20:00</text>
+          <text class="time-slot-icon">🌙</text>
+        </view>
+      </view>
+
+      <view class="form-tip">
+        💡 门店将根据您的期望时间确认具体到店时间
       </view>
     </view>
 
@@ -134,6 +165,7 @@
           placeholder="请输入车辆当前里程"
           value="{{mileage}}"
           bindinput="onMileageInput"
+          maxlength="7"
         />
         <view class="mileage-photo-btn" bindtap="onChooseMileagePhoto">
           <text class="mileage-photo-icon">📷</text>
@@ -168,16 +200,133 @@
       </view>
     </view>
 
+    <!-- ===== 保养订单专用UI ===== -->
+    <!-- 推荐套餐（直接显示小/中/大保养套餐） -->
+    <view class="form-group" wx:if="{{type === 'maintenance'}}">
+      <view class="form-label">
+        <text class="required">*</text>
+        选择保养套餐
+        <text class="label-hint" wx:if="{{fleetConfig.showMaintenancePrice}}">（含价格）</text>
+      </view>
+
+      <!-- 未选择车辆的提示 -->
+      <view class="fleet-tip-card" wx:if="{{selectedVehicleIndex === -1}}">
+        <view class="tip-icon">💡</view>
+        <view class="tip-content">
+          <view class="tip-title">请先选择车辆</view>
+          <view class="tip-text">我们将根据车辆里程智能推荐合适的保养套餐</view>
+        </view>
+      </view>
+
+      <!-- 套餐列表 -->
+      <view wx:if="{{selectedVehicleIndex !== -1 && recommendedPackages.length > 0}}">
+        <view class="maintenance-tip" wx:if="{{recommendedPackages.length > 0}}">
+          根据车辆里程（{{vehicles[selectedVehicleIndex].mileage}}km）为您推荐以下套餐：
+        </view>
+      </view>
+
+      <view class="packages-list" wx:if="{{selectedVehicleIndex !== -1 && recommendedPackages.length > 0}}">
+        <view
+          class="package-item {{selectedPackageIndex === index ? 'active' : ''}}"
+          wx:for="{{recommendedPackages}}"
+          wx:key="index"
+          data-index="{{index}}"
+          bindtap="onSelectPackage"
+        >
+          <!-- 选中状态标识 -->
+          <view class="package-check-icon {{selectedPackageIndex === index ? 'checked' : ''}}">
+            <text wx:if="{{selectedPackageIndex === index}}">✓</text>
+          </view>
+
+          <!-- 套餐标题 -->
+          <view class="package-header">
+            <text class="package-name">{{item.name}}</text>
+            <view class="package-tier">
+              <text class="tier-tag">{{item.tier}}</text>
+              <text class="package-price" wx:if="{{fleetConfig.showMaintenancePrice}}">¥{{item.formattedPrice}}</text>
+            </view>
+          </view>
+
+          <!-- 套餐描述 -->
+          <view class="package-desc" wx:if="{{item.description}}">
+            <text>{{item.description}}</text>
+          </view>
+
+          <!-- 服务项目列表 -->
+          <view class="service-items-list" wx:if="{{item.serviceItems && item.serviceItems.length > 0}}">
+            <view class="service-item-row" wx:for="{{item.serviceItems}}" wx:for-item="serviceItem" wx:for-index="serviceIndex" wx:key="serviceIndex">
+              <text class="service-item-icon">{{serviceItem.icon}}</text>
+              <text class="service-item-name">{{serviceItem.name}}</text>
+              <text class="service-item-desc" wx:if="{{serviceItem.description}}">{{serviceItem.description}}</text>
+            </view>
+          </view>
+
+          <!-- 套餐标签 -->
+          <view class="package-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+            <text class="package-tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:for-index="tagIndex" wx:key="tagIndex">{{tag}}</text>
+          </view>
+
+          <!-- 查看商品详情按钮 -->
+          <view class="view-products-btn" catchtap="toggleProductDetail" data-id="{{item._id}}">
+            <text class="btn-icon">{{expandedPackageIds.indexOf(item._id) !== -1 ? '▼' : '▶'}}</text>
+            <text class="btn-text">查看商品详情</text>
+            <text class="btn-hint" wx:if="{{expandedPackageIds.indexOf(item._id) !== -1}}">（收起）</text>
+          </view>
+
+          <!-- 价格信息 -->
+          <view class="package-footer">
+            <view class="package-duration" wx:if="{{item.estimatedDuration}}">
+              <text class="duration-text">预计 {{item.estimatedDuration}} 小时</text>
+            </view>
+            <view class="package-price-detail" wx:if="{{fleetConfig.showMaintenancePrice}}">
+              <text class="original-price">原价¥{{item.formattedOriginalPrice}}</text>
+              <text class="save-price">省¥{{item.formattedSavePrice}}</text>
+            </view>
+          </view>
+
+          <!-- 商品清单（折叠展开，点击按钮后显示） -->
+          <view class="products-detail" wx:if="{{expandedPackageIds.indexOf(item._id) !== -1 && item.products && item.products.length > 0}}">
+            <view class="products-detail-header">
+              <text class="detail-title">商品清单</text>
+              <text class="detail-hint">工时费已包含在套餐价格中</text>
+            </view>
+            <view class="products-list">
+              <view class="product-item" wx:for="{{item.products}}" wx:key="productId" wx:for-item="product" wx:for-index="productIndex">
+                <text class="product-name">{{product.productId.name || '未知商品'}}</text>
+                <text class="product-spec" wx:if="{{product.productId.spec}}">规格：{{product.productId.spec}}</text>
+                <text class="product-quantity">× {{product.quantity}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 保养备注 -->
+    <view class="form-group" wx:if="{{type === 'maintenance'}}">
+      <view class="form-label">备注（选填）</view>
+      <textarea
+        class="textarea-field"
+        placeholder="如有其他需求请说明"
+        value="{{driverRemark}}"
+        bindinput="onDriverRemarkInput"
+        maxlength="500"
+        auto-height
+      />
+      <view class="char-count">{{driverRemark.length}}/500</view>
+    </view>
+
+    <!-- ===== 维修订单专用UI ===== -->
     <!-- 故障描述 - 标签快速选择 -->
-    <view class="form-group">
+    <view class="form-group" wx:if="{{type === 'repair'}}">
       <view class="form-label">
         <text class="required">*</text>
         故障类型
       </view>
       <!-- 语音输入提示 -->
       <view class="voice-input-hint">
-        <text class="hint-icon">💡</text>
-        <text class="hint-text">长按输入框可使用微信语音输入功能</text>
+        <text class="hint-icon">💬</text>
+        <text class="hint-text">说出故障更省事，长按输入框试试</text>
       </view>
       <view class="tags-container tags-compact">
         <view
@@ -201,70 +350,72 @@
       <view class="char-count">{{faultDescription.length}}/500</view>
     </view>
 
-    <!-- 图片和视频上传 - 合并为一个按钮 -->
-    <view class="form-group">
+    <!-- 图片和视频上传 - 卡片网格布局（仅维修订单） -->
+    <view class="form-group" wx:if="{{type === 'repair'}}">
       <view class="form-label">
         <text class="required">*</text>
-        故障图片/视频（必填）
+        故障图片/视频（至少上传1张）
       </view>
-      <view class="media-upload">
-        <!-- 上传按钮 -->
-        <view class="media-upload-btn" bindtap="openMediaPicker">
-          <text class="media-upload-icon">➕</text>
-          <text class="media-upload-text">添加图片或视频</text>
+      <view class="media-grid">
+        <!-- 上传按钮卡片 -->
+        <view class="media-item upload-btn-card" bindtap="openMediaPicker">
+          <view class="upload-icon-wrapper">
+            <text class="upload-icon">📷</text>
+          </view>
+          <text class="upload-text">添加</text>
         </view>
 
-        <!-- 已上传的媒体列表 -->
-        <view class="media-list">
-          <!-- 图片 -->
+        <!-- 已上传的图片 -->
+        <view
+          class="media-item"
+          wx:for="{{faultImages}}"
+          wx:key="*this"
+        >
+          <image
+            class="uploaded-media"
+            src="{{item}}"
+            mode="aspectFill"
+            bindtap="onPreviewImage"
+            data-url="{{item}}"
+          />
           <view
-            class="media-item image-item"
-            wx:for="{{faultImages}}"
-            wx:key="*this"
+            class="delete-btn"
+            bindtap="onDeleteImage"
+            data-index="{{index}}"
           >
-            <image
-              class="uploaded-media"
-              src="{{item}}"
-              mode="aspectFill"
-              bindtap="onPreviewImage"
-              data-url="{{item}}"
-            />
-            <view
-              class="delete-btn"
-              bindtap="onDeleteImage"
-              data-index="{{index}}"
-            >
-              ✕
-            </view>
+            ✕
           </view>
-          <!-- 视频 -->
+        </view>
+
+        <!-- 已上传的视频 -->
+        <view
+          class="media-item"
+          wx:for="{{faultVideos}}"
+          wx:for-index="videoIndex"
+          wx:key="*this"
+        >
+          <video
+            class="uploaded-media"
+            src="{{item}}"
+            object-fit="cover"
+          />
+          <view class="video-badge">视频</view>
           <view
-            class="media-item video-item"
-            wx:for="{{faultVideos}}"
-            wx:for-index="videoIndex"
-            wx:key="*this"
+            class="delete-btn"
+            bindtap="onDeleteVideo"
+            data-index="{{videoIndex}}"
           >
-            <video
-              class="uploaded-media"
-              src="{{item}}"
-              show-center-play-btn="{{true}}"
-              controls="{{true}}"
-            />
-            <view
-              class="delete-btn"
-              bindtap="onDeleteVideo"
-              data-index="{{videoIndex}}"
-            >
-              ✕
-            </view>
+            ✕
           </view>
         </view>
       </view>
-      <view class="upload-hint">请至少上传一张图片或视频，方便门店了解故障情况</view>
+      <view class="form-tip">
+        💡 最多可上传9张图片或3个视频
+      </view>
     </view>
 
-    <!-- 备注 -->
-    <view class="form-group">
+    <!-- 备注（仅维修订单） -->
+    <view class="form-group" wx:if="{{type === 'repair'}}">
       <view class="form-label">补充说明（选填）</view>
       <textarea
         class="textarea-field"
@@ -283,16 +434,16 @@
       bindtap="onSubmit"
       disabled="{{submitting}}"
     >
-      {{submitting ? '提交中...' : '提交报修申请'}}
+      {{submitting ? '提交中...' : (type === 'maintenance' ? '提交保养申请' : '提交报修申请')}}
     </button>
 
     <!-- 提示信息 -->
     <view class="tips">
       <view class="tip-title">💡 温馨提示</view>
-      <view class="tip-item">• 点击卡片即可选择车辆和门店</view>
-      <view class="tip-item">• 可使用语音输入或点选故障标签快速填写</view>
-      <view class="tip-item">• 点击门店电话可直接拨打</view>
-      <view class="tip-item">• 必须上传图片或视频才能提交</view>
+      <view class="tip-item" wx:if="{{type === 'repair'}}">• 可使用语音输入或点选故障标签快速填写</view>
+      <view class="tip-item">• 必须上传里程照片</view>
+      <view class="tip-item" wx:if="{{type === 'repair'}}">• 必须上传图片或视频才能提交</view>
+      <view class="tip-item">• 保养套餐一口价，透明实惠</view>
     </view>
   </view>
 
@@ -319,40 +470,134 @@
     </view>
   </view>
 
-  <!-- 门店选择弹窗 -->
-  <view class="picker-mask" wx:if="{{showStorePicker}}" bindtap="closeStorePicker">
-    <view class="picker-popup" catchtap="">
-      <view class="picker-header">
-        <text class="picker-title">选择门店</text>
-        <text class="picker-close" bindtap="closeStorePicker">✕</text>
+  <!-- 门店选择弹窗（复用订单详情页的丰富UI） -->
+  <view class="store-picker-mask" wx:if="{{showStorePicker}}" bindtap="closeStorePicker">
+    <view class="store-picker-popup" catchtap="">
+      <view class="store-picker-header">
+        <text class="store-picker-title">选择门店</text>
+        <text class="store-picker-close" bindtap="closeStorePicker">✕</text>
       </view>
-      <scroll-view class="picker-list" scroll-y="">
+      <scroll-view class="store-picker-list" scroll-y="">
         <view
-          class="picker-item store-picker-item {{selectedStoreIndex === index ? 'active' : ''}}"
+          class="store-picker-item {{selectedStoreIndex === index ? 'active' : ''}}"
           wx:for="{{stores}}"
           wx:key="_id"
           data-index="{{index}}"
           bindtap="onStoreSelect"
         >
-          <view class="store-picker-content">
-            <view class="store-picker-header">
-              <view class="picker-item-main">{{item.label}}</view>
-              <text class="picker-check" wx:if="{{selectedStoreIndex === index}}">✓</text>
+          <view class="store-item-main">
+            <view class="store-item-header">
+              <view class="store-item-name">{{item.label}}</view>
+              <view class="store-item-check" wx:if="{{selectedStoreIndex === index}}">✓</view>
             </view>
-            <view class="picker-item-sub">{{item.sublabel}}</view>
-            <view class="store-picker-details">
-              <view class="store-detail-row">
-                <text class="store-detail-icon">🕐</text>
-                <text class="store-detail-text">{{item.businessHours}}</text>
-                <text class="store-detail-icon" style="margin-left: 20rpx;">👤</text>
-                <text class="store-detail-text">{{item.contactName}}</text>
-                <text class="store-detail-icon" style="margin-left: 20rpx;">📞</text>
-                <text class="store-detail-text phone-tap" catchtap="makePhoneCall" data-phone="{{item.contactPhone}}">{{item.contactPhone}}</text>
+            <view class="store-item-info">
+              <text class="store-item-distance" wx:if="{{item.distance !== undefined}}">{{item.distance}}km</text>
+              <text class="store-item-location" wx:if="{{item.address && item.address.district}}">📍 {{item.address.district}}</text>
+              <text class="store-item-rating" wx:if="{{item.ratingStats && item.ratingStats.overallRating > 0}}">
+                {{item.ratingStats.overallRating}}分
+                <text wx:if="{{item.ratingStats.reviewCount > 0}}">（{{item.ratingStats.reviewCount}}条）</text>
+              </text>
+              <text class="store-item-rating" wx:else>暂无评价</text>
+            </view>
+            <view class="store-item-details">
+              <view class="store-item-detail" wx:if="{{item.businessHours}}">
+                <text class="detail-icon">🕐</text>
+                <text class="detail-text">{{item.businessHours}}</text>
+              </view>
+              <view class="store-item-detail" wx:if="{{item.contactPhone}}">
+                <text class="detail-icon">📞</text>
+                <text class="detail-text phone-tap" catchtap="makePhoneCall" data-phone="{{item.contactPhone}}">{{item.contactPhone}}</text>
               </view>
             </view>
           </view>
+          <view class="store-item-actions">
+            <button class="store-detail-btn" catchtap="onViewStoreDetail" data-store="{{item}}">查看详情</button>
+          </view>
         </view>
       </scroll-view>
+      <view class="store-picker-footer">
+        <button class="store-picker-cancel" bindtap="closeStorePicker">取消</button>
+        <button class="store-picker-confirm" bindtap="onConfirmStoreSelect" disabled="{{selectedStoreIndex === -1}}">确认</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 门店详情弹窗（复用订单详情页的设计） -->
+  <view class="store-detail-mask" wx:if="{{showStoreDetail}}" bindtap="onCloseStoreDetail">
+    <view class="store-detail-popup" catchtap="">
+      <view class="store-detail-header">
+        <view class="store-detail-title">{{storeDetail.name}}</view>
+        <text class="store-detail-close" bindtap="onCloseStoreDetail">✕</text>
+      </view>
+
+      <scroll-view class="store-detail-content" scroll-y>
+        <!-- 评分概览 -->
+        <view class="detail-rating-card">
+          <view class="rating-overview">
+            <text class="rating-score">{{storeDetail.ratingStats.overallRating || 0}}</text>
+            <view class="rating-stars">
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 1 ? '★' : '☆'}}</text>
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 2 ? '★' : '☆'}}</text>
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 3 ? '★' : '☆'}}</text>
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 4 ? '★' : '☆'}}</text>
+              <text class="star">{{storeDetail.ratingStats.overallRating >= 5 ? '★' : '☆'}}</text>
+            </view>
+            <text class="rating-count">{{storeDetail.ratingStats.reviewCount || 0}}条评价</text>
+          </view>
+        </view>
+
+        <!-- 门店信息 -->
+        <view class="detail-section">
+          <view class="detail-section-title">门店信息</view>
+          <view class="detail-info-list">
+            <view class="detail-info-item" wx:if="{{storeDetail.address}}">
+              <text class="info-icon">📍</text>
+              <text class="info-text">{{storeDetail.address.city}} {{storeDetail.address.district}} {{storeDetail.address.detail}}</text>
+            </view>
+            <view class="detail-info-item" wx:if="{{storeDetail.businessHours}}">
+              <text class="info-icon">🕐</text>
+              <text class="info-text">{{storeDetail.businessHours}}</text>
+            </view>
+            <view class="detail-info-item" wx:if="{{storeDetail.contactPhone}}">
+              <text class="info-icon">📞</text>
+              <text class="info-text">{{storeDetail.contactPhone}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 最近评价 -->
+        <view class="detail-section" wx:if="{{storeDetailReviews && storeDetailReviews.length > 0}}">
+          <view class="detail-section-title">最近评价</view>
+          <view class="review-list">
+            <view class="review-item" wx:for="{{storeDetailReviews}}" wx:key="_id" wx:for-item="review">
+              <view class="review-header">
+                <view class="review-author">{{review.anonymous ? '匿名用户' : review.reviewerId.nickname}}</view>
+                <view class="review-rating">
+                  <text class="review-star" wx:for="{{5}}" wx:for-item="star" wx:key="*this">
+                    {{star <= review.overallRating ? '★' : '☆'}}
+                  </text>
+                </view>
+              </view>
+              <view class="review-comment" wx:if="{{review.comment}}">{{review.comment}}</view>
+              <view class="review-time">{{review.createdAtText}}</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 暂无评价提示 -->
+        <view class="detail-section" wx:else>
+          <view class="no-reviews">
+            <text class="no-reviews-icon">💬</text>
+            <text class="no-reviews-text">暂无评价</text>
+            <text class="no-reviews-hint">成为第一个评价的人</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 底部操作 -->
+      <view class="store-detail-footer">
+        <button class="detail-close-btn" bindtap="onCloseStoreDetail">关闭</button>
+      </view>
     </view>
   </view>
 
@@ -446,7 +691,8 @@
         <text class="picker-title">修改服务地址</text>
         <text class="picker-close" bindtap="closeLocationPicker">✕</text>
       </view>
-      <view class="location-picker-content">
+      <scroll-view class="location-picker-content" scroll-y="{{true}}">
+        <!-- 地图选择 -->
         <view class="location-picker-option" bindtap="onLocationSelect">
           <view class="location-option-icon">📍</view>
           <view class="location-option-text">
@@ -454,11 +700,39 @@
             <view class="location-option-desc">精确定位到您的位置</view>
           </view>
         </view>
+
+        <!-- 常用地址列表 -->
+        <view class="location-divider" wx:if="{{savedAddresses.length > 0}}">
+          <text class="divider-text">常用地址</text>
+        </view>
+
+        <view
+          class="address-item"
+          wx:for="{{savedAddresses}}"
+          wx:key="_id"
+          bindtap="onSelectSavedAddress"
+          data-address="{{item}}"
+        >
+          <view class="address-item-icon">📋</view>
+          <view class="address-item-content">
+            <view class="address-item-name">{{item.name}}</view>
+            <view class="address-item-detail">{{item.address}}</view>
+          </view>
+          <text class="address-item-check" wx:if="{{item.isDefault}}">默认</text>
+        </view>
+
+        <!-- 管理常用地址入口 -->
+        <view class="location-manage-btn" bindtap="onManageAddresses">
+          <text class="manage-icon">⚙️</text>
+          <text class="manage-text">管理常用地址</text>
+        </view>
+
+        <!-- 当前位置显示 -->
         <view class="location-picker-current">
-          <view class="location-current-label">当前服务地址</view>
+          <view class="location-current-label">当前选择</view>
           <view class="location-current-value">{{serviceLocation.address}}</view>
         </view>
-      </view>
+      </scroll-view>
     </view>
   </view>
 </view>

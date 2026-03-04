@@ -13,7 +13,7 @@
         <view class="form-label">地址名称 <text class="required">*</text></view>
         <input
           class="form-input"
-          placeholder="例如：万联驿站北京中心店"
+          placeholder="例如：万联驿站2.0北京中心店"
           value="{{formData.name}}"
           bindinput="onInputChange"
           data-field="name"

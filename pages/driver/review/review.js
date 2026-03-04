@@ -15,22 +15,28 @@ Page({
       pricingTransparency: 5 // 收费透明度
     },
 
-    // 评分文字描述
+    // 评分文字描述（行业最佳实践）
     ratingTexts: {
       1: '非常不满意',
-      1.5: '不满意',
       2: '不满意',
-      2.5: '一般',
       3: '一般',
-      3.5: '满意',
       4: '满意',
-      4.5: '非常满意',
       5: '非常满意'
     },
 
     // 评价内容
     comment: '',
-    selectedTags: [], // 选中的标签
+    selectedTags: [], // 选中的标签列表
+    tagsStatus: {    // 标签选中状态（用于WXML判断）
+      '技术专业': false,
+      '服务热情': false,
+      '完工迅速': false,
+      '价格公道': false,
+      '环境整洁': false,
+      '响应及时': false,
+      '收费透明': false,
+      '值得信赖': false
+    },
     anonymous: false // 是否匿名
   },
 
@@ -147,13 +153,15 @@ Page({
     if (selectedTags.includes(tag)) {
       // 取消选择
       this.setData({
-        selectedTags: selectedTags.filter(t => t !== tag)
+        selectedTags: selectedTags.filter(t => t !== tag),
+        [`tagsStatus.${tag}`]: false
       });
     } else {
       // 添加选择（最多选5个）
       if (selectedTags.length < 5) {
         this.setData({
-          selectedTags: [...selectedTags, tag]
+          selectedTags: [...selectedTags, tag],
+          [`tagsStatus.${tag}`]: true
         });
       } else {
         wx.showToast({

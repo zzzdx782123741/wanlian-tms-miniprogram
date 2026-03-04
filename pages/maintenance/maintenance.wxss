@@ -80,7 +80,7 @@
   font-weight: 500;
 }
 
-/* 服务地址 */
+/* 我的位置 */
 .location-info {
   display: flex;
   align-items: center;
@@ -646,4 +646,100 @@
   font-size: 26rpx;
   color: #606266;
   line-height: 1.6;
+}
+
+/* 必填标记 */
+.required {
+  color: #f56c6c;
+  margin-left: 4rpx;
+  font-size: 28rpx;
+}
+
+/* 里程输入 */
+.mileage-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 24rpx;
+  background-color: #f5f7fa;
+  border-radius: 12rpx;
+}
+
+.mileage-input {
+  flex: 1;
+  font-size: 32rpx;
+  color: #1a1a1a;
+}
+
+.mileage-unit {
+  font-size: 28rpx;
+  color: #909399;
+}
+
+/* 里程照片 */
+.milestone-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.photo-item {
+  position: relative;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+}
+
+.photo-delete {
+  position: absolute;
+  top: 8rpx;
+  right: 8rpx;
+  width: 48rpx;
+  height: 48rpx;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.photo-add {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 12rpx;
+  border: 2rpx dashed #dcdfe6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  background-color: #fafafa;
+}
+
+.photo-add-icon {
+  font-size: 48rpx;
+  color: #909399;
+  line-height: 1;
+}
+
+.photo-add-text {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+.photos-tip {
+  font-size: 24rpx;
+  color: #909399;
+  text-align: center;
 }
