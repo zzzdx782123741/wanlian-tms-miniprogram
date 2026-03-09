@@ -135,8 +135,6 @@ Page({
 
   // 获取状态信息
   getStatusInfo(status, order) {
-    const isConfirmed = order && order.completion && order.completion.confirmedBy;
-
     const statusMap = {
       'awaiting_fleet_approval': {
         text: '待车队审批',
@@ -188,10 +186,15 @@ Page({
         type: 'warning',
         tip: '维修增项等待车队管理员审批'
       },
+      'pending_confirmation': {
+        text: '待确认',
+        type: 'warning',
+        tip: '维修已完成，等待司机确认'
+      },
       'completed': {
-        text: isConfirmed ? '已完成' : '待确认',
+        text: '已完成',
         type: 'success',
-        tip: isConfirmed ? '维修已完成，司机已确认' : '维修已完成，等待司机确认'
+        tip: '维修已完成，司机已确认'
       },
       'confirmed': {
         text: '已确认',

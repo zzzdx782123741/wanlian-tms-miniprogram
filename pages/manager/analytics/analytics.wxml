@@ -1,0 +1,101 @@
+<!--pages/manager/analytics/analytics.wxml-->
+<view class="analytics-container">
+  <!-- 时间筛选 -->
+  <view class="filter-bar">
+    <view class="filter-tabs">
+      <view
+        class="filter-tab {{timeRange === 'week' ? 'active' : ''}}"
+        bindtap="selectTimeRange"
+        data-range="week"
+      >
+        本周
+      </view>
+      <view
+        class="filter-tab {{timeRange === 'month' ? 'active' : ''}}"
+        bindtap="selectTimeRange"
+        data-range="month"
+      >
+        本月
+      </view>
+      <view
+        class="filter-tab {{timeRange === 'quarter' ? 'active' : ''}}"
+        bindtap="selectTimeRange"
+        data-range="quarter"
+      >
+        本季度
+      </view>
+    </view>
+  </view>
+
+  <!-- 订单统计 -->
+  <view class="section">
+    <view class="section-title">订单统计</view>
+    <view class="stats-grid">
+      <view class="stat-card">
+        <view class="stat-value">{{orderStats.total || 0}}</view>
+        <view class="stat-label">总订单数</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-value">{{orderStats.completed || 0}}</view>
+        <view class="stat-label">已完成</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-value">{{orderStats.processing || 0}}</view>
+        <view class="stat-label">处理中</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-value">¥{{orderStats.avgAmount || 0}}</view>
+        <view class="stat-label">客单价(元)</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 订单类型分布 -->
+  <view class="section">
+    <view class="section-title">订单类型分布</view>
+    <view class="chart-card">
+      <view class="chart-placeholder">
+        <text class="chart-text">维修订单: {{orderStats.repair || 0}}单</text>
+        <text class="chart-text">保养订单: {{orderStats.maintenance || 0}}单</text>
+      </view>
+ </view>
+  </view>
+
+  <!-- 收入趋势 -->
+  <view class="section">
+    <view class="section-title">收入趋势</view>
+    <view class="chart-card">
+      <view class="chart-placeholder">
+        <text class="chart-text">本周收入: ¥{{incomeStats.week || 0}}</text>
+        <text class="chart-text">上周收入: ¥{{incomeStats.lastWeek || 0}}</text>
+        <text class="chart-trend {{incomeStats.weekGrowth >= 0 ? 'up' : 'down'}}">
+          {{incomeStats.weekGrowth >= 0 ? '↑' : '↓'}} {{Math.abs(incomeStats.weekGrowth) || 0}}%
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 客户分析 -->
+  <view class="section">
+    <view class="section-title">客户分析</view>
+    <view class="client-stats">
+      <view class="client-stat">
+        <view class="client-label">合作车队</view>
+        <view class="client-value">{{clientStats.fleets || 0}}家</view>
+      </view>
+      <view class="client-stat">
+        <view class="client-label">活跃车队</view>
+        <view class="client-value">{{clientStats.activeFleets || 0}}家</view>
+      </view>
+      <view class="client-stat">
+        <view class="client-label">门店评分</view>
+        <view class="client-value">{{clientStats.rating || '5.0'}}分</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导出按钮 -->
+  <view class="action-buttons">
+    <button class="btn outline" bindtap="exportOrders">导出订单报表</button>
+  </view>
+</view>

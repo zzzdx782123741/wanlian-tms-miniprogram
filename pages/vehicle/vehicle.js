@@ -39,7 +39,29 @@ Page({
 
     // 更新自定义 tabBar 选中状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().updateTabBar();
+      const tabBar = this.getTabBar();
+
+      // 重新加载角色（增强容错性）
+      const role = app.globalData.role || wx.getStorageSync('role') || '';
+      console.log('[车辆页] onShow - 当前角色:', role);
+
+      // 如果角色为空，尝试从userInfo中提取
+      if (!role) {
+        const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+        if (userInfo && userInfo.role) {
+          const extractedRole = typeof userInfo.role === 'object' ? userInfo.role.type : userInfo.role;
+          if (extractedRole) {
+            app.globalData.role = extractedRole;
+            wx.setStorageSync('role', extractedRole);
+            console.log('[车辆页] 从userInfo提取角色:', extractedRole);
+            tabBar.setData({ role: extractedRole });
+          }
+        }
+      } else {
+        tabBar.setData({ role });
+      }
+
+      tabBar.updateTabBar();
     }
   },
 

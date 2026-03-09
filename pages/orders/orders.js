@@ -1,16 +1,19 @@
 // pages/orders/orders.js - 订单列表页面（支持所有角色）
 const app = getApp();
 const request = require('../../utils/request');
+const format = require('../../utils/format');
 const VEHICLE_FILTER_TTL = 30 * 1000;
 
 Page({
   data: {
     activeTab: 'all',
     orders: [],
+    allOrders: [], // 保存所有订单用于搜索
     loading: false,
     role: '',
     filterVehicleId: '',
     filterVehiclePlate: '',
+    searchQuery: '', // 搜索关键词
     // 标签配置（根据角色动态生成）
     tabs: [],
     // 时间调整弹窗相关
@@ -82,7 +85,29 @@ Page({
 
     // 更新自定义 tabBar 选中状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().updateTabBar();
+      const tabBar = this.getTabBar();
+
+      // 重新加载角色（增强容错性）
+      const role = app.globalData.role || wx.getStorageSync('role') || '';
+      console.log('[订单页] onShow - 当前角色:', role);
+
+      // 如果角色为空，尝试从userInfo中提取
+      if (!role) {
+        const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+        if (userInfo && userInfo.role) {
+          const extractedRole = typeof userInfo.role === 'object' ? userInfo.role.type : userInfo.role;
+          if (extractedRole) {
+            app.globalData.role = extractedRole;
+            wx.setStorageSync('role', extractedRole);
+            console.log('[订单页] 从userInfo提取角色:', extractedRole);
+            tabBar.setData({ role: extractedRole });
+          }
+        }
+      } else {
+        tabBar.setData({ role });
+      }
+
+      tabBar.updateTabBar();
     }
   },
 
@@ -160,7 +185,7 @@ Page({
         } else if (activeTab === 'processing') {
           status = 'awaiting_approval,in_repair,awaiting_addon_approval';
         } else if (activeTab === 'completed') {
-          status = 'completed';
+          status = 'pending_confirmation,completed';
         }
       } else {
         // 其他角色
@@ -169,7 +194,7 @@ Page({
         } else if (activeTab === 'processing') {
           status = 'awaiting_approval,in_repair,awaiting_addon_approval';
         } else if (activeTab === 'completed') {
-          status = 'completed';
+          status = 'pending_confirmation,completed';
         }
       }
 
@@ -188,8 +213,14 @@ Page({
 
       this.setData({
         orders,
+        allOrders: orders, // 保存所有订单用于搜索
         loading: false
       });
+
+      // 如果有搜索关键词，执行搜索
+      if (this.data.searchQuery) {
+        this.performSearch();
+      }
 
     } catch (error) {
       console.error('加载订单失败:', error);
@@ -244,7 +275,27 @@ Page({
   formatOrders(orders) {
     if (!Array.isArray(orders)) return [];
 
+    console.log('========== formatOrders 调试 ==========');
+    console.log('原始订单数量:', orders.length);
+
+    // 测试解码函数
+    console.log('=== 测试解码函数 ===');
+    console.log('"A &gt; B" → ', format.decodeHTMLEntities('A &gt; B'));
+    console.log('"A &amp;gt; B" → ', format.decodeHTMLEntities('A &amp;gt; B'));
+
     return orders.map(order => {
+      // 调试：打印每个订单的原始数据
+      console.log('--- 单个订单 ---');
+      const originalBrand = order.vehicleId?.brand;
+      const originalModel = order.vehicleId?.model;
+      console.log('品牌原始值:', originalBrand);
+      console.log('型号原始值:', originalModel);
+
+      // 测试解码
+      if (originalBrand) {
+        console.log('品牌解码后:', format.decodeHTMLEntities(originalBrand));
+      }
+
       // 判断是否已确认
       const isConfirmed = order.completion && order.completion.confirmedBy;
 
@@ -266,7 +317,8 @@ Page({
         'awaiting_approval': { text: '待审批报价', type: 'info' },
         'in_repair': { text: '维修中', type: 'primary' },
         'awaiting_addon_approval': { text: '增项待审批', type: 'warning' },
-        'completed': { text: isConfirmed ? '已完成' : '待确认', type: 'success' },
+        'pending_confirmation': { text: '待确认', type: 'warning' },
+        'completed': { text: '已完成', type: 'success' },
         'confirmed': { text: '已完成', type: 'success' },
         'rejected': { text: '已拒绝', type: 'error' }
       };
@@ -290,6 +342,15 @@ Page({
         };
       }
 
+      const vehicleInfo = {
+        plateNumber: format.decodeHTMLEntities(order.vehicleId?.plateNumber) || '未知车牌',
+        brand: format.decodeHTMLEntities(order.vehicleId?.brand) || '',
+        model: format.decodeHTMLEntities(order.vehicleId?.model) || ''
+      };
+
+      // 调试：打印格式化后的车辆信息
+      console.log('=== 格式化后 vehicleInfo ===', vehicleInfo);
+
       return {
         ...order,
         statusText: statusInfo.text,
@@ -297,11 +358,7 @@ Page({
         isConfirmed,
         isReviewed,
         canReview,
-        vehicleInfo: {
-          plateNumber: order.vehicleId?.plateNumber || '未知车牌',
-          brand: order.vehicleId?.brand || '',
-          model: order.vehicleId?.model || ''
-        },
+        vehicleInfo,
         createdAtText: this.formatTime(order.createdAt),
         createdAt: this.formatDate(order.createdAt),
         appointment: formattedAppointment,
@@ -360,6 +417,7 @@ Page({
       'awaiting_approval': 'info',
       'in_repair': 'primary',
       'awaiting_addon_approval': 'warning',
+      'pending_confirmation': 'warning',
       'completed': 'success',
       'confirmed': 'success',
       'rejected': 'error'
@@ -452,10 +510,10 @@ Page({
             wx.showLoading({ title: '确认中...' });
 
             // 调用后端API确认时间（使用原始值）
+            // 注意：系统会自动检测时间是否被调整，如果调整了会自动通知司机
             await request.put(`/orders/${id}/confirm-time`, {
               confirmedDate: order.appointment.expectedDateOriginal,
-              confirmedTimeSlot: order.appointment.expectedTimeSlotOriginal || '08:00-10:00',
-              adjusted: false
+              confirmedTimeSlot: order.appointment.expectedTimeSlotOriginal || '08:00-10:00'
             });
 
             wx.hideLoading();
@@ -595,17 +653,27 @@ Page({
     try {
       wx.showLoading({ title: '确认中...' });
 
-      await request.put(`/orders/${this.data.currentOrderId}/confirm-time`, {
+      // 注意：系统会自动检测时间是否被调整，如果调整了会自动通知司机
+      const response = await request.put(`/orders/${this.data.currentOrderId}/confirm-time`, {
         confirmedDate: selectedSlot.date,
-        confirmedTimeSlot: selectedSlot.timeSlot,
-        adjusted: true
+        confirmedTimeSlot: selectedSlot.timeSlot
       });
 
       wx.hideLoading();
-      wx.showToast({
-        title: '已调整时间',
-        icon: 'success'
-      });
+
+      // 根据后端响应显示不同提示
+      if (response.data && response.data.timeAdjusted) {
+        wx.showToast({
+          title: '已调整时间并通知司机',
+          icon: 'success',
+          duration: 2000
+        });
+      } else {
+        wx.showToast({
+          title: '已调整时间',
+          icon: 'success'
+        });
+      }
 
       // 关闭弹窗
       this.onCloseTimeAdjuster();
@@ -742,5 +810,67 @@ Page({
     };
 
     return timeSlotMap[timeSlot] || timeSlot;
+  },
+
+  /**
+   * 搜索输入
+   */
+  onSearchInput(e) {
+    const searchQuery = e.detail.value;
+    this.setData({ searchQuery });
+    this.performSearch(searchQuery);
+  },
+
+  /**
+   * 执行搜索（按回车）
+   */
+  onSearch() {
+    this.performSearch(this.data.searchQuery);
+  },
+
+  /**
+   * 清除搜索
+   */
+  onClearSearch() {
+    this.setData({
+      searchQuery: '',
+      orders: this.data.allOrders
+    });
+  },
+
+  /**
+   * 执行搜索逻辑
+   */
+  performSearch(query) {
+    const trimmedQuery = (query || this.data.searchQuery || '').trim().toLowerCase();
+
+    if (!trimmedQuery) {
+      // 搜索框为空，显示所有订单
+      this.setData({
+        orders: this.data.allOrders
+      });
+      return;
+    }
+
+    // 过滤订单（支持车牌号、订单号搜索）
+    const filteredOrders = this.data.allOrders.filter(order => {
+      const plateNumber = (order.vehicleInfo?.plateNumber || '').toLowerCase();
+      const orderNumber = (order.orderNumber || '').toLowerCase();
+
+      return plateNumber.includes(trimmedQuery) || orderNumber.includes(trimmedQuery);
+    });
+
+    this.setData({
+      orders: filteredOrders
+    });
+
+    // 提示用户搜索结果
+    if (filteredOrders.length === 0) {
+      wx.showToast({
+        title: '未找到匹配的订单',
+        icon: 'none',
+        duration: 1500
+      });
+    }
   }
 });

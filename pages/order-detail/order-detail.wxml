@@ -435,7 +435,7 @@
       <!-- 司机确认按钮 -->
       <button
         class="action-btn confirm"
-        wx:if="{{order.status === 'completed' && userRole === 'DRIVER' && !(order.completion && order.completion.confirmedBy)}}"
+        wx:if="{{userRole === 'DRIVER' && (order.status === 'pending_confirmation' || (order.status === 'completed' && !(order.completion && order.completion.confirmedBy)))}}"
         bindtap="onConfirmOrder"
       >
         <text class="btn-icon">✓</text>

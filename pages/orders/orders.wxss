@@ -1,6 +1,5 @@
 /**
  * 订单列表页面样式 - 现代化设计
- * Order List Styles - Modern Design
  */
 
 /* 页面容器 */
@@ -27,6 +26,57 @@
 .header-subtitle {
   font-size: 24rpx;
   color: rgba(255, 255, 255, 0.8);
+}
+
+/* ========== 搜索框 ========== */
+.search-container {
+  background: #fff;
+  padding: 24rpx 32rpx;
+  margin: -40rpx 32rpx 0;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+  background: #F1F5F9;
+  border-radius: 20rpx;
+  padding: 0 20rpx;
+}
+
+.search-icon {
+  font-size: 28rpx;
+  margin-right: 10rpx;
+  opacity: 0.4;
+}
+
+.search-input {
+  flex: 1;
+  height: 100%;
+  font-size: 26rpx;
+  color: #0F172A;
+  background: transparent;
+  border: none;
+}
+
+.search-input::placeholder {
+  color: #94A3B8;
+}
+
+.search-clear {
+  width: 36rpx;
+  height: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 18rpx;
+  font-size: 22rpx;
+  color: #64748B;
+  margin-left: 10rpx;
 }
 
 /* 车辆筛选提示 */

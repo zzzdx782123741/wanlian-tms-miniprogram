@@ -1,0 +1,184 @@
+/* pages/manager/analytics/analytics.wxss */
+.analytics-container {
+  min-height: 100vh;
+  background: #F5F7FA;
+  padding-bottom: 30rpx;
+}
+
+/* 筛选栏 */
+.filter-bar {
+  background: #fff;
+  padding: 20rpx 30rpx;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 20rpx;
+}
+
+.filter-tab {
+  flex: 1;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F5F7FA;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.filter-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+/* 统计卡片 */
+.stats-section {
+  margin-top: 30rpx;
+  padding: 0 30rpx;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.stat-card {
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 16rpx;
+}
+
+.stat-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.stat-value {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.stat-trend {
+  font-size: 24rpx;
+  color: #52C41A;
+  margin-top: 8rpx;
+}
+
+.stat-trend.decline {
+  color: #FF4D4F;
+}
+
+/* 图表 */
+.chart-section {
+  margin-top: 30rpx;
+  padding: 0 30rpx;
+}
+
+.chart-card {
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 16rpx;
+}
+
+.chart-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.chart-placeholder {
+  height: 400rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F5F7FA;
+  border-radius: 12rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 列表 */
+.list-section {
+  margin-top: 30rpx;
+  padding: 0 30rpx;
+}
+
+.list-card {
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.item-rank {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: #F5F7FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #666;
+  margin-right: 20rpx;
+}
+
+.item-rank.top3 {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: #fff;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-name {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.item-meta {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.item-value {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.loading {
+  text-align: center;
+  padding: 40rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.empty {
+  text-align: center;
+  padding: 80rpx 40rpx;
+  color: #999;
+  font-size: 28rpx;
+}

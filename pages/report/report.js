@@ -2,6 +2,7 @@
 const app = getApp();
 const request = require('../../utils/request');
 const mapConfig = require('../../config/map.config');
+const { localizePackage } = require('../../utils/maintenance-localizer');
 
 // 引入腾讯地图SDK（如果SDK文件存在）
 let qqmapsdk = null;
@@ -40,7 +41,7 @@ Page({
     },
 
     // 车队配置
-    allowDriverSelectStore: false, // 是否允许司机选择门店（报修默认管理员选，保养默认司机选）
+    allowDriverSelectStore: undefined, // 是否允许司机选择门店（从车队配置加载，不设置默认值）
 
     // 故障标签
     faultTags: [
@@ -124,14 +125,11 @@ Page({
     const requestType = options.type || 'repair'; // 默认为报修
     this.setData({ type: requestType });
 
-    // 根据订单类型设置默认值
+    // 统一规则：报修和保养都根据车队配置决定，不再设置默认值
+    // 默认值将在 loadFleetConfig() 中根据车队配置设置
     if (requestType === 'maintenance') {
-      // 保养申请：默认司机选门店
-      this.setData({ allowDriverSelectStore: true });
       wx.setNavigationBarTitle({ title: '保养申请' });
     } else {
-      // 报修申请：默认管理员选门店
-      this.setData({ allowDriverSelectStore: false });
       wx.setNavigationBarTitle({ title: '报修申请' });
     }
 
@@ -1122,6 +1120,11 @@ Page({
    * 提交报修/保养申请
    */
   async onSubmit() {
+    console.log('========== 用户提交表单 ==========');
+    console.log('当前车队配置 allowDriverSelectStore =', this.data.allowDriverSelectStore);
+    console.log('已选择门店索引 =', this.data.selectedStoreIndex);
+    console.log('订单类型 =', this.data.type);
+
     // 验证表单
     if (this.data.selectedVehicleIndex === -1) {
       wx.showToast({
@@ -1133,9 +1136,12 @@ Page({
 
     // 根据车队配置验证门店选择
     if (this.data.allowDriverSelectStore && this.data.selectedStoreIndex === -1) {
-      wx.showToast({
+      console.error('❌ 车队配置要求司机必须选择门店，但用户未选择');
+      wx.showModal({
         title: '请选择门店',
-        icon: 'none'
+        content: '根据车队配置，您需要选择一个维修门店',
+        showCancel: false,
+        confirmText: '我知道了'
       });
       return;
     }
@@ -1381,49 +1387,57 @@ Page({
    * 加载车队配置
    */
   async loadFleetConfig() {
+    console.log('========== 开始加载车队配置 ==========');
     try {
-      const res = await request.get('/user/me');
+      // 获取用户信息
+      const meRes = await request.get('/user/me');
+      const meData = meRes.data;
 
-      // 调试日志
-      console.log('🔍 /user/me 响应数据:', res.data);
-      console.log('🔍 fleets 字段:', res.data.fleets);
-      console.log('🔍 fleetInfo 字段:', res.data.fleetInfo);
+      console.log('🔍 /user/me 响应数据:', meData);
+      console.log('🔍 fleets 字段:', meData.fleets);
+      console.log('🔍 fleetInfo 字段:', meData.fleetInfo);
 
       // 司机使用 fleets 数组，车队管理员使用 fleetInfo
       let fleetId = null;
 
-      if (res.data.fleets && res.data.fleets.length > 0) {
+      if (meData.fleets && meData.fleets.length > 0) {
         // 司机：从 fleets 数组获取第一个正常状态的车队
-        const normalFleet = res.data.fleets.find(f => f.status === 'normal');
+        const normalFleet = meData.fleets.find(f => f.status === 'normal');
         if (normalFleet) {
           fleetId = normalFleet.fleetId;
           console.log('✅ 从 fleets 数组找到车队:', fleetId);
         }
-      } else if (res.data.fleetInfo?.fleetId) {
+      } else if (meData.fleetInfo?.fleetId) {
         // 车队管理员：从 fleetInfo 获取
-        fleetId = res.data.fleetInfo.fleetId;
+        fleetId = meData.fleetInfo.fleetId;
         console.log('✅ 从 fleetInfo 找到车队:', fleetId);
       }
 
       if (!fleetId) {
-        console.warn('用户未关联车队');
+        console.warn('⚠️ 用户未关联车队，使用默认配置');
+        wx.showToast({
+          title: '未找到车队信息',
+          icon: 'none',
+          duration: 2000
+        });
         return;
       }
 
+      // 获取车队配置
+      console.log('📡 请求车队配置: /fleets/' + fleetId);
       const fleetRes = await request.get('/fleets/' + fleetId);
-      const fleet = fleetRes.data.fleet || {};
+      console.log('📡 车队配置响应:', fleetRes);
 
-      // 重要：保养申请始终允许司机选择门店
-      // 报修申请才根据车队配置决定
-      let allowDriverSelectStore;
-      if (this.data.type === 'maintenance') {
-        // 保养申请：强制允许司机选门店
-        allowDriverSelectStore = true;
-      } else {
-        // 报修申请：根据车队配置决定
-        allowDriverSelectStore = fleet.allowDriverSelectStore || false;
-      }
+      const fleet = fleetRes.data?.fleet || {};
+      console.log('✅ 车队配置对象:', fleet);
+      console.log('🔑 allowDriverSelectStore 原始值:', fleet.allowDriverSelectStore);
 
+      // 统一规则：报修和保养都根据车队配置决定门店选择权限
+      // 不再有例外情况（修复2026-03-03错误的硬编码逻辑）
+      const allowDriverSelectStore = fleet.allowDriverSelectStore || false;
+      console.log('📋 根据车队配置，allowDriverSelectStore =', allowDriverSelectStore);
+
+      // 更新界面
       this.setData({
         allowDriverSelectStore: allowDriverSelectStore,
         'fleetConfig.allowDriverSelectStore': allowDriverSelectStore,
@@ -1433,12 +1447,29 @@ Page({
 
       // 如果不允许司机选择门店，清空门店选择
       if (!allowDriverSelectStore) {
+        console.log('🗑️ 清空已选择的门店（车队配置不允许司机选择）');
         this.setData({ selectedStoreIndex: -1 });
       }
 
-      console.log('车队配置 allowDriverSelectStore =', allowDriverSelectStore, '（类型：', this.data.type, '）');
+      console.log('✅ 车队配置加载成功！');
+      console.log('   allowDriverSelectStore =', allowDriverSelectStore);
+      console.log('   订单类型 =', this.data.type);
+      console.log('====================================');
+
     } catch (error) {
-      console.error('加载车队配置失败:', error);
+      console.error('❌ 加载车队配置失败:', error);
+      console.error('   错误信息:', error.message);
+      console.error('   错误堆栈:', error.stack);
+
+      // 显示错误提示
+      wx.showToast({
+        title: '加载车队配置失败',
+        icon: 'none',
+        duration: 2000
+      });
+
+      // 保持初始配置不变（报修：不允许选门店，保养：允许选门店）
+      console.log('⚠️ 使用初始配置（从 onLoad 设置的值）');
     }
   },
 
@@ -1475,12 +1506,18 @@ Page({
       });
 
       // 预处理套餐数据，添加格式化后的价格字段
-      const packages = (res.data.packages || []).map(pkg => ({
-        ...pkg,
-        formattedPrice: (pkg.price / 100).toFixed(2),
-        formattedOriginalPrice: (pkg.originalPrice / 100).toFixed(2),
-        formattedSavePrice: ((pkg.originalPrice - pkg.price) / 100).toFixed(2)
-      }));
+      const packages = (res.data.packages || []).map(pkg => {
+        const localizedPkg = localizePackage(pkg);
+        const price = Number(localizedPkg.price || 0);
+        const originalPrice = Number(localizedPkg.originalPrice || localizedPkg.price || 0);
+
+        return {
+          ...localizedPkg,
+          formattedPrice: (price / 100).toFixed(2),
+          formattedOriginalPrice: (originalPrice / 100).toFixed(2),
+          formattedSavePrice: ((originalPrice - price) / 100).toFixed(2)
+        };
+      });
 
       this.setData({
         recommendedPackages: packages

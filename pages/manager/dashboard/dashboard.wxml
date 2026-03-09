@@ -1,0 +1,166 @@
+<!--pages/manager/dashboard/dashboard.wxml-->
+<view class="dashboard-container">
+  <view class="section top-section">
+    <view class="section-title">今日订单</view>
+    <view class="stats-grid">
+      <view class="stat-card" bindtap="goToOrders" data-type="pending">
+        <view class="stat-icon pending">📋</view>
+        <view class="stat-info">
+          <view class="stat-count">{{stats.pendingOrders || 0}}</view>
+          <view class="stat-label">待处理</view>
+        </view>
+      </view>
+      <view class="stat-card" bindtap="goToOrders" data-type="processing">
+        <view class="stat-icon processing">🔧</view>
+        <view class="stat-info">
+          <view class="stat-count">{{stats.processingOrders || 0}}</view>
+          <view class="stat-label">维修中</view>
+        </view>
+      </view>
+      <view class="stat-card" bindtap="goToOrders" data-type="completed">
+        <view class="stat-icon completed">✅</view>
+        <view class="stat-info">
+          <view class="stat-count">{{stats.completedToday || 0}}</view>
+          <view class="stat-label">今日完成</view>
+        </view>
+      </view>
+      <view class="stat-card" bindtap="goToOrders" data-type="all">
+        <view class="stat-icon income">💰</view>
+        <view class="stat-info">
+          <view class="stat-value">¥{{todayIncome}}</view>
+          <view class="stat-label">今日营收</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <view class="section-title">技师工作状态</view>
+      <view class="section-action" bindtap="goToTechnicians">全部 ›</view>
+    </view>
+
+    <scroll-view class="technician-scroll" scroll-x enable-flex>
+      <view class="technician-list">
+        <view
+          class="technician-card {{item.status}}"
+          wx:for="{{technicians}}"
+          wx:key="id"
+          bindtap="showTechnicianDetail"
+          data-technician="{{item}}"
+        >
+          <view class="technician-header">
+            <view class="technician-avatar">{{item.avatarChar}}</view>
+            <view class="status-badge {{item.status}}">{{item.statusText}}</view>
+          </view>
+          <view class="technician-name">{{item.name}}</view>
+          <view class="technician-task">
+            <text class="task-icon">{{item.status === 'busy' ? '🔧' : '🕘'}}</text>
+            <text>{{item.currentTaskText}}</text>
+          </view>
+          <view class="technician-stats">
+            <text class="stat-item">今日 {{item.todayCompleted}} 单</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="section" wx:if="{{recentActivities.length > 0}}">
+    <view class="section-header">
+      <view class="section-title">最近动态</view>
+      <view class="section-subtitle">{{recentActivities.length}} 条新动态</view>
+    </view>
+    <view class="activity-list">
+      <view
+        class="activity-item"
+        wx:for="{{recentActivities}}"
+        wx:key="id"
+        bindtap="handleActivity"
+        data-activity="{{item}}"
+      >
+        <view class="activity-icon {{item.type}}">
+          <text class="icon-text">{{item.icon}}</text>
+        </view>
+        <view class="activity-content">
+          <view class="activity-title">{{item.title}}</view>
+          <view class="activity-desc">{{item.description}}</view>
+        </view>
+        <view class="activity-time">{{item.time}}</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="technician-modal" wx:if="{{showTechnicianModal}}">
+  <view class="modal-mask" bindtap="hideTechnicianDetail"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <view class="modal-title">技师详情</view>
+      <view class="modal-close" bindtap="hideTechnicianDetail">✕</view>
+    </view>
+
+    <scroll-view class="modal-body" scroll-y>
+      <view class="technician-info">
+        <view class="info-avatar">{{selectedTechnician.avatarChar}}</view>
+        <view class="info-details">
+          <view class="info-name">{{selectedTechnician.name}}</view>
+          <view class="info-stats">
+            <text class="info-stat">本月完工: {{selectedTechnician.monthlyCompleted}}</text>
+            <text class="info-divider">|</text>
+            <text class="info-stat">评分: {{selectedTechnician.rating}}</text>
+          </view>
+        </view>
+        <view class="status-badge {{selectedTechnician.status}}">
+          {{selectedTechnician.statusLabel}}
+        </view>
+      </view>
+
+      <view class="today-orders">
+        <view class="sub-title">今日排单</view>
+
+        <view class="order-list" wx:if="{{selectedTechnician.todayOrders.length > 0}}">
+          <view
+            class="order-item"
+            wx:for="{{selectedTechnician.todayOrders}}"
+            wx:for-item="order"
+            wx:key="id"
+            bindtap="goToOrderDetail"
+            data-id="{{order.id}}"
+          >
+            <view class="order-status {{order.status}}"></view>
+            <view class="order-content">
+              <view class="order-plate">{{order.plateNumber}}</view>
+              <view class="order-desc">{{order.vehicleModel}}</view>
+            </view>
+            <view class="order-amount">¥{{order.amount}}</view>
+          </view>
+        </view>
+
+        <view class="empty-state" wx:else>
+          <text class="empty-text">暂无排单</text>
+        </view>
+      </view>
+
+      <view class="today-summary">
+        <view class="summary-item">
+          <view class="summary-label">今日完工</view>
+          <view class="summary-value">{{selectedTechnician.todayCompleted}}</view>
+        </view>
+        <view class="summary-item">
+          <view class="summary-label">今日收入</view>
+          <view class="summary-value">¥{{selectedTechnician.todayIncome}}</view>
+        </view>
+        <view class="summary-item">
+          <view class="summary-label">平均客单价</view>
+          <view class="summary-value">¥{{selectedTechnician.avgOrderAmount}}</view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="modal-footer">
+      <button class="modal-btn secondary" bindtap="hideTechnicianDetail">关闭</button>
+      <button class="modal-btn primary" bindtap="viewTechnicianPerformance">查看绩效</button>
+    </view>
+  </view>
+</view>

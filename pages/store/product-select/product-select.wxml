@@ -88,7 +88,7 @@
 
           <view class="product-spec">
             <text class="spec-item" wx:if="{{item.brand}}">🏷️ {{item.brand}}</text>
-            <text class="spec-item" wx:if="{{item.spec}}">📐 {{item.spec}}</text>
+            <text class="spec-item" wx:if="{{item.specText || item.spec}}">📐 {{item.specText || item.spec}}</text>
           </view>
 
           <view class="product-models">

@@ -62,8 +62,8 @@ Page({
       'awaiting_approval': '待审批报价',
       'in_repair': '维修中',
       'awaiting_addon_approval': '增项审批中',
-      'completed': '待确认',
-      'confirmed': '已完成',
+      'pending_confirmation': '待确认',
+      'completed': '已完成',
       'rejected': '已拒绝'
     };
 

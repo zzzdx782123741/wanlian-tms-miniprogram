@@ -1,6 +1,7 @@
 // pages/order-detail/order-detail.js - 订单详情页面
 const app = getApp();
 const request = require('../../utils/request');
+const format = require('../../utils/format');
 
 // 导入图片URL格式化函数
 const { formatImageUrl } = request;
@@ -113,31 +114,66 @@ Page({
       };
     };
 
-    // 处理订单中的所有图片URL
+    // 处理订单中的所有图片URL和HTML实体解码
     const formattedOrder = {
       ...order,
+      // 解码HTML实体编码
+      orderNumber: format.decodeHTMLEntities(order.orderNumber) || '',
+      faultDescription: format.decodeHTMLEntities(order.faultDescription) || '',
+      rejectReason: format.decodeHTMLEntities(order.rejectReason) || '',
+      // 处理车辆信息
+      vehicleId: order.vehicleId ? {
+        ...order.vehicleId,
+        plateNumber: format.decodeHTMLEntities(order.vehicleId.plateNumber) || '',
+        brand: format.decodeHTMLEntities(order.vehicleId.brand) || '',
+        model: format.decodeHTMLEntities(order.vehicleId.model) || ''
+      } : null,
+      // 处理司机信息
+      reporterId: order.reporterId ? {
+        ...order.reporterId,
+        nickname: format.decodeHTMLEntities(order.reporterId.nickname) || '',
+        name: format.decodeHTMLEntities(order.reporterId.name) || ''
+      } : null,
+      // 处理门店信息
+      storeId: order.storeId ? {
+        ...order.storeId,
+        name: format.decodeHTMLEntities(order.storeId.name) || ''
+      } : null,
+      // 处理车队信息
+      fleetId: order.fleetId ? {
+        ...order.fleetId,
+        name: format.decodeHTMLEntities(order.fleetId.name) || ''
+      } : null,
       // 处理预约时间
       appointment: processAppointment(order.appointment),
       faultImages: processImages(order.faultImages),
       // 处理接车检查照片
       receiveCheck: order.receiveCheck ? {
         ...order.receiveCheck,
+        diagnosis: format.decodeHTMLEntities(order.receiveCheck.diagnosis) || '',
         checkinPhotos: processImages(order.receiveCheck.checkinPhotos)
       } : null,
-      // 处理报价图片
+      // 处理报价图片和项目
       quote: order.quote ? {
         ...order.quote,
+        items: order.quote.items?.map(item => ({
+          ...item,
+          item: format.decodeHTMLEntities(item.item) || ''
+        })) || [],
         images: processImages(order.quote.images)
       } : null,
       // 处理完工图片
       completion: order.completion ? {
         ...order.completion,
+        description: format.decodeHTMLEntities(order.completion.description) || '',
         images: processImages(order.completion.images),
         videos: processImages(order.completion.videos)
       } : null,
       // 处理日志图片
       logs: order.logs ? order.logs.map(log => ({
         ...log,
+        content: format.decodeHTMLEntities(log.content) || '',
+        details: format.decodeHTMLEntities(log.details) || '',
         images: processImages(log.images),
         videos: processImages(log.videos)
       })) : []

@@ -57,8 +57,8 @@ Page({
         // 处理中：待确认时间、待评估、待审批、维修中、增项待审批
         params.status = 'awaiting_time_confirmation,pending_assessment,awaiting_approval,in_repair,awaiting_addon_approval';
       } else if (activeTab === 'completed') {
-        // 已完成
-        params.status = 'completed';
+        // 待确认 + 已完成
+        params.status = 'pending_confirmation,completed';
       }
 
       const res = await request.get('/orders', params);
@@ -264,7 +264,8 @@ Page({
       'repairing': '维修中',
       'in_repair': '维修中',
       'awaiting_addon_approval': '增项待审批',
-      'completed': isConfirmed ? '已完成' : '待确认',
+      'pending_confirmation': '待确认',
+      'completed': '已完成',
       'confirmed': '已确认',
       'rejected': '已拒绝',
       'refunded': '已退款'
@@ -303,6 +304,7 @@ Page({
       'repairing': 'primary',
       'in_repair': 'primary',
       'awaiting_addon_approval': 'warning',
+      'pending_confirmation': 'warning',
       'completed': 'success',
       'confirmed': 'success',
       'rejected': 'error',
@@ -463,6 +465,7 @@ Page({
   },
 
   // 确认调整时间
+  // 注意：系统会自动检测时间是否被调整，如果调整了会自动通知司机
   async onConfirmAdjustTime() {
     if (!this.data.selectedTimeSlot) {
       wx.showToast({
@@ -480,17 +483,26 @@ Page({
     try {
       wx.showLoading({ title: '确认中...' });
 
-      await request.put(`/orders/${this.data.currentOrderId}/confirm-time`, {
+      const response = await request.put(`/orders/${this.data.currentOrderId}/confirm-time`, {
         confirmedDate: selectedSlot.date,
-        confirmedTimeSlot: selectedSlot.timeSlot,
-        adjusted: true
+        confirmedTimeSlot: selectedSlot.timeSlot
       });
 
       wx.hideLoading();
-      wx.showToast({
-        title: '已调整时间',
-        icon: 'success'
-      });
+
+      // 根据后端响应显示不同提示
+      if (response.data && response.data.timeAdjusted) {
+        wx.showToast({
+          title: '已调整时间并通知司机',
+          icon: 'success',
+          duration: 2000
+        });
+      } else {
+        wx.showToast({
+          title: '已确认到店时间',
+          icon: 'success'
+        });
+      }
 
       // 关闭弹窗
       this.onCloseTimeAdjuster();
@@ -503,7 +515,7 @@ Page({
     } catch (error) {
       wx.hideLoading();
       wx.showToast({
-        title: error.message || '调整失败',
+        title: error.message || '确认失败',
         icon: 'none'
       });
     }

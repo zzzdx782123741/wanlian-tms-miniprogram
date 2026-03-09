@@ -20,7 +20,29 @@ Page({
 
     // 更新自定义 tabBar 选中状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().updateTabBar();
+      const tabBar = this.getTabBar();
+
+      // 重新加载角色（增强容错性）
+      const role = app.globalData.role || wx.getStorageSync('role') || '';
+      console.log('[首页] onShow - 当前角色:', role);
+
+      // 如果角色为空，尝试从userInfo中提取
+      if (!role) {
+        const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+        if (userInfo && userInfo.role) {
+          const extractedRole = typeof userInfo.role === 'object' ? userInfo.role.type : userInfo.role;
+          if (extractedRole) {
+            app.globalData.role = extractedRole;
+            wx.setStorageSync('role', extractedRole);
+            console.log('[首页] 从userInfo提取角色:', extractedRole);
+            tabBar.setData({ role: extractedRole });
+          }
+        }
+      } else {
+        tabBar.setData({ role });
+      }
+
+      tabBar.updateTabBar();
     }
   },
 
@@ -35,6 +57,22 @@ Page({
       // 未登录，跳转到登录页
       wx.redirectTo({
         url: '/pages/auth/login/login'
+      });
+      return;
+    }
+
+    // 技师角色自动跳转到技师工作台
+    if (role === 'STORE_TECHNICIAN') {
+      wx.switchTab({
+        url: '/pages/technician/home/home'
+      });
+      return;
+    }
+
+    // 门店管理员自动跳转到管理后台
+    if (role === 'STORE_MANAGER') {
+      wx.switchTab({
+        url: '/pages/manager/dashboard/dashboard'
       });
       return;
     }
@@ -58,6 +96,7 @@ Page({
       'DRIVER': '司机',
       'FLEET_MANAGER': '车队管理员',
       'STORE_TECHNICIAN': '门店技师',
+      'STORE_MANAGER': '门店管理员',
       'PLATFORM_OPERATOR': '平台运营'
     };
     return roleMap[role] || '未知角色';
@@ -71,6 +110,7 @@ Page({
       'DRIVER': '司机',
       'FLEET_MANAGER': '车队',
       'STORE_TECHNICIAN': '技师',
+      'STORE_MANAGER': '店长',
       'PLATFORM_OPERATOR': '运营'
     };
     return roleMap[role] || '';
@@ -142,6 +182,43 @@ Page({
             description: '查看和管理维修订单',
             url: '/pages/orders/orders',
             color: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
+          }
+        ];
+        break;
+
+      case 'STORE_MANAGER':
+        menuList = [
+          {
+            id: 'store-orders',
+            title: '门店订单',
+            icon: '📋',
+            description: '查看和管理门店订单',
+            url: '/pages/orders/orders',
+            color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          },
+          {
+            id: 'store-settings',
+            title: '门店设置',
+            icon: '⚙️',
+            description: '管理门店信息和设置',
+            url: '/pages/manager/store/store',
+            color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+          },
+          {
+            id: 'finance',
+            title: '财务管理',
+            icon: '💰',
+            description: '查看财务数据和提现',
+            url: '/pages/manager/finance/finance',
+            color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+          },
+          {
+            id: 'analytics',
+            title: '数据报表',
+            icon: '📊',
+            description: '查看经营数据分析',
+            url: '/pages/manager/analytics/analytics',
+            color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
           }
         ];
         break;

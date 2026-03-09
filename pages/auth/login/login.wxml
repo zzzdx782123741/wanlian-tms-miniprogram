@@ -28,26 +28,30 @@
 
   <view class="test-login-mask" wx:if="{{showTestLogin}}" bindtap="onCloseTestLogin">
     <view class="test-login-panel" catchtap="noop">
-      <view class="test-login-title">测试登录</view>
-      <view class="test-login-subtitle">仅开发/测试环境可用</view>
+      <view class="test-login-header">
+        <view class="test-login-title">🚀 快速测试登录</view>
+        <view class="test-login-subtitle">选择角色，一键登录</view>
+      </view>
 
-      <input
-        class="test-input"
-        placeholder="请输入测试账号"
-        value="{{testUsername}}"
-        bindinput="onTestUsernameInput"
-      />
-      <input
-        class="test-input"
-        type="password"
-        placeholder="请输入测试密码"
-        value="{{testPassword}}"
-        bindinput="onTestPasswordInput"
-      />
+      <view class="test-account-list">
+        <view
+          class="test-account-item {{testLoading ? 'loading' : ''}}"
+          wx:for="{{testAccounts}}"
+          wx:key="username"
+          bindtap="onQuickLogin"
+          data-account="{{item}}"
+        >
+          <view class="account-icon">{{item.icon}}</view>
+          <view class="account-info">
+            <view class="account-nickname">{{item.nickname}}</view>
+            <view class="account-username">{{item.username}}</view>
+          </view>
+          <view class="account-arrow">→</view>
+        </view>
+      </view>
 
-      <view class="test-actions">
-        <button class="test-cancel-btn" bindtap="onCloseTestLogin">取消</button>
-        <button class="test-submit-btn" loading="{{testLoading}}" disabled="{{testLoading}}" bindtap="onTestLogin">登录</button>
+      <view class="test-login-footer">
+        <view class="password-tip">🔑 密码统一为: Test123456</view>
       </view>
     </view>
   </view>

@@ -1,0 +1,187 @@
+/* pages/manager/finance/finance.wxss */
+.finance-container {
+  min-height: 100vh;
+  background: #F5F7FA;
+  padding-bottom: 30rpx;
+}
+
+.section {
+  margin-top: 30rpx;
+  padding: 0 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.more-btn {
+  font-size: 26rpx;
+  color: #667eea;
+}
+
+/* 收入统计 */
+.income-section {
+  padding: 30rpx 30rpx 0;
+}
+
+.income-cards {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10rpx;
+}
+
+.income-card {
+  flex: 1;
+  min-width: 300rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin: 0 10rpx 20rpx 0;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  color: #fff;
+}
+
+.income-label {
+  font-size: 26rpx;
+  opacity: 0.9;
+  margin-bottom: 12rpx;
+}
+
+.income-value {
+  font-size: 48rpx;
+  font-weight: bold;
+}
+
+/* 账户余额 */
+.balance-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-around;
+}
+
+.balance-item {
+  text-align: center;
+}
+
+.balance-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+}
+
+.balance-value {
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+.balance-value.pending {
+  color: #f5222d;
+}
+
+.balance-value.settled {
+  color: #52c41a;
+}
+
+/* 提现操作 */
+.withdraw-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.withdraw-hint {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+/* 提现记录 */
+.withdraw-list {
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.withdraw-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #F5F7FA;
+}
+
+.withdraw-item:last-child {
+  border-bottom: none;
+}
+
+.withdraw-amount {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #f5222d;
+}
+
+.withdraw-info {
+  text-align: right;
+}
+
+.withdraw-status {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.withdraw-status.pending {
+  color: #faad14;
+}
+
+.withdraw-status.completed {
+  color: #52c41a;
+}
+
+.withdraw-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  padding: 30rpx;
+}
+
+.btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 80rpx 0;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}

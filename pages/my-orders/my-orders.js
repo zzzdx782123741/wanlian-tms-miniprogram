@@ -1,6 +1,7 @@
 // pages/my-orders/my-orders.js - 我的订单页面（支持所有角色）
 const app = getApp();
 const request = require('../../utils/request');
+const format = require('../../utils/format');
 
 Page({
   data: {
@@ -107,9 +108,9 @@ Page({
         statusText: statusInfo.text,
         nextAction: statusInfo.nextAction,
         vehicleId: {
-          plateNumber: order.vehicleId && order.vehicleId.plateNumber ? order.vehicleId.plateNumber : '未知车牌',
-          brand: order.vehicleId && order.vehicleId.brand ? order.vehicleId.brand : '',
-          model: order.vehicleId && order.vehicleId.model ? order.vehicleId.model : ''
+          plateNumber: format.decodeHTMLEntities(order.vehicleId?.plateNumber) || '未知车牌',
+          brand: format.decodeHTMLEntities(order.vehicleId?.brand) || '',
+          model: format.decodeHTMLEntities(order.vehicleId?.model) || ''
         },
         createdAtText: this.formatTime(order.createdAt)
       };

@@ -1,0 +1,77 @@
+<!--pages/manager/store/store.wxml-->
+<view class="store-container">
+  <!-- 门店基本信息 -->
+  <view class="section">
+    <view class="section-title">门店信息</view>
+    <view class="info-card">
+      <view class="info-row">
+        <view class="label">门店名称</view>
+        <view class="value">{{storeInfo.name || '-'}}</view>
+      </view>
+      <view class="info-row">
+        <view class="label">门店地址</view>
+        <view class="value">{{storeInfo.fullAddress || '-'}}</view>
+      </view>
+      <view class="info-row">
+        <view class="label">联系电话</view>
+        <view class="value">{{storeInfo.phone || '-'}}</view>
+      </view>
+      <view class="info-row">
+        <view class="label">营业时间</view>
+        <view class="value">{{storeInfo.businessHours || '暂未设置'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 收款账户信息 -->
+  <view class="section">
+    <view class="section-title">
+      收款账户
+      <text class="edit-btn" bindtap="editBankAccount">编辑</text>
+    </view>
+    <view class="info-card">
+      <view class="info-row" wx:if="{{!bankAccount.accountName}}">
+        <view class="empty-hint">未设置收款账户</view>
+      </view>
+      <block wx:else>
+        <view class="info-row">
+          <view class="label">开户银行</view>
+          <view class="value">{{bankAccount.bankName}}</view>
+        </view>
+        <view class="info-row">
+          <view class="label">银行账号</view>
+          <view class="value">{{bankAccount.accountNumber}}</view>
+        </view>
+        <view class="info-row">
+          <view class="label">账户名称</view>
+          <view class="value">{{bankAccount.accountName}}</view>
+        </view>
+        <view class="info-row" wx:if="{{bankAccount.branch}}">
+          <view class="label">开户行</view>
+          <view class="value">{{bankAccount.branch}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 门店照片 -->
+  <view class="section">
+    <view class="section-title">门店照片</view>
+    <view class="photos-card">
+      <view class="photos-grid" wx:if="{{storeInfo.photos && storeInfo.photos.length > 0}}">
+        <view class="photo-item" wx:for="{{storeInfo.photos}}" wx:key="*this">
+          <image class="photo" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" />
+        </view>
+      </view>
+      <view class="empty-photos" wx:else>
+        <view class="empty-icon">📷</view>
+        <view class="empty-text">暂无照片</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="btn primary" bindtap="editStore">编辑门店信息</button>
+  </view>
+</view>

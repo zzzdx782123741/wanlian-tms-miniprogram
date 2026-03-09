@@ -57,8 +57,8 @@ const formatImageUrl = (url) => {
 // 封装请求方法
 const request = (options) => {
   return new Promise((resolve, reject) => {
-    // 获取token
-    const token = wx.getStorageSync('token');
+    // 获取token（如果options.noAuth为true，则不获取token）
+    const token = options.noAuth ? null : wx.getStorageSync('token');
 
     const fullUrl = `${getBaseUrl()}${options.url}`;
 
@@ -66,7 +66,7 @@ const request = (options) => {
     console.log('URL:', fullUrl);
     console.log('方法:', options.method || 'GET');
     console.log('参数:', options.data);
-    console.log('Token:', token ? '已携带' : '未携带');
+    console.log('Token:', token ? '已携带' : (options.noAuth ? '跳过认证' : '未携带'));
 
     wx.request({
       url: fullUrl,
@@ -120,7 +120,7 @@ const request = (options) => {
 
 module.exports = {
   get: (url, data) => request({ url, method: 'GET', data }),
-  post: (url, data) => request({ url, method: 'POST', data }),
+  post: (url, data, noAuth = false) => request({ url, method: 'POST', data, noAuth }),
   put: (url, data) => request({ url, method: 'PUT', data }),
   delete: (url, data) => request({ url, method: 'DELETE', data }),
   formatImageUrl,

@@ -3,6 +3,7 @@
     "pages/auth/login/login",
     "pages/auth/register",
     "pages/auth/activate/activate",
+    "pages/auth/verify-phone/verify-phone",
     "pages/auth/fleet-register/fleet-register",
     "pages/auth/store-register/store-register",
     "pages/index/index",
@@ -34,7 +35,16 @@
     "pages/fleets/fleets",
     "pages/stores/stores",
     "pages/users/users",
-    "pages/test-location/test-location"
+    "pages/test-location/test-location",
+    "pages/technician/home/home",
+    "pages/technician/products/products",
+    "pages/technician/order-center/order-center",
+    "pages/technician/completion/completion",
+    "pages/technician/notifications/notifications",
+    "pages/manager/dashboard/dashboard",
+    "pages/manager/store/store",
+    "pages/manager/finance/finance",
+    "pages/manager/analytics/analytics"
   ],
   "window": {
     "backgroundColor": "#F5F7FA",
@@ -74,10 +84,22 @@
         "selectedIconPath": "images/icons/goods-active.png"
       },
       {
-        "pagePath": "pages/vehicle/vehicle",
-        "text": "车辆",
-        "iconPath": "images/icons/business.png",
-        "selectedIconPath": "images/icons/business-active.png"
+        "pagePath": "pages/technician/home/home",
+        "text": "工作台",
+        "iconPath": "images/icons/home.png",
+        "selectedIconPath": "images/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/manager/dashboard/dashboard",
+        "text": "工作台",
+        "iconPath": "images/icons/home.png",
+        "selectedIconPath": "images/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/technician/products/products",
+        "text": "商品库",
+        "iconPath": "images/icons/goods.png",
+        "selectedIconPath": "images/icons/goods-active.png"
       },
       {
         "pagePath": "pages/account/account",

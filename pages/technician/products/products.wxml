@@ -1,0 +1,96 @@
+<!--pages/technician/products/products.wxml-->
+<view class="products-container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-box">
+      <text class="search-icon">🔍</text>
+      <input class="search-input" placeholder="搜索商品名称/编码" value="{{keyword}}" bindinput="onKeywordInput" confirm-type="search" bindconfirm="searchProducts" />
+      <text class="clear-icon" wx:if="{{keyword}}" bindtap="clearSearch">✕</text>
+    </view>
+    <view class="scan-btn" bindtap="scanProduct">
+      <text>🔲</text>
+    </view>
+  </view>
+
+  <!-- 商品分类 -->
+  <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="category-list">
+      <view
+        class="category-item {{selectedCategory === '' ? 'active' : ''}}"
+        bindtap="selectCategory"
+        data-category=""
+      >
+        全部
+      </view>
+      <view
+        class="category-item {{selectedCategory === item ? 'active' : ''}}"
+        wx:for="{{categories}}"
+        wx:key="*this"
+        bindtap="selectCategory"
+        data-category="{{item}}"
+      >
+        {{item}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 商品统计 -->
+  <view class="product-stats" wx:if="{{products.length > 0}}">
+    <text class="stats-text">共 {{products.length}} 件商品</text>
+  </view>
+
+  <!-- 商品列表 -->
+  <view class="product-list">
+    <view class="product-item" wx:for="{{products}}" wx:key="_id" bindtap="viewProduct" data-product="{{item}}">
+      <view class="product-image-wrapper">
+        <image
+          class="product-image"
+          src="{{item.image || '/images/default-goods-image.png'}}"
+          mode="aspectFill"
+          lazy-load
+        />
+        <view class="product-tag" wx:if="{{item.tag}}">{{item.tag}}</view>
+      </view>
+      <view class="product-info">
+        <view class="product-header">
+          <view class="product-name">{{item.name}}</view>
+          <view class="product-brand" wx:if="{{item.brand}}">{{item.brand}}</view>
+        </view>
+        <view class="product-category">
+          <text class="category-text">{{item.categoryText || item.category}}</text>
+          <text class="divider" wx:if="{{item.specText || item.spec}}">|</text>
+          <text class="spec-text" wx:if="{{item.specText || item.spec}}">{{item.specText || item.spec}}</text>
+        </view>
+        <view class="product-footer">
+          <view class="product-price">
+            <text class="price-symbol">¥</text>
+            <text class="price-value">{{item.priceText}}</text>
+            <text class="price-unit" wx:if="{{item.unit}}">/{{item.unit}}</text>
+          </view>
+          <view class="stock-info" wx:if="{{item.stock !== undefined}}">
+            <text class="stock-text {{item.stock > 0 ? 'in-stock' : 'out-stock'}}">
+              {{item.stock > 0 ? '库存:' + item.stock : '缺货'}}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && products.length === 0}}">
+    <view class="empty-icon">📦</view>
+    <view class="empty-title">暂无商品</view>
+    <view class="empty-desc">{{keyword ? '换个关键词试试' : '还没有添加商品'}}</view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 没有更多 -->
+  <view class="no-more" wx:if="{{!hasMore && products.length > 0}}">
+    <text>没有更多了</text>
+  </view>
+</view>

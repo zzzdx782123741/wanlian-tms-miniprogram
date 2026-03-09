@@ -197,3 +197,82 @@ page {
 .test-submit-btn::after {
   border: none;
 }
+
+/* 测试账号列表样式 */
+.test-login-header {
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.test-account-list {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.test-account-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  background: #F9FAFB;
+  border-radius: 16rpx;
+  border: 2rpx solid #E5E7EB;
+  transition: all 0.2s;
+}
+
+.test-account-item:last-child {
+  margin-bottom: 0;
+}
+
+.test-account-item:active {
+  background: #EFF6FF;
+  border-color: #3B82F6;
+  transform: scale(0.98);
+}
+
+.test-account-item.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.account-icon {
+  font-size: 48rpx;
+  margin-right: 16rpx;
+}
+
+.account-info {
+  flex: 1;
+}
+
+.account-nickname {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1F2937;
+  margin-bottom: 4rpx;
+}
+
+.account-username {
+  font-size: 24rpx;
+  color: #6B7280;
+}
+
+.account-arrow {
+  font-size: 32rpx;
+  color: #9CA3AF;
+  margin-left: 16rpx;
+}
+
+.test-login-footer {
+  margin-top: 24rpx;
+  text-align: center;
+}
+
+.password-tip {
+  font-size: 24rpx;
+  color: #6B7280;
+  padding: 12rpx 24rpx;
+  background: #FEF3C7;
+  border-radius: 8rpx;
+  display: inline-block;
+}
+

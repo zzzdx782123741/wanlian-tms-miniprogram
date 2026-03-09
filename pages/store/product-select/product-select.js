@@ -8,7 +8,26 @@ Page({
     activeCategory: '',
     products: [],
     loading: false,
-    searchTimer: null
+    searchTimer: null,
+    // 分类英文映射
+    categoryMap: {
+      'parts': '配件类',
+      'labor': '工时类',
+      'service': '服务类',
+      'material': '材料类'
+    },
+    // 规格英文映射
+    specMap: {
+      'standard': '标准工时',
+      'premium': '高级工时',
+      'basic': '基础工时',
+      'diagnosis': '诊断工时',
+      'installation': '安装工时',
+      'maintenance': '保养工时',
+      'repair': '维修工时',
+      'replacement': '更换工时',
+      'inspection': '检查工时'
+    }
   },
 
   onLoad(options) {
@@ -86,8 +105,19 @@ Page({
 
       const res = await request.get('/products/search', params);
 
+      // 预处理数据：转换英文分类和规格为中文
+      const processedProducts = (res.data || []).map(product => {
+        const categoryText = this.data.categoryMap[product.category] || product.category;
+        const specText = this.data.specMap[product.spec] || product.spec;
+        return {
+          ...product,
+          categoryText,
+          specText
+        };
+      });
+
       this.setData({
-        products: res.data || []
+        products: processedProducts
       });
 
     } catch (error) {

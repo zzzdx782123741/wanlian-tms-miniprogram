@@ -1,6 +1,7 @@
 // pages/maintenance/maintenance.js - 保养申请页面
 const app = getApp();
 const request = require('../../utils/request');
+const { localizePackage, localizeProduct } = require('../../utils/maintenance-localizer');
 
 Page({
   data: {
@@ -45,7 +46,7 @@ Page({
 
     // 车队配置
     fleetConfig: {
-      allowDriverSelectStore: true, // 保养申请默认司机选门店
+      allowDriverSelectStore: undefined, // 从车队配置加载，不设置默认值
       maintenanceProductPermission: 'fleet_control',
       maintenanceBudgetThreshold: 5000
     },
@@ -152,7 +153,7 @@ Page({
       const res = await request.get('/products');
 
       this.setData({
-        allProducts: res.data.products || []
+        allProducts: (res.data.products || []).map(item => localizeProduct(item))
       });
     } catch (error) {
       console.error('加载商品失败:', error);
@@ -260,7 +261,7 @@ Page({
       });
 
       this.setData({
-        recommendedPackages: res.data.packages || []
+        recommendedPackages: (res.data.packages || []).map(pkg => localizePackage(pkg))
       });
     } catch (error) {
       console.error('加载推荐套餐失败:', error);
