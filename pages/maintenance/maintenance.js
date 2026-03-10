@@ -25,9 +25,25 @@ Page({
     maintenanceTypes: [],
     selectedTypeIndex: -1,
 
-    // 推荐套餐
+    // 智能推荐套餐（顶部）
+    topRecommendations: [],
+
+    // 按分类分组的套餐
+    categorizedPackages: {
+      minor: { name: '小保养', key: 'minor', packages: [], expanded: true },
+      major: { name: '大保养', key: 'major', packages: [], expanded: false },
+      special: { name: '专项保养', key: 'special', packages: [], expanded: false }
+    },
+
+    // 当前展开的分类
+    expandedCategory: 'minor',
+
+    // 推荐套餐（兼容旧版）
     recommendedPackages: [],
     selectedPackageIndex: -1,
+
+    // 当前选中的套餐（新的选择方式）
+    selectedPackageId: null,
 
     // 商品选择（根据权限）
     allProducts: [],
@@ -44,9 +60,9 @@ Page({
     // 备注
     driverRemark: '',
 
-    // 车队配置
+    // 车队配置（保养订单默认允许司机选择门店）
     fleetConfig: {
-      allowDriverSelectStore: undefined, // 从车队配置加载，不设置默认值
+      allowDriverSelectStore: true, // 保养订单默认允许司机选择门店
       maintenanceProductPermission: 'fleet_control',
       maintenanceBudgetThreshold: 5000
     },
@@ -62,7 +78,14 @@ Page({
 
     // 显示选择器
     showTimePicker: false,
-    showTierPicker: false
+    showTierPicker: false,
+
+    // ==================== 门店选择相关（保养订单默认司机选择门店） ====================
+    stores: [],              // 门店列表
+    selectedStoreIndex: -1,  // 已选择的门店索引
+    showStorePicker: false,  // 显示门店选择弹窗
+    storeDetail: null,       // 门店详情
+    showStoreDetail: false   // 显示门店详情弹窗
   },
 
   onLoad(options) {
@@ -77,6 +100,7 @@ Page({
     this.loadProducts();
     this.loadVehicle();
     this.getCurrentLocation();
+    this.loadStores(); // 加载门店列表
   },
 
   /**
@@ -109,13 +133,27 @@ Page({
       }
 
       const res = await request.get('/fleets/' + fleetId);
+      const fleet = res.data.fleet || {};
+
+      // 保养订单使用 storeSelectionConfig.maintenance 配置
+      let allowDriverSelectStore = true; // 默认允许
+      if (fleet.storeSelectionConfig && typeof fleet.storeSelectionConfig.maintenance === 'boolean') {
+        allowDriverSelectStore = fleet.storeSelectionConfig.maintenance;
+      } else if (typeof fleet.allowDriverSelectStore === 'boolean') {
+        // 兼容旧配置
+        allowDriverSelectStore = fleet.allowDriverSelectStore;
+      }
+
       this.setData({
-        fleetConfig: res.data.fleet || {
-          allowDriverSelectStore: false,
-          maintenanceProductPermission: 'fleet_control',
-          maintenanceBudgetThreshold: 5000
+        fleetConfig: {
+          ...fleet,
+          allowDriverSelectStore: allowDriverSelectStore,
+          maintenanceProductPermission: fleet.maintenanceProductPermission || 'fleet_control',
+          maintenanceBudgetThreshold: fleet.maintenanceBudgetThreshold || 5000
         }
       });
+
+      console.log('保养订单门店选择权限:', allowDriverSelectStore);
     } catch (error) {
       console.error('加载车队配置失败:', error);
     }
@@ -128,7 +166,7 @@ Page({
     try {
       this.setData({ 'loading.types': true });
 
-      const res = await request.get('/maintenance/platform/types?enabled=true');
+      const res = await request.get('/maintenance/types?enabled=true');
 
       this.setData({
         maintenanceTypes: res.data.types || [],
@@ -243,25 +281,74 @@ Page({
 
   /**
    * 加载推荐套餐
+   * 注意：必须先选择门店才能加载套餐，因为套餐是门店专属的
    */
   async loadRecommendedPackages() {
     const vehicle = this.data.vehicle;
-    const type = this.data.maintenanceTypes[this.data.selectedTypeIndex];
 
-    if (!vehicle || !type) {
+    if (!vehicle) {
+      return;
+    }
+
+    // 【重要】必须先选择门店才能加载套餐
+    if (this.data.selectedStoreIndex === -1) {
+      // 未选择门店时，清空套餐列表
+      this.setData({
+        topRecommendations: [],
+        categorizedPackages: {
+          minor: { name: '小保养', key: 'minor', packages: [], expanded: true },
+          major: { name: '大保养', key: 'major', packages: [], expanded: false },
+          special: { name: '专项保养', key: 'special', packages: [], expanded: false }
+        },
+        recommendedPackages: []
+      });
       return;
     }
 
     try {
       this.setData({ 'loading.packages': true });
 
-      const res = await request.get('/maintenance/recommendations', {
-        vehicleGroupId: vehicle.groupId,
-        mileage: vehicle.mileage
-      });
+      // 构建请求参数，必须包含门店ID
+      const params = {
+        vehicleGroupId: vehicle.groupId || vehicle.vehicleGroup || vehicle.vehicleType || vehicle.group || '牵引车',
+        mileage: this.data.milestone || vehicle.mileage || 0,
+        storeId: this.data.stores[this.data.selectedStoreIndex]._id // 必须传递门店ID
+      };
+
+      const res = await request.get('/maintenance/recommendations', params);
+
+      const data = res.data || {};
+
+      // 处理智能推荐套餐
+      const topRecommendations = (data.topRecommendations || []).map(pkg => localizePackage(pkg));
+
+      // 处理分类套餐
+      const categorized = data.categorizedPackages || {
+        minor: { name: '小保养', key: 'minor', packages: [] },
+        major: { name: '大保养', key: 'major', packages: [] },
+        special: { name: '专项保养', key: 'special', packages: [] }
+      };
+
+      // 本地化套餐数据
+      const localizedCategorized = {};
+      for (const key in categorized) {
+        localizedCategorized[key] = {
+          ...categorized[key],
+          packages: (categorized[key].packages || []).map(pkg => localizePackage(pkg)),
+          expanded: key === 'minor' // 默认展开小保养
+        };
+      }
+
+      // 兼容旧版：将所有套餐合并到 recommendedPackages
+      const allPackages = [];
+      for (const key in localizedCategorized) {
+        allPackages.push(...localizedCategorized[key].packages);
+      }
 
       this.setData({
-        recommendedPackages: (res.data.packages || []).map(pkg => localizePackage(pkg))
+        topRecommendations,
+        categorizedPackages: localizedCategorized,
+        recommendedPackages: allPackages // 兼容旧版逻辑
       });
     } catch (error) {
       console.error('加载推荐套餐失败:', error);
@@ -272,12 +359,75 @@ Page({
 
   /**
    * 选择套餐
+   * 必须先选择门店才能选择套餐
    */
   onSelectPackage(e) {
-    const index = parseInt(e.currentTarget.dataset.index);
+    // 验证是否已选择门店
+    if (this.data.selectedStoreIndex === -1) {
+      wx.showToast({
+        title: '请先选择门店',
+        icon: 'none'
+      });
+      return;
+    }
+
+    const { index, category } = e.currentTarget.dataset;
+    const packages = this.data.categorizedPackages[category]?.packages || [];
+    const pkg = packages[index];
+
+    if (pkg) {
+      this.setData({
+        selectedPackageId: pkg._id,
+        selectedPackageIndex: -1 // 重置旧版索引
+      });
+      wx.showToast({
+        title: `已选择：${pkg.name}`,
+        icon: 'success'
+      });
+    }
+  },
+
+  /**
+   * 展开/收起套餐分类
+   */
+  onToggleCategory(e) {
+    const { category } = e.currentTarget.dataset;
+    const currentExpanded = this.data.categorizedPackages[category]?.expanded;
+
+    // 手风琴效果：只允许展开一个分类
+    const updatedCategories = { ...this.data.categorizedPackages };
+    for (const key in updatedCategories) {
+      updatedCategories[key].expanded = (key === category && !currentExpanded);
+    }
+
     this.setData({
-      selectedPackageIndex: index
+      categorizedPackages: updatedCategories,
+      expandedCategory: updatedCategories[category].expanded ? category : null
     });
+  },
+
+  /**
+   * 展开/收起套餐详情
+   */
+  onTogglePackageDetail(e) {
+    const { index, category } = e.currentTarget.dataset;
+    const packages = this.data.categorizedPackages[category]?.packages || [];
+    const pkg = packages[index];
+
+    if (pkg) {
+      const updatedPackages = [...packages];
+      updatedPackages[index] = {
+        ...pkg,
+        expanded: !pkg.expanded
+      };
+
+      const updatedCategories = { ...this.data.categorizedPackages };
+      updatedCategories[category].packages = updatedPackages;
+
+      this.setData({
+        categorizedPackages: updatedCategories
+      });
+    }
   },
 
   /**
@@ -476,10 +626,10 @@ Page({
       return;
     }
 
-    // 验证保养类型
-    if (this.data.selectedTypeIndex === -1) {
+    // 验证套餐选择
+    if (!this.data.selectedPackageId) {
       wx.showToast({
-        title: '请选择保养类型',
+        title: '请选择保养套餐',
         icon: 'none'
       });
       return;
@@ -495,7 +645,6 @@ Page({
     }
 
     const type = this.data.maintenanceTypes[this.data.selectedTypeIndex];
-    const pkg = this.data.recommendedPackages[this.data.selectedPackageIndex];
 
     // 先上传照片
     wx.showLoading({ title: '上传照片中...' });
@@ -541,16 +690,21 @@ Page({
         driverRemark: this.data.driverRemark
       };
 
-      // 根据权限添加不同字段
-      if (this.data.fleetConfig.maintenanceProductPermission === 'driver_select') {
-        // 司机有商品选择权限
-        if (pkg) {
-          data.packageId = pkg._id;
-        }
+      // 添加套餐ID
+      data.packageId = this.data.selectedPackageId;
+
+      // 添加门店ID（保养订单司机必选门店）
+      if (this.data.selectedStoreIndex !== -1) {
+        const storeId = this.data.stores[this.data.selectedStoreIndex]._id;
+        data.storeId = storeId;
       } else {
-        // 司机无权限，选择档位
-        const tiers = ['基础', '标准', '高级', '尊享'];
-        data.selectedTier = tiers[this.data.selectedTierIndex];
+        wx.hideLoading();
+        wx.showToast({
+          title: '请选择门店',
+          icon: 'none'
+        });
+        this.setData({ submitting: false });
+        return;
       }
 
       this.setData({ submitting: true });
@@ -575,5 +729,181 @@ Page({
     } finally {
       this.setData({ submitting: false });
     }
+  },
+
+  // ==================== 门店选择相关方法 ====================
+
+  /**
+   * 加载门店列表
+   */
+  async loadStores() {
+    try {
+      const res = await request.get('/stores', {
+        status: 'normal',
+        limit: 100
+      });
+
+      const stores = (res.data.stores || []).map(store => ({
+        _id: store._id,
+        name: store.name,
+        label: store.name,
+        address: store.address,
+        phone: store.phone,
+        // 计算距离（如果有位置信息）
+        distance: this.calculateDistance(store)
+      }));
+
+      this.setData({ stores });
+    } catch (error) {
+      console.error('加载门店列表失败:', error);
+    }
+  },
+
+  /**
+   * 计算与门店的距离
+   */
+  calculateDistance(store) {
+    if (!store.latitude || !store.longitude || !this.data.serviceLocation.latitude || !this.data.serviceLocation.longitude) {
+      return null;
+    }
+
+    const R = 6371; // 地球半径，单位km
+    const lat1 = this.data.serviceLocation.latitude * Math.PI / 180;
+    const lat2 = store.latitude * Math.PI / 180;
+    const deltaLat = (store.latitude - this.data.serviceLocation.latitude) * Math.PI / 180;
+    const deltaLon = (store.longitude - this.data.serviceLocation.longitude) * Math.PI / 180;
+
+    const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+              Math.cos(lat1) * Math.cos(lat2) *
+              Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return (R * c).toFixed(1);
+  },
+
+  /**
+   * 打开门店选择器
+   */
+  openStorePicker() {
+    if (this.data.stores.length === 0) {
+      wx.showToast({
+        title: '暂无可用门店',
+        icon: 'none'
+      });
+      return;
+    }
+    this.setData({ showStorePicker: true });
+  },
+
+  /**
+   * 关闭门店选择器
+   */
+  closeStorePicker() {
+    this.setData({ showStorePicker: false });
+  },
+
+  /**
+   * 选择门店
+   */
+  onStoreSelect(e) {
+    const index = parseInt(e.currentTarget.dataset.index);
+    this.setData({
+      selectedStoreIndex: index
+    });
+  },
+
+  /**
+   * 确认选择门店
+   */
+  onConfirmStoreSelect() {
+    if (this.data.selectedStoreIndex === -1) {
+      wx.showToast({
+        title: '请选择门店',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.setData({
+      showStorePicker: false
+    });
+
+    // 选择成功提示
+    const storeName = this.data.stores[this.data.selectedStoreIndex]?.label || '';
+    wx.showToast({
+      title: `已选择：${storeName}`,
+      icon: 'success'
+    });
+
+    // 重新加载推荐套餐（基于选中的门店）
+    const vehicle = this.data.vehicle;
+    if (vehicle && this.data.selectedTypeIndex >= 0) {
+      this.loadRecommendedPackages();
+    }
+  },
+
+  /**
+   * 查看门店详情
+   */
+  async onViewStoreDetail(e) {
+    const store = e.currentTarget.dataset.store;
+
+    // 获取门店评价
+    try {
+      const reviewsRes = await request.get('/store-reviews', {
+        storeId: store._id,
+        limit: 5
+      });
+
+      this.setData({
+        storeDetail: store,
+        storeDetailReviews: reviewsRes.data.reviews || [],
+        showStoreDetail: true
+      });
+
+    } catch (error) {
+      // 获取评价失败不影响显示门店详情
+      this.setData({
+        storeDetail: store,
+        storeDetailReviews: [],
+        showStoreDetail: true
+      });
+    }
+  },
+
+  /**
+   * 关闭门店详情弹窗
+   */
+  onCloseStoreDetail() {
+    this.setData({
+      showStoreDetail: false
+    });
+  },
+
+  /**
+   * 联系门店
+   */
+  onCallStore() {
+    const store = this.data.storeDetail;
+    if (!store || !store.phone) {
+      wx.showToast({
+        title: '暂无联系电话',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.showModal({
+      title: '联系门店',
+      content: `电话：${store.phone}`,
+      confirmText: '拨打电话',
+      success: (res) => {
+        if (res.confirm) {
+          wx.makePhoneCall({
+            phoneNumber: store.phone
+          });
+        }
+      }
+    });
   }
 });

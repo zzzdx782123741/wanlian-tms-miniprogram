@@ -302,7 +302,7 @@ Page({
 
       case 6: // 确认提交
         if (!this.data.agreedToTerms) {
-          wx.showToast({ title: '请阅读并同意注册协议', icon: 'none' });
+          wx.showToast({ title: '请先阅读并同意入驻协议', icon: 'none' });
           return false;
         }
         break;
@@ -356,8 +356,8 @@ Page({
       this.setData({ submitting: false });
 
       wx.showModal({
-        title: '注册成功',
-        content: '门店注册申请已提交，请等待平台审核。审核通过后，我们将使用管理员账号信息联系您。',
+        title: '申请已提交',
+        content: '门店入驻申请已提交，请等待平台审核。审核通过后，我们将使用管理员账号信息联系您。',
         showCancel: false,
         success: () => {
           // 返回登录页
@@ -371,7 +371,7 @@ Page({
       wx.hideLoading();
       this.setData({ submitting: false });
       wx.showToast({
-        title: error.message || '注册失败',
+        title: error.message || '提交申请失败',
         icon: 'none'
       });
     }

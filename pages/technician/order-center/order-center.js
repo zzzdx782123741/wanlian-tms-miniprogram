@@ -247,12 +247,12 @@ Page({
   getStatusText(status) {
     const statusMap = {
       'awaiting_fleet_approval': '待车队审批',
-      'awaiting_time_confirmation': '待确认时间',
+      'awaiting_time_confirmation': '待确认到店时间',
       'pending_assessment': '待接车检查',
       'awaiting_approval': '待审批报价',
       'in_repair': '维修中',
-      'awaiting_addon_approval': '增项待审批',
-      'pending_confirmation': '待确认',
+      'awaiting_addon_approval': '待审批增项',
+      'pending_confirmation': '待确认完工',
       'completed': '已完成',
       'refunded': '已退款',
       'rejected': '已拒绝'
@@ -274,7 +274,7 @@ Page({
    * 格式化时间
    */
   formatTime(time) {
-    if (!time) return '待确认';
+    if (!time) return '待确认到店时间';
 
     const date = new Date(time);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');

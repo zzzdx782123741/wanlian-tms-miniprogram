@@ -20,14 +20,14 @@
       data-tab="pending_assessment"
       bindtap="onTabChange"
     >
-      <text class="tab-text">待评估</text>
+      <text class="tab-text">待接车检查</text>
     </view>
     <view
       class="tab-item {{activeTab === 'awaiting_approval' ? 'active' : ''}}"
       data-tab="awaiting_approval"
       bindtap="onTabChange"
     >
-      <text class="tab-text">审批中</text>
+      <text class="tab-text">待审批报价</text>
     </view>
     <view
       class="tab-item {{activeTab === 'in_repair' ? 'active' : ''}}"

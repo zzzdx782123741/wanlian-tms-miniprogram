@@ -20,7 +20,7 @@ Page({
 
     if (!openid) {
       wx.showModal({
-        title: '提示',
+        title: '登录已过期',
         content: '登录信息已过期，请重新登录',
         showCancel: false,
         success: () => {
@@ -99,7 +99,7 @@ Page({
         if (res.data && res.data.debugCode) {
           console.log('开发环境验证码:', res.data.debugCode);
           wx.showModal({
-            title: '开发环境',
+            title: '开发环境验证码',
             content: `验证码: ${res.data.debugCode}`,
             showCancel: false
           });
@@ -109,7 +109,7 @@ Page({
         this.startCountdown();
       } else {
         wx.showToast({
-          title: res.message || '发送失败',
+          title: res.message || '验证码发送失败',
           icon: 'none'
         });
       }
@@ -118,7 +118,7 @@ Page({
       wx.hideLoading();
       console.error('发送验证码失败:', error);
       wx.showToast({
-        title: error.message || '发送失败',
+        title: error.message || '验证码发送失败',
         icon: 'none'
       });
     }

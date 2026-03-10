@@ -66,10 +66,10 @@ Component({
      */
     updateTabBar() {
       const role = this.data.role;
-      console.log('[TabBar] 更新TabBar，当前角色:', role);
+      console.log('[TabBar] 更新 tabBar，当前角色:', role);
 
       const list = this.getTabsByRole(role);
-      console.log('[TabBar] 过滤后的Tab列表:', list);
+      console.log('[TabBar] 过滤后的 tab 列表:', list);
 
       this.setData({ list });
 
@@ -177,8 +177,27 @@ Component({
       const data = e.currentTarget.dataset;
       const url = data.path;
 
+      const pages = getCurrentPages();
+      const currentRoute = pages.length > 0 ? `/${pages[pages.length - 1].route}` : '';
+      if (!url || currentRoute === url) {
+        return;
+      }
+
       wx.switchTab({
-        url
+        url,
+        fail: (error) => {
+          console.error('[TabBar] switchTab 失败，尝试使用 reLaunch 兜底:', url, error);
+          wx.reLaunch({
+            url,
+            fail: (relaunchError) => {
+              console.error('[TabBar] reLaunch 也失败:', url, relaunchError);
+              wx.showToast({
+                title: '页面跳转失败',
+                icon: 'none'
+              });
+            }
+          });
+        }
       });
     }
   }

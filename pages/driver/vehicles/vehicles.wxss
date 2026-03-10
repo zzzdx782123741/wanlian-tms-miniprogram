@@ -49,14 +49,20 @@
   font-size: var(--font-size-xs);
 }
 
-.status-ACTIVE {
+.status-normal {
   background: rgba(16, 185, 129, 0.1);
   color: var(--color-success);
 }
 
-.status-IDLE {
+.status-repairing,
+.status-pending_inspection {
   background: rgba(148, 163, 184, 0.1);
   color: var(--color-text-tertiary);
+}
+
+.status-scrapped {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
 }
 
 /* 车辆信息 */

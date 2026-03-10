@@ -11,7 +11,7 @@
     <!-- 顶部提示 -->
     <view class="review-header">
       <text class="header-title">服务评价</text>
-      <text class="header-subtitle">您的评价能帮助我们提供更好的服务</text>
+      <text class="header-subtitle">您的评价将帮助我们持续提升服务</text>
     </view>
 
     <!-- 门店信息 -->
@@ -27,11 +27,11 @@
 
     <!-- 评分区域 -->
     <view class="rating-section">
-      <!-- 技术专业度 -->
+      <!-- 维修技术 -->
       <view class="rating-item">
         <view class="rating-label">
           <text class="label-icon">🔧</text>
-          <text class="label-text">技术专业度</text>
+          <text class="label-text">维修技术</text>
         </view>
         <view class="rating-stars">
           <block wx:for="{{[1, 2, 3, 4, 5]}}" wx:key="index">
@@ -48,11 +48,11 @@
         <view class="rating-text">{{ratingTexts[ratings.technicalSkill]}}</view>
       </view>
 
-      <!-- 服务效率 -->
+      <!-- 服务质量 -->
       <view class="rating-item">
         <view class="rating-label">
           <text class="label-icon">⚡</text>
-          <text class="label-text">服务效率</text>
+          <text class="label-text">服务质量</text>
         </view>
         <view class="rating-stars">
           <block wx:for="{{[1, 2, 3, 4, 5]}}" wx:key="index">
@@ -69,11 +69,11 @@
         <view class="rating-text">{{ratingTexts[ratings.serviceEfficiency]}}</view>
       </view>
 
-      <!-- 收费透明度 -->
+      <!-- 收费透明 -->
       <view class="rating-item">
         <view class="rating-label">
           <text class="label-icon">💰</text>
-          <text class="label-text">收费透明度</text>
+          <text class="label-text">收费透明</text>
         </view>
         <view class="rating-stars">
           <block wx:for="{{[1, 2, 3, 4, 5]}}" wx:key="index">
@@ -149,7 +149,7 @@
       </view>
       <textarea
         class="comment-input"
-        placeholder="说说您的服务体验，帮助我们改进..."
+        placeholder="说说本次服务体验，帮助我们持续改进..."
         maxlength="100"
         value="{{comment}}"
         bindinput="onCommentInput"
@@ -166,7 +166,7 @@
         </view>
         <text class="anonymous-label">匿名评价</text>
       </view>
-      <view class="anonymous-hint">匿名后您的昵称将隐藏显示</view>
+      <view class="anonymous-hint">匿名后将隐藏您的昵称</view>
     </view>
 
     <!-- 提交按钮 -->
@@ -176,7 +176,7 @@
         提交评价
       </button>
       <button class="skip-btn" bindtap="onSkip">
-        跳过
+        暂不评价
       </button>
     </view>
   </view>

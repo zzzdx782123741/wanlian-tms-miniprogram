@@ -94,7 +94,7 @@ Page({
       const debugCode = res?.data?.debugCode;
 
       wx.showToast({
-        title: debugCode ? `验证码:${debugCode}` : '验证码已发送',
+        title: debugCode ? `验证码：${debugCode}` : '验证码已发送',
         icon: 'none',
         duration: 2000
       });

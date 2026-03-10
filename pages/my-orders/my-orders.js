@@ -72,11 +72,11 @@ Page({
 
       const statusMap = {
         'pending_assessment': {
-          text: '待评估',
+          text: '待接车检查',
           nextAction: '请检查车辆并提交报价'
         },
         'awaiting_approval': {
-          text: '费用审批中',
+          text: '待审批报价',
           nextAction: '等待车队审批报价'
         },
         'in_repair': {
@@ -84,12 +84,12 @@ Page({
           nextAction: '请尽快完成维修并提交完工'
         },
         'awaiting_addon_approval': {
-          text: '增项审批中',
+          text: '待审批增项',
           nextAction: '等待车队审批增项费用'
         },
         'completed': {
-          text: isConfirmed ? '已完成' : '待确认',
-          nextAction: isConfirmed ? '订单已完成' : '等待司机确认'
+          text: isConfirmed ? '已完成' : '待确认完工',
+          nextAction: isConfirmed ? '订单已完成' : '等待司机确认完工'
         },
         'rejected': {
           text: '已拒绝',

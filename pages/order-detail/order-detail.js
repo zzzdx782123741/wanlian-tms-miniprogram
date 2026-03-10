@@ -61,6 +61,18 @@ Page({
       const res = await request.get(`/orders/${this.data.orderId}`);
       const order = this.formatOrderDetail(res.data);
 
+      // ========== 审批按钮调试日志 ==========
+      console.log('========== 审批按钮调试 ==========');
+      console.log('订单ID:', this.data.orderId);
+      console.log('订单状态:', order.status);
+      console.log('订单状态是否为 awaiting_fleet_approval:', order.status === 'awaiting_fleet_approval');
+      console.log('用户角色 (app.globalData.role):', app.globalData.role);
+      console.log('用户角色 (storage):', wx.getStorageSync('role'));
+      console.log('页面中的 userRole:', this.data.userRole);
+      console.log('角色是否为 FLEET_MANAGER:', this.data.userRole === 'FLEET_MANAGER');
+      console.log('审批按钮应该显示:', order.status === 'awaiting_fleet_approval' && this.data.userRole === 'FLEET_MANAGER');
+      console.log('================================');
+
       this.setData({ order });
 
       // 如果是从"去确认"按钮进入的，自动弹出确认对话框
@@ -211,13 +223,13 @@ Page({
         ]
       },
       'awaiting_time_confirmation': {
-        text: '待门店确认时间',
-        hint: '门店将确认您的到店时间',
+        text: '待确认到店时间',
+        hint: '门店待确认您的到店时间',
         icon: '⏰',
         timeline: [
           { title: '订单已提交', completed: true },
           { title: '车队已审批', completed: true },
-          { title: '等待门店确认时间', completed: false }
+          { title: '待确认到店时间', completed: false }
         ]
       },
       'pending_assessment': {
@@ -234,7 +246,7 @@ Page({
       },
       'awaiting_approval': {
         // 维修订单专属状态
-        text: '待审批',
+        text: '待审批报价',
         hint: '等待车队管理员审批报价',
         icon: '💰',
         timeline: [
@@ -263,7 +275,7 @@ Page({
         ]
       },
       'awaiting_addon_approval': {
-        text: '增项待审批',
+        text: '待审批增项',
         hint: isMaintenance ? '保养增项等待车队管理员审批' : '维修增项等待车队管理员审批',
         icon: '📋',
         timeline: isMaintenance ? [
@@ -272,19 +284,19 @@ Page({
           { title: '车队已审批', completed: true },
           { title: '时间已确认', completed: true },
           { title: '保养进行中', completed: true },
-          { title: '增项待审批', completed: true }
+          { title: '待审批增项', completed: true }
         ] : [
           // 维修订单增项时间线
           { title: '订单已提交', completed: true },
           { title: '接车检查完成', completed: true },
           { title: '报价已批准', completed: true },
           { title: '维修中', completed: true },
-          { title: '增项待审批', completed: true }
+          { title: '待审批增项', completed: true }
         ]
       },
       'pending_confirmation': {
-        text: '待确认',
-        hint: `等待司机确认${isMaintenance ? '保养' : '维修'}完工`,
+        text: '待确认完工',
+        hint: `等待司机确认${isMaintenance ? '保养' : '维修'}已完工`,
         icon: '✅',
         timeline: isMaintenance ? [
           // 保养订单时间线
@@ -292,14 +304,14 @@ Page({
           { title: '车队已审批', completed: true },
           { title: '时间已确认', completed: true },
           { title: '保养完成', completed: true },
-          { title: '等待确认', completed: true }
+          { title: '待确认完工', completed: true }
         ] : [
           // 维修订单时间线
           { title: '订单已提交', completed: true },
           { title: '接车检查完成', completed: true },
           { title: '报价已批准', completed: true },
           { title: '维修完成', completed: true },
-          { title: '等待确认', completed: true }
+          { title: '待确认完工', completed: true }
         ]
       },
       'completed': {
@@ -630,7 +642,7 @@ Page({
     const title = approved ? '批准报价' : '拒绝报价';
     const content = approved
       ? '确认批准此报价？批准后将从账户扣款。'
-      : '确认拒绝此报价？订单将返回待评估状态。';
+      : '确认拒绝此报价？订单将返回待接车检查状态。';
 
     wx.showModal({
       title,
@@ -1040,9 +1052,10 @@ Page({
   async onViewStoreDetail(e) {
     const store = e.currentTarget.dataset.store;
 
-    // 获取门店评价
+    // 获取门店评价 - 修复API路径
     try {
-      const reviewsRes = await request.get(`/store-reviews/store/${store._id}`, {
+      const reviewsRes = await request.get('/store-reviews', {
+        storeId: store._id,
         limit: 5
       });
 

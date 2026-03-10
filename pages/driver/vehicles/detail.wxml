@@ -1,49 +1,46 @@
-<!--pages/driver/vehicles/detail.wxml-->
 <view class="detail-container">
   <block wx:if="{{vehicle}}">
-    <!-- 车辆头部信息 -->
     <view class="vehicle-header glass-card">
       <text class="plate-number">{{vehicle.plateNumber}}</text>
       <view class="status-badge status-{{vehicle.status}}">
-        <text wx:if="{{vehicle.status === 'ACTIVE'}}">运营中</text>
-        <text wx:else>闲置</text>
+        <text>{{vehicle.statusText}}</text>
       </view>
     </view>
 
-    <!-- 车辆详细信息 -->
     <view class="info-section glass-card">
       <view class="section-title">车辆信息</view>
 
       <view class="info-item">
-        <text class="label">车型</text>
-        <text class="value">{{vehicle.type}}</text>
+        <text class="label">车辆类型</text>
+        <text class="value">{{vehicle.vehicleTypeText}}</text>
       </view>
 
       <view class="info-item">
-        <text class="label">载重</text>
-        <text class="value">{{vehicle.loadCapacity}}吨</text>
+        <text class="label">品牌型号</text>
+        <text class="value">{{vehicle.brandModelText}}</text>
       </view>
 
       <view class="info-item">
-        <text class="label">长度</text>
-        <text class="value">{{vehicle.length}}米</text>
+        <text class="label">年份</text>
+        <text class="value">{{vehicle.yearText}}</text>
+      </view>
+
+      <view class="info-item">
+        <text class="label">VIN</text>
+        <text class="value">{{vehicle.vinText}}</text>
       </view>
     </view>
 
-    <!-- 维修记录 -->
     <view class="repair-records-section glass-card">
       <view class="section-title">
-        <text>维修记录</text>
+        <text>订单记录</text>
         <text class="record-count">({{repairRecords.length}})</text>
       </view>
 
-      <!-- 空状态 -->
       <view class="empty-records" wx:if="{{repairRecords.length === 0}}">
-        <text class="empty-icon">📋</text>
-        <text class="empty-text">暂无维修记录</text>
+        <text class="empty-text">暂无订单记录</text>
       </view>
 
-      <!-- 记录列表 -->
       <view class="record-list" wx:else>
         <view
           class="record-item"
@@ -74,20 +71,18 @@
             </view>
           </view>
 
-          <view class="record-arrow">›</view>
+          <view class="record-arrow">></view>
         </view>
       </view>
     </view>
 
-    <!-- 操作按钮 -->
     <view class="action-section">
-      <button class="action-btn glass-btn" bindtap="editVehicle">编辑</button>
+      <button class="action-btn glass-btn" wx:if="{{canManageVehicle}}" bindtap="editVehicle">完善档案</button>
       <button class="action-btn glass-btn-primary" bindtap="applyMaintenance">保养申请</button>
-      <button class="action-btn glass-btn-secondary" bindtap="deleteVehicle">删除</button>
+      <button class="action-btn glass-btn-secondary" wx:if="{{canManageVehicle}}" bindtap="deleteVehicle">删除车辆</button>
     </view>
   </block>
 
-  <!-- 加载状态 -->
   <view wx:if="{{loading}}" class="loading-state">
     <text>加载中...</text>
   </view>

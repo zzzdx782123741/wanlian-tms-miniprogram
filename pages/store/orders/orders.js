@@ -54,10 +54,10 @@ Page({
         // 全部：显示所有分配给该门店的订单
         params.status = ''; // 不过滤状态
       } else if (activeTab === 'processing') {
-        // 处理中：待确认时间、待评估、待审批、维修中、增项待审批
+        // 处理中：待确认到店时间、待接车检查、待审批报价、维修中、待审批增项
         params.status = 'awaiting_time_confirmation,pending_assessment,awaiting_approval,in_repair,awaiting_addon_approval';
       } else if (activeTab === 'completed') {
-        // 待确认 + 已完成
+        // 待确认完工 + 已完成
         params.status = 'pending_confirmation,completed';
       }
 
@@ -255,7 +255,7 @@ Page({
 
     const statusMap = {
       'awaiting_fleet_approval': '待车队审批',
-      'awaiting_time_confirmation': '待确认时间',
+      'awaiting_time_confirmation': '待确认到店时间',
       'pending_assessment': '待接车检查',
       'received': '已接单',
       'awaiting_approval': '待审批报价',
@@ -263,8 +263,8 @@ Page({
       'approved': '已审批',
       'repairing': '维修中',
       'in_repair': '维修中',
-      'awaiting_addon_approval': '增项待审批',
-      'pending_confirmation': '待确认',
+      'awaiting_addon_approval': '待审批增项',
+      'pending_confirmation': '待确认完工',
       'completed': '已完成',
       'confirmed': '已确认',
       'rejected': '已拒绝',

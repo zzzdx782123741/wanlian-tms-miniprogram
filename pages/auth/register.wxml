@@ -3,7 +3,7 @@
   <!-- 顶部标题 -->
   <view class="header-section">
     <text class="header-title">注册账号</text>
-    <text class="header-subtitle">加入万联驿站2.0智慧物流</text>
+    <text class="header-subtitle">创建账号并加入万联驿站 2.0</text>
   </view>
 
   <!-- 注册表单 -->

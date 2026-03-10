@@ -215,7 +215,7 @@
 
     <!-- 操作按钮 -->
     <view class="action-section">
-      <!-- 待确认时间：显示确认时间按钮 -->
+      <!-- 待确认到店时间：显示确认按钮 -->
       <button
         wx:if="{{order.status === 'awaiting_time_confirmation'}}"
         class="action-btn action-btn-warning"
@@ -224,7 +224,7 @@
         确认到店时间
       </button>
 
-      <!-- 待评估状态：显示填写报价按钮 -->
+      <!-- 待接车检查状态：显示填写报价按钮 -->
       <button
         wx:if="{{order.status === 'pending_assessment'}}"
         class="action-btn action-btn-primary"
@@ -233,13 +233,25 @@
         填写报价
       </button>
 
+      <!-- 维修中状态：显示增项和完工两个按钮（并列布局） -->
+      <block wx:if="{{order.status === 'in_repair'}}">
+        <view class="action-buttons-row">
+          <button class="action-btn action-btn-addon" bindtap="handleAddon">
+            提交增项
+          </button>
+          <button class="action-btn action-btn-complete" bindtap="handleComplete">
+            提交完工
+          </button>
+        </view>
+      </block>
+
       <!-- 通用按钮 -->
       <button
         class="action-btn action-btn-secondary"
         bindtap="contactReporter"
         wx:if="{{order.reporterId && order.reporterId.phone}}"
       >
-        联系报修人
+        联系提交人
       </button>
 
       <button

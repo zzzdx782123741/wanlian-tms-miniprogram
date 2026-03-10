@@ -32,10 +32,10 @@
 
   <!-- 提现操作 -->
   <view class="section">
-    <view class="section-title">提现</view>
+    <view class="section-title">提现管理</view>
     <view class="withdraw-card">
       <view class="withdraw-info">
-        <view class="withdraw-hint">可提现金额：¥{{pendingBalance}}</view>
+        <view class="withdraw-hint">当前可提现金额：¥{{pendingBalance}}</view>
       </view>
       <button class="btn primary" bindtap="goToWithdraw">申请提现</button>
     </view>
@@ -45,7 +45,7 @@
   <view class="section">
     <view class="section-title">
       提现记录
-      <text class="more-btn" bindtap="goToWithdrawRecords">更多 →</text>
+      <text class="more-btn" bindtap="goToWithdrawRecords">查看全部 ›</text>
     </view>
     <view class="withdraw-list" wx:if="{{withdrawRecords.length > 0}}">
       <view class="withdraw-item" wx:for="{{withdrawRecords}}" wx:key="_id" bindtap="viewWithdrawal" data-id="{{item._id}}">

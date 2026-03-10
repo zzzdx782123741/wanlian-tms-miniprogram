@@ -1,0 +1,196 @@
+<!--pages/store/addon/addon.wxml - 门店技师提交增项-->
+<wxs module="utils">
+  module.exports = {
+    toFixed: function(value) {
+      return (value || 0).toFixed(2);
+    }
+  }
+</wxs>
+<view class="addon-container">
+  <block wx:if="{{order}}">
+    <!-- 订单信息 -->
+    <view class="order-section glass-card">
+      <view class="section-title">
+        <text class="icon">📋</text>
+        <text>订单信息</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">订单号</text>
+        <text class="value">{{order.orderNumber}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">车牌号</text>
+        <text class="value">{{(order.vehicleId && order.vehicleId.plateNumber) || '-'}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">车型</text>
+        <text class="value">{{(order.vehicleId && order.vehicleId.brand) || '-'}} {{(order.vehicleId && order.vehicleId.model) || ''}}</text>
+      </view>
+
+      <view class="info-row">
+        <text class="label">当前状态</text>
+        <text class="value status-text">维修中</text>
+      </view>
+    </view>
+
+    <!-- 增项项目清单 -->
+    <view class="form-section glass-card">
+      <view class="section-title">
+        <text class="icon">📦</text>
+        <text>增项项目清单</text>
+      </view>
+
+      <!-- 已选商品列表 -->
+      <view class="selected-products" wx:if="{{selectedItems.length > 0}}">
+        <view class="product-item" wx:for="{{selectedItems}}" wx:key="*this" wx:for-index="idx">
+          <view class="product-info">
+            <view class="product-name">{{item.name}}</view>
+            <view class="product-meta">
+              <text class="product-category category-{{item.category}}">{{item.categoryText}}</text>
+              <text class="product-divider">|</text>
+              <text class="product-price">¥{{item.price}}</text>
+              <text class="product-divider">|</text>
+              <text class="product-unit">{{item.unit}}</text>
+            </view>
+          </view>
+          <view class="product-actions">
+            <view class="quantity-control">
+              <view class="quantity-btn minus" bindtap="onDecreaseQuantity" data-index="{{idx}}">-</view>
+              <input
+                class="quantity-input"
+                type="number"
+                value="{{item.quantity}}"
+                bindinput="onQuantityInput"
+                data-index="{{idx}}"
+              />
+              <view class="quantity-btn plus" bindtap="onIncreaseQuantity" data-index="{{idx}}">+</view>
+            </view>
+            <view class="item-subtotal">¥{{utils.toFixed(item.price * item.quantity)}}</view>
+            <view class="item-delete" bindtap="deleteItem" data-index="{{idx}}">
+              <text class="delete-icon">🗑️</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态提示 -->
+      <view class="empty-products" wx:if="{{selectedItems.length === 0}}">
+        <text class="empty-icon">📦</text>
+        <text class="empty-text">尚未添加增项项目</text>
+        <text class="empty-hint">点击下方按钮从项目库中选择</text>
+      </view>
+
+      <!-- 添加商品按钮 -->
+      <view class="add-product-btn" bindtap="addProduct">
+        <text class="add-icon">➕</text>
+        <text>添加增项项目</text>
+      </view>
+
+      <!-- 总计区域 -->
+      <view class="total-section">
+        <view class="total-row">
+          <text class="total-label">增项总计</text>
+          <text class="total-amount">¥{{totalAmount}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 增项原因 -->
+    <view class="form-section glass-card">
+      <view class="section-title">
+        <text class="icon">💬</text>
+        <text>增项原因</text>
+        <text class="required-mark">*</text>
+      </view>
+
+      <view class="reason-hint">
+        <text class="hint-icon">💡</text>
+        <text class="hint-text">请详细说明增项原因，方便车队审批</text>
+      </view>
+
+      <textarea
+        class="textarea-field"
+        placeholder="请详细说明增项原因（必填）&#10;例如：检测发现刹车片磨损严重，建议更换..."
+        value="{{reason}}"
+        bindinput="onReasonInput"
+        maxlength="200"
+        auto-height
+      ></textarea>
+      <view class="char-count">{{reason.length}}/200</view>
+    </view>
+
+    <!-- 增项图片 -->
+    <view class="form-section glass-card">
+      <view class="section-title">
+        <text class="icon">📷</text>
+        <text>增项图片（选填）</text>
+      </view>
+
+      <view class="photo-hint">
+        <text class="hint-icon">💡</text>
+        <text class="hint-text">上传增项部位照片，作为审批参考</text>
+      </view>
+
+      <view class="image-upload">
+        <block wx:if="{{addonImages.length > 0}}">
+          <view class="image-item" wx:for="{{addonImages}}" wx:key="index">
+            <image
+              class="uploaded-image"
+              src="{{item}}"
+              mode="aspectFill"
+              bindtap="previewImage"
+              data-url="{{item}}"
+              data-urls="{{addonImages}}"
+            />
+            <view class="image-delete" bindtap="deleteImage" data-index="{{index}}">
+              <text>✕</text>
+            </view>
+          </view>
+        </block>
+
+        <view class="upload-btn" wx:if="{{addonImages.length < 9}}" bindtap="chooseImage">
+          <text class="upload-icon">📷</text>
+          <text class="upload-text">添加图片</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 审批流程提示 -->
+    <view class="process-hint">
+      <view class="hint-title">📢 审批流程</view>
+      <view class="hint-steps">
+        <view class="hint-step">
+          <view class="step-number">1</view>
+          <view class="step-text">提交增项</view>
+        </view>
+        <view class="step-arrow">→</view>
+        <view class="hint-step">
+          <view class="step-number">2</view>
+          <view class="step-text">车队审批</view>
+        </view>
+        <view class="step-arrow">→</view>
+        <view class="hint-step">
+          <view class="step-number">3</view>
+          <view class="step-text">继续处理</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <button
+      class="submit-btn glass-btn-cta addon-submit-btn"
+      bindtap="handleSubmit"
+      disabled="{{submitting}}"
+    >
+      {{submitting ? '提交中...' : '提交增项'}}
+    </button>
+  </block>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text>加载中...</text>
+  </view>
+</view>

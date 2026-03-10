@@ -89,6 +89,10 @@ Page({
       }
     } catch (error) {
       console.error('加载数据失败:', error);
+      wx.showToast({
+        title: '加载财务数据失败',
+        icon: 'none'
+      });
     }
   },
 
@@ -96,8 +100,9 @@ Page({
    * 申请提现
    */
   goToWithdraw() {
-    wx.navigateTo({
-      url: '/pages/store/withdraw/withdraw'
+    wx.showToast({
+      title: '提现页面暂未开放',
+      icon: 'none'
     });
   },
 
@@ -105,8 +110,9 @@ Page({
    * 查看提现记录
    */
   goToWithdrawRecords() {
-    wx.navigateTo({
-      url: '/pages/store/withdrawal-records/withdrawal-records'
+    wx.showToast({
+      title: '提现记录页暂未开放',
+      icon: 'none'
     });
   },
 
@@ -114,9 +120,9 @@ Page({
    * 查看提现详情
    */
   viewWithdrawal(e) {
-    const { id } = e.currentTarget.dataset;
-    wx.navigateTo({
-      url: `/pages/store/withdrawal-detail/withdrawal-detail?id=${id}`
+    wx.showToast({
+      title: '提现详情页暂未开放',
+      icon: 'none'
     });
   },
 

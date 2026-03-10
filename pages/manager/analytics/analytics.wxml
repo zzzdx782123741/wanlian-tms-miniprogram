@@ -33,7 +33,7 @@
     <view class="stats-grid">
       <view class="stat-card">
         <view class="stat-value">{{orderStats.total || 0}}</view>
-        <view class="stat-label">总订单数</view>
+        <view class="stat-label">订单总数</view>
       </view>
       <view class="stat-card">
         <view class="stat-value">{{orderStats.completed || 0}}</view>
@@ -45,7 +45,7 @@
       </view>
       <view class="stat-card">
         <view class="stat-value">¥{{orderStats.avgAmount || 0}}</view>
-        <view class="stat-label">客单价(元)</view>
+        <view class="stat-label">客单价（元）</view>
       </view>
     </view>
   </view>
@@ -96,6 +96,6 @@
 
   <!-- 导出按钮 -->
   <view class="action-buttons">
-    <button class="btn outline" bindtap="exportOrders">导出订单报表</button>
+    <button class="btn outline" bindtap="exportOrders">导出经营报表</button>
   </view>
 </view>

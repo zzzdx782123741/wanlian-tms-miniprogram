@@ -3,7 +3,7 @@
   <!-- 顶部标题栏 -->
   <view class="header">
     <view class="header-title">车队车辆</view>
-    <view class="header-subtitle">管理车队的所有车辆</view>
+    <view class="header-subtitle">查看与管理车队全部车辆</view>
   </view>
 
   <!-- 统计卡片 -->
@@ -27,8 +27,8 @@
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{!loading && vehicles.length === 0}}">
       <text class="empty-icon">🚛</text>
-      <text class="empty-text">暂无车辆</text>
-      <text class="empty-hint">请先添加车辆到车队</text>
+      <text class="empty-text">暂无车辆记录</text>
+      <text class="empty-hint">请先将车辆添加到车队</text>
     </view>
 
     <!-- 车辆卡片 -->
@@ -84,7 +84,7 @@
           catchtap="true"
         >
           <text class="btn-icon">📋</text>
-          维修记录
+          订单记录
         </button>
         <button
           class="action-btn primary"

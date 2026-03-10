@@ -80,7 +80,7 @@ Page({
   },
 
   /**
-   * 查看维修记录
+   * 查看订单记录
    */
   onViewOrders(e) {
     const vehicleId = e.currentTarget.dataset.vehicleId;
@@ -97,7 +97,7 @@ Page({
       fail: (err) => {
         console.error('跳转订单页失败:', err);
         wx.showToast({
-          title: '打开维修记录失败',
+          title: '打开订单记录失败',
           icon: 'none'
         });
       }

@@ -51,6 +51,28 @@
       </view>
     </view>
 
+    <!-- 选择保养门店（必填） -->
+    <view class="card">
+      <view class="card-title">
+        <text>选择保养门店</text>
+        <text class="required">*</text>
+        <text class="title-tip">（选择门店后可查看该门店的套餐）</text>
+      </view>
+      <view class="store-select-btn" bindtap="openStorePicker">
+        <view class="store-select-content" wx:if="{{selectedStoreIndex !== -1}}">
+          <text class="store-select-value">{{stores[selectedStoreIndex].label}}</text>
+          <text class="store-distance" wx:if="{{stores[selectedStoreIndex].distance}}">
+            {{stores[selectedStoreIndex].distance}}km
+          </text>
+        </view>
+        <view class="store-select-placeholder" wx:else>
+          <text class="placeholder-icon">🔧</text>
+          <text class="store-select-text">点击选择门店</text>
+        </view>
+        <text class="store-select-arrow">›</text>
+      </view>
+    </view>
+
     <!-- 里程照片（必填，1-3张） -->
     <view class="card">
       <view class="card-title">
@@ -89,50 +111,185 @@
       </scroll-view>
     </view>
 
-    <!-- 推荐套餐 -->
-    <view class="card" wx:if="{{recommendedPackages.length > 0}}">
+    <!-- 智能推荐套餐（基于里程） - 必须先选择门店 -->
+    <view class="card" wx:if="{{selectedStoreIndex !== -1 && topRecommendations.length > 0}}">
       <view class="card-title">
-        <text>推荐套餐</text>
-        <text class="title-tip" wx:if="{{fleetConfig.maintenanceProductPermission === 'driver_select'}}">（含商品明细和价格）</text>
+        <text class="title-icon">🔥</text>
+        <text>智能推荐</text>
+        <text class="title-tip">（基于当前里程 {{milestone || vehicle.mileage}}km）</text>
       </view>
 
-      <view class="packages-list">
-        <view
-          class="package-item {{selectedPackageIndex === index ? 'active' : ''}}"
-          wx:for="{{recommendedPackages}}"
-          wx:key="*this"
-          data-index="{{index}}"
-          bindtap="onSelectPackage"
-        >
-          <view class="package-header">
-            <text class="package-name">{{item.name}}</text>
-            <view class="package-tier">
-              <text class="tier-tag" data-tier="{{item.tier}}">{{item.tierName}}</text>
-              <text class="package-price">¥{{item.price}}</text>
-            </view>
-            <view class="package-products">含 {{item.products.length }} 项商品</view>
+      <view class="top-recommendations">
+        <scroll-view class="recommendations-scroll" scroll-x>
+          <view
+            class="recommendation-card {{selectedPackageId === item._id ? 'active' : ''}}"
+            wx:for="{{topRecommendations}}"
+            wx:key="_id"
+            data-category="{{item.category}}"
+            data-index="{{index}}"
+            bindtap="onSelectPackage"
+          >
+            <view class="rec-badge">{{item.recommendationReason || '智能推荐'}}</view>
+            <view class="rec-name">{{item.name}}</view>
+            <view class="rec-tier">{{item.tierName || item.tier}}</view>
+            <view class="rec-price">¥{{item.price}}</view>
+            <view class="rec-products">含 {{item.products.length}} 项商品</view>
           </view>
-          <view class="package-desc" wx:if="{{item.description}}">
-            <text>{{item.description}}</text>
+        </scroll-view>
+      </view>
+    </view>
+
+    <!-- 全部套餐分类 - 必须先选择门店 -->
+    <view class="card" wx:if="{{selectedStoreIndex !== -1 && (categorizedPackages.minor.packages.length > 0 || categorizedPackages.major.packages.length > 0 || categorizedPackages.special.packages.length > 0)}}">
+      <view class="card-title">
+        <text>全部套餐</text>
+        <text class="title-tip">（按分类选择）</text>
+      </view>
+
+      <!-- 小保养分类 -->
+      <view class="category-section" wx:if="{{categorizedPackages.minor.packages.length > 0}}">
+        <view class="category-header" data-category="minor" bindtap="onToggleCategory">
+          <view class="category-info">
+            <text class="category-icon">🛢️</text>
+            <text class="category-name">小保养</text>
+            <text class="category-count">{{categorizedPackages.minor.packages.length}} 个套餐</text>
+          </view>
+          <text class="category-arrow {{categorizedPackages.minor.expanded ? 'expanded' : ''}}">▼</text>
+        </view>
+
+        <view class="category-packages" wx:if="{{categorizedPackages.minor.expanded}}">
+          <view
+            class="package-row {{selectedPackageId === item._id ? 'selected' : ''}}"
+            wx:for="{{categorizedPackages.minor.packages}}"
+            wx:key="_id"
+            wx:for-item="pkg"
+            wx:for-index="pkgIndex"
+            data-category="minor"
+            data-index="{{pkgIndex}}"
+            bindtap="onSelectPackage"
+          >
+            <view class="package-main">
+              <view class="package-left">
+                <text class="package-tier-tag">{{pkg.tierName || pkg.tier}}</text>
+                <text class="package-row-name">{{pkg.name}}</text>
+              </view>
+              <view class="package-right">
+                <text class="package-row-price">¥{{pkg.price}}</text>
+              </view>
+            </view>
+            <view class="package-detail-toggle" data-category="minor" data-index="{{pkgIndex}}" catchtap="onTogglePackageDetail">
+              <text>商品明细</text>
+              <text class="toggle-arrow {{pkg.expanded ? 'up' : ''}}">▼</text>
+            </view>
+            <view class="package-products-list" wx:if="{{pkg.expanded}}">
+              <view class="product-row" wx:for="{{pkg.products}}" wx:key="productId" wx:for-item="product">
+                <text class="product-dot">•</text>
+                <text class="product-name">{{product.productId.name || product.name}}</text>
+                <text class="product-qty">x{{product.quantity || 1}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 大保养分类 -->
+      <view class="category-section" wx:if="{{categorizedPackages.major.packages.length > 0}}">
+        <view class="category-header" data-category="major" bindtap="onToggleCategory">
+          <view class="category-info">
+            <text class="category-icon">🔧</text>
+            <text class="category-name">大保养</text>
+            <text class="category-count">{{categorizedPackages.major.packages.length}} 个套餐</text>
+          </view>
+          <text class="category-arrow {{categorizedPackages.major.expanded ? 'expanded' : ''}}">▼</text>
+        </view>
+
+        <view class="category-packages" wx:if="{{categorizedPackages.major.expanded}}">
+          <view
+            class="package-row {{selectedPackageId === item._id ? 'selected' : ''}}"
+            wx:for="{{categorizedPackages.major.packages}}"
+            wx:key="_id"
+            wx:for-item="pkg"
+            wx:for-index="pkgIndex"
+            data-category="major"
+            data-index="{{pkgIndex}}"
+            bindtap="onSelectPackage"
+          >
+            <view class="package-main">
+              <view class="package-left">
+                <text class="package-tier-tag">{{pkg.tierName || pkg.tier}}</text>
+                <text class="package-row-name">{{pkg.name}}</text>
+              </view>
+              <view class="package-right">
+                <text class="package-row-price">¥{{pkg.price}}</text>
+              </view>
+            </view>
+            <view class="package-detail-toggle" data-category="major" data-index="{{pkgIndex}}" catchtap="onTogglePackageDetail">
+              <text>商品明细</text>
+              <text class="toggle-arrow {{pkg.expanded ? 'up' : ''}}">▼</text>
+            </view>
+            <view class="package-products-list" wx:if="{{pkg.expanded}}">
+              <view class="product-row" wx:for="{{pkg.products}}" wx:key="productId" wx:for-item="product">
+                <text class="product-dot">•</text>
+                <text class="product-name">{{product.productId.name || product.name}}</text>
+                <text class="product-qty">x{{product.quantity || 1}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 专项保养分类 -->
+      <view class="category-section" wx:if="{{categorizedPackages.special.packages.length > 0}}">
+        <view class="category-header" data-category="special" bindtap="onToggleCategory">
+          <view class="category-info">
+            <text class="category-icon">⚙️</text>
+            <text class="category-name">专项保养</text>
+            <text class="category-count">{{categorizedPackages.special.packages.length}} 个套餐</text>
+          </view>
+          <text class="category-arrow {{categorizedPackages.special.expanded ? 'expanded' : ''}}">▼</text>
+        </view>
+
+        <view class="category-packages" wx:if="{{categorizedPackages.special.expanded}}">
+          <view
+            class="package-row {{selectedPackageId === item._id ? 'selected' : ''}}"
+            wx:for="{{categorizedPackages.special.packages}}"
+            wx:key="_id"
+            wx:for-item="pkg"
+            wx:for-index="pkgIndex"
+            data-category="special"
+            data-index="{{pkgIndex}}"
+            bindtap="onSelectPackage"
+          >
+            <view class="package-main">
+              <view class="package-left">
+                <text class="package-tier-tag">{{pkg.tierName || pkg.tier}}</text>
+                <text class="package-row-name">{{pkg.name}}</text>
+              </view>
+              <view class="package-right">
+                <text class="package-row-price">¥{{pkg.price}}</text>
+              </view>
+            </view>
+            <view class="package-detail-toggle" data-category="special" data-index="{{pkgIndex}}" catchtap="onTogglePackageDetail">
+              <text>商品明细</text>
+              <text class="toggle-arrow {{pkg.expanded ? 'up' : ''}}">▼</text>
+            </view>
+            <view class="package-products-list" wx:if="{{pkg.expanded}}">
+              <view class="product-row" wx:for="{{pkg.products}}" wx:key="productId" wx:for-item="product">
+                <text class="product-dot">•</text>
+                <text class="product-name">{{product.productId.name || product.name}}</text>
+                <text class="product-qty">x{{product.quantity || 1}}</text>
+              </view>
+            </view>
           </view>
         </view>
       </view>
     </view>
 
-    <!-- 档位选择（司机无商品权限时） -->
-    <view class="card" wx:if="{{fleetConfig.maintenanceProductPermission !== 'driver_select' && recommendedPackages.length > 0}}">
-      <view class="card-title">选择档位</view>
-      <view class="tier-list">
-        <view
-          class="tier-item {{selectedTier === index ? 'active' : ''}}"
-          wx:for="{{tiers}}"
-          wx:key="*this"
-          data-index="{{index}}"
-          bindtap="onSelectTier"
-        >
-          <text class="tier-name">{{item.name}}</text>
-          <text class="tier-desc">{{item.priceRange}}</text>
-        </view>
+    <!-- 空状态提示 -->
+    <view class="card" wx:if="{{selectedStoreIndex === -1 || (topRecommendations.length === 0 && categorizedPackages.minor.packages.length === 0 && categorizedPackages.major.packages.length === 0 && categorizedPackages.special.packages.length === 0)}}">
+      <view class="empty-state">
+        <text class="empty-icon">📦</text>
+        <text class="empty-text">请先选择门店后查看套餐</text>
       </view>
     </view>
 
@@ -278,6 +435,74 @@
           <text class="option-title">常用地址</text>
           <text class="option-desc">从地址簿选择</text>
         </button>
+      </view>
+    </view>
+
+    <!-- 门店选择器 -->
+    <view class="picker-mask" wx:if="{{showStorePicker}}" bindtap="closeStorePicker">
+      <view class="store-picker-popup" catchtap="">
+        <view class="picker-header">
+          <text class="picker-title">选择保养门店</text>
+          <text class="picker-close" bindtap="closeStorePicker">✕</text>
+        </view>
+
+        <scroll-view class="store-list" scroll-y>
+          <view
+            class="store-item {{selectedStoreIndex === index ? 'active' : ''}}"
+            wx:for="{{stores}}"
+            wx:key="_id"
+            data-index="{{index}}"
+            bindtap="onStoreSelect"
+          >
+            <view class="store-item-info">
+              <text class="store-item-name">{{item.name}}</text>
+              <text class="store-item-address" wx:if="{{item.address}}">
+                {{item.address.city || ''}}{{item.address.district || ''}}{{item.address.detail || item.address.full || ''}}
+              </text>
+              <text class="store-item-distance" wx:if="{{item.distance}}">
+                距离 {{item.distance}}km
+              </text>
+            </view>
+            <view class="store-item-check" wx:if="{{selectedStoreIndex === index}}">✓</view>
+          </view>
+        </scroll-view>
+
+        <view class="store-picker-footer">
+          <button class="store-picker-cancel" bindtap="closeStorePicker">取消</button>
+          <button class="store-picker-confirm" bindtap="onConfirmStoreSelect">确认</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 门店详情弹窗 -->
+    <view class="picker-mask" wx:if="{{showStoreDetail}}" bindtap="onCloseStoreDetail">
+      <view class="store-detail-popup" catchtap="">
+        <view class="picker-header">
+          <text class="picker-title">门店详情</text>
+          <text class="picker-close" bindtap="onCloseStoreDetail">✕</text>
+        </view>
+
+        <scroll-view class="store-detail-content" scroll-y>
+          <view class="store-detail-name">{{storeDetail.name}}</view>
+          <view class="store-detail-address" wx:if="{{storeDetail.address}}">
+            {{storeDetail.address.city || ''}}{{storeDetail.address.district || ''}}{{storeDetail.address.detail || storeDetail.address.full || ''}}
+          </view>
+          <view class="store-detail-phone" wx:if="{{storeDetail.phone}}">
+            <text>电话：{{storeDetail.phone}}</text>
+            <text class="store-call-btn" bindtap="onCallStore">拨打电话</text>
+          </view>
+
+          <view class="store-reviews" wx:if="{{storeDetailReviews.length > 0}}">
+            <view class="reviews-title">用户评价</view>
+            <view class="review-item" wx:for="{{storeDetailReviews}}" wx:key="_id">
+              <view class="review-header">
+                <text class="reviewer-name">{{item.reviewerId.nickname || '匿名用户'}}</text>
+                <text class="review-rating">{{item.overallRating}}★</text>
+              </view>
+              <text class="review-comment" wx:if="{{item.comment}}">{{item.comment}}</text>
+            </view>
+          </view>
+        </scroll-view>
       </view>
     </view>
 

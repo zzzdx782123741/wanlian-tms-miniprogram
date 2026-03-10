@@ -46,8 +46,9 @@ Page({
       this.setData({ activeTab: 'completed' });
     }
 
-    // 兼容从 tabBar 页面切换带来的“缓存传参”
+    // 兼容从 tabBar 页面切换带来的”缓存传参”
     this.consumeVehicleFilter();
+    this.consumeOrderStatusFilter();
     this.loadOrders();
   },
 
@@ -60,6 +61,7 @@ Page({
     console.log('页面中的角色:', this.data.role);
     console.log('当前用户角色:', currentRole);
     const vehicleFilterChanged = this.consumeVehicleFilter();
+    const statusFilterChanged = this.consumeOrderStatusFilter();
 
     // 如果角色发生变化，重新初始化页面
     if (currentRole !== this.data.role) {
@@ -76,7 +78,7 @@ Page({
       this.loadOrders();
     } else {
       // 角色未变化，从订单详情页返回时刷新列表
-      if (vehicleFilterChanged || this.data.orders.length > 0) {
+      if (vehicleFilterChanged || statusFilterChanged || this.data.orders.length > 0) {
         this.refreshOrders();
       }
     }
@@ -270,6 +272,33 @@ Page({
   },
 
   /**
+   * 消费订单状态筛选参数（从全局变量传递）
+   */
+  consumeOrderStatusFilter() {
+    const status = app.globalData.orderFilterStatus;
+    if (!status) return false;
+
+    // 清除全局变量
+    app.globalData.orderFilterStatus = null;
+
+    // 检查状态是否有效
+    const tabs = this.data.tabs || [];
+    const isValidTab = tabs.some(t => t.key === status);
+
+    if (!isValidTab) {
+      return false;
+    }
+
+    // 如果当前已经是该状态，不需要切换
+    if (this.data.activeTab === status) {
+      return false;
+    }
+
+    this.setData({ activeTab: status });
+    return true;
+  },
+
+  /**
    * 格式化订单数据
    */
   formatOrders(orders) {
@@ -312,12 +341,12 @@ Page({
 
       const statusMap = {
         'awaiting_fleet_approval': { text: '待车队审批', type: 'warning' },
-        'awaiting_time_confirmation': { text: '待确认时间', type: 'warning' },
+        'awaiting_time_confirmation': { text: '待确认到店时间', type: 'warning' },
         'pending_assessment': { text: '待接车检查', type: 'warning' },
         'awaiting_approval': { text: '待审批报价', type: 'info' },
         'in_repair': { text: '维修中', type: 'primary' },
-        'awaiting_addon_approval': { text: '增项待审批', type: 'warning' },
-        'pending_confirmation': { text: '待确认', type: 'warning' },
+        'awaiting_addon_approval': { text: '待审批增项', type: 'warning' },
+        'pending_confirmation': { text: '待确认完工', type: 'warning' },
         'completed': { text: '已完成', type: 'success' },
         'confirmed': { text: '已完成', type: 'success' },
         'rejected': { text: '已拒绝', type: 'error' }

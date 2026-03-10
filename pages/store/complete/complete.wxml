@@ -76,7 +76,7 @@
 
       <view class="video-hint">
         <text class="hint-icon">💡</text>
-        <text class="hint-text">可上传维修过程的视频，最多3个，每个不超过60秒</text>
+        <text class="hint-text">可上传维修过程视频，最多 3 个，每个不超过 60 秒</text>
       </view>
 
       <view class="video-list" wx:if="{{completionVideos.length > 0}}">

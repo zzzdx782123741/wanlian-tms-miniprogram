@@ -10,9 +10,9 @@ Page({
 
     // 评分数据
     ratings: {
-      technicalSkill: 5,    // 技术专业度
-      serviceEfficiency: 5,  // 服务效率
-      pricingTransparency: 5 // 收费透明度
+      technicalSkill: 5,    // 维修技术
+      serviceEfficiency: 5,  // 服务质量
+      pricingTransparency: 5 // 收费透明
     },
 
     // 评分文字描述（行业最佳实践）
@@ -73,8 +73,8 @@ Page({
       // 验证订单状态
       if (order.status !== 'completed') {
         wx.showModal({
-          title: '提示',
-          content: '只能评价已完成的订单',
+          title: '当前订单暂不可评价',
+          content: '仅已完成的订单支持评价',
           showCancel: false,
           success: () => {
             wx.navigateBack();
@@ -234,7 +234,7 @@ Page({
   onSkip() {
     wx.showModal({
       title: '确认跳过',
-      content: '跳过后将无法评价此订单，确认跳过吗？',
+        content: '暂不评价后将无法再评价此订单，确认继续吗？',
       confirmText: '确认跳过',
       cancelText: '继续评价',
       confirmColor: '#666',

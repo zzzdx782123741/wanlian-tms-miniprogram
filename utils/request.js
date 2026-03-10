@@ -1,17 +1,20 @@
-// 根据环境自动选择API地址
-// 开发工具：使用localhost
-// 真机调试：自动使用局域网IP
-const getDefaultBaseUrl = () => {
-  const systemInfo = wx.getSystemInfoSync();
-  const platform = systemInfo.platform;
+const LOCAL_API_BASE_URL = 'http://192.168.98.241:3000/api';
 
-  // 真机调试环境
-  if (platform === 'devtools') {
-    return 'http://localhost:3000/api';
-  } else {
-    // 真机环境，使用局域网IP
-    return 'http://192.168.98.241:3000/api';
+// 根据环境自动选择 API 地址
+const getDefaultBaseUrl = () => {
+  try {
+    const systemInfo = wx.getSystemInfoSync();
+    const platform = systemInfo.platform;
+
+    // 小程序里 localhost 很容易被合法域名校验直接拦截，开发工具也统一走局域网地址。
+    if (platform === 'devtools') {
+      return LOCAL_API_BASE_URL;
+    }
+  } catch (error) {
+    console.warn('获取系统信息失败，使用默认 API 地址', error);
   }
+
+  return LOCAL_API_BASE_URL;
 };
 
 const DEFAULT_BASE_URL = getDefaultBaseUrl();
@@ -30,19 +33,19 @@ const getBaseUrl = () => {
   return DEFAULT_BASE_URL;
 };
 
-// 获取服务器基础URL（用于图片等资源）
+// 获取服务器基础 URL（用于图片等资源）
 const getServerUrl = () => {
   return getBaseUrl().replace('/api', '');
 };
 
 /**
- * 格式化图片URL - 将相对路径转换为完整URL
- * @param {string} url - 图片URL（可能是相对路径或完整URL）
- * @returns {string} 完整的图片URL
+  * 格式化图片 URL - 将相对路径转换为完整 URL
+  * @param {string} url - 图片 URL（可能是相对路径或完整 URL）
+  * @returns {string} 完整的图片 URL
  */
 const formatImageUrl = (url) => {
   if (!url) return '';
-  // 如果已经是完整URL（http/https开头），直接返回
+  // 如果已经是完整 URL（http/https 开头），直接返回
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
@@ -62,7 +65,7 @@ const request = (options) => {
 
     const fullUrl = `${getBaseUrl()}${options.url}`;
 
-    console.log('========== API请求 ==========');
+    console.log('========== API 请求 ==========');
     console.log('URL:', fullUrl);
     console.log('方法:', options.method || 'GET');
     console.log('参数:', options.data);
@@ -77,14 +80,14 @@ const request = (options) => {
         'Authorization': token ? `Bearer ${token}` : ''
       },
       success: (res) => {
-        console.log('API响应状态码:', res.statusCode);
-        console.log('API响应数据:', res.data);
+        console.log('API 响应状态码:', res.statusCode);
+        console.log('API 响应数据:', res.data);
 
         // 修复：接受所有2xx状态码，不只是200
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);
         } else {
-          console.error('API错误响应:', res.data);
+          console.error('API 错误响应:', res.data);
 
           // 对于常用地址接口的403错误，静默处理（功能暂未实现）
           const isAddressApi = fullUrl.includes('/user/addresses');
@@ -99,16 +102,26 @@ const request = (options) => {
         }
       },
       fail: (err) => {
-        console.error('========== API请求失败 ==========');
+        console.error('========== API 请求失败 ==========');
         console.error('错误信息:', err);
         console.error('URL:', fullUrl);
 
         // 对于常用地址接口的403错误，静默处理（功能暂未实现）
         const isAddressApi = fullUrl.includes('/user/addresses');
+        const errMsg = err?.errMsg || '';
+        const isDomainBlocked = errMsg.includes('url not in domain list');
         if (!isAddressApi) {
           wx.showToast({
-            title: '网络请求失败',
+            title: isDomainBlocked ? '域名未配置' : '网络请求失败',
             icon: 'none'
+          });
+        }
+
+        if (isDomainBlocked) {
+          wx.showModal({
+            title: '请求被微信拦截',
+            content: '当前接口域名未加入小程序白名单。开发调试请确认已关闭“合法域名校验”，或将 baseUrl 改成已配置的 HTTPS 域名。',
+            showCancel: false
           });
         }
 

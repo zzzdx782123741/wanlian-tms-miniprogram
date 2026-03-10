@@ -38,7 +38,7 @@ Page({
     } catch (error) {
       this.setData({ loading: false });
       wx.showToast({
-        title: error.message || '加载失败',
+        title: error.message || '加载订单失败',
         icon: 'none'
       });
     }
@@ -47,7 +47,7 @@ Page({
   // 上报位置
   reportLocation(e) {
     wx.showToast({
-      title: '位置上报功能开发中',
+      title: '功能开发中',
       icon: 'none'
     });
   },
@@ -55,7 +55,7 @@ Page({
   // 更新状态
   updateStatus(e) {
     wx.showToast({
-      title: '状态更新功能开发中',
+      title: '功能开发中',
       icon: 'none'
     });
   }

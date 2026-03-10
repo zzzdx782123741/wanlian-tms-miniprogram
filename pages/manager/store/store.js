@@ -70,7 +70,7 @@ Page({
    */
   editBankAccount() {
     wx.showToast({
-      title: '编辑功能开发中',
+      title: '功能开发中',
       icon: 'none'
     });
     // TODO: 跳转到编辑收款账户页面
@@ -94,7 +94,7 @@ Page({
    */
   editStore() {
     wx.showToast({
-      title: '编辑功能开发中',
+      title: '功能开发中',
       icon: 'none'
     });
     // TODO: 跳转到编辑门店信息页面

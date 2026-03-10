@@ -8,7 +8,8 @@ App({
   },
 
   onLaunch() {
-    // 根据环境自动设置API地址
+    // 根据环境自动设置 API 地址
+    const defaultBaseUrl = 'http://192.168.98.241:3000/api';
     const systemInfo = wx.getSystemInfoSync();
     const platform = systemInfo.platform;
 
@@ -16,15 +17,10 @@ App({
     console.log('平台:', platform);
     console.log('系统信息:', systemInfo);
 
-    // 开发工具：使用localhost
-    // 真机（android/ios）：使用局域网IP
-    if (platform === 'devtools') {
-      this.globalData.baseUrl = 'http://localhost:3000/api';
-      console.log('使用开发环境地址: localhost');
-    } else {
-      this.globalData.baseUrl = 'http://192.168.98.241:3000/api';
-      console.log('使用真机调试地址: 192.168.98.241');
-    }
+    // 小程序环境里统一优先使用局域网地址，避免 localhost 被合法域名校验拦截。
+    this.globalData.baseUrl = defaultBaseUrl;
+    console.log('默认 API 地址:', defaultBaseUrl);
+    console.log('当前平台:', platform);
 
     // 如果有存储的自定义地址，优先使用
     const storedBaseUrl = wx.getStorageSync('baseUrl');
@@ -33,7 +29,7 @@ App({
       console.log('使用存储的地址:', storedBaseUrl);
     }
 
-    console.log('最终API地址:', this.globalData.baseUrl);
+    console.log('最终 API 地址:', this.globalData.baseUrl);
     console.log('============================');
 
     // 检查登录状态

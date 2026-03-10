@@ -57,7 +57,7 @@ Page({
       console.error('加载统计数据失败:', error);
       this.setData({ loading: false });
       wx.showToast({
-        title: '加载失败',
+        title: '加载报表失败',
         icon: 'none'
       });
     }

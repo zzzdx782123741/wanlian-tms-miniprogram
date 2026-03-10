@@ -15,7 +15,7 @@
     <!-- 顶部标题栏 -->
     <view class="header">
       <view class="header-title">我的车辆</view>
-      <view class="header-subtitle">查看和管理您的车辆信息</view>
+      <view class="header-subtitle">查看与管理您的车辆信息</view>
     </view>
 
     <!-- 车辆列表 -->
@@ -23,8 +23,8 @@
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{!loading && vehicles.length === 0}}">
       <text class="empty-icon">🚚</text>
-      <text class="empty-text">暂无车辆信息</text>
-      <text class="empty-hint">请联系管理员分配车辆</text>
+      <text class="empty-text">暂无车辆记录</text>
+      <text class="empty-hint">请联系管理员为您分配车辆</text>
     </view>
 
     <!-- 车辆卡片 -->
@@ -68,25 +68,34 @@
         </view>
       </view>
 
-      <!-- 操作按钮 -->
+      <!-- 操作按钮 - 三列紧凑布局 -->
       <view class="vehicle-actions">
         <button
-          class="action-btn primary"
+          class="action-btn action-report"
           bindtap="onReport"
           data-vehicle-id="{{item._id}}"
           disabled="{{item.status !== 'normal'}}"
         >
           <text class="btn-icon">🔧</text>
-          <text>报修申请</text>
+          <text>报修</text>
         </button>
         <button
-          class="action-btn secondary"
+          class="action-btn action-maintenance"
+          bindtap="onMaintenance"
+          data-vehicle-id="{{item._id}}"
+          disabled="{{item.status !== 'normal'}}"
+        >
+          <text class="btn-icon">🛠️</text>
+          <text>保养</text>
+        </button>
+        <button
+          class="action-btn action-records"
           bindtap="onViewOrders"
           data-vehicle-id="{{item._id}}"
           data-vehicle-plate="{{item.plateNumber}}"
         >
           <text class="btn-icon">📋</text>
-          <text>维修记录</text>
+          <text>订单</text>
         </button>
       </view>
     </view>

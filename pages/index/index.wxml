@@ -1,13 +1,159 @@
-<!--index.wxml - 万联驿站2.0首页 - 现代化设计-->
+<!--index.wxml - 万联驿站2.0首页 - 车队管理员版-->
 <view class="page">
   <!-- 顶部装饰背景 -->
   <view class="header-bg"></view>
 
-  <!-- 功能菜单区域 -->
-  <view class="menu-section">
+  <!-- 车队管理员首页内容 -->
+  <view class="fleet-home" wx:if="{{role === 'FLEET_MANAGER'}}">
+    <!-- 数据概览区域 -->
+    <view class="stats-section">
+      <view class="section-header-inline">
+        <view class="section-title">📊 数据概览</view>
+      </view>
+      <view class="stats-grid">
+        <view class="stat-card" bindtap="goToVehicles">
+          <view class="stat-value">{{stats.totalVehicles || 0}}</view>
+          <view class="stat-label">车辆总数</view>
+        </view>
+        <view class="stat-card" bindtap="goToOrders" data-type="pending">
+          <view class="stat-value highlight">{{stats.pendingApprovals || 0}}</view>
+          <view class="stat-label">待审批</view>
+        </view>
+        <view class="stat-card" bindtap="goToOrders" data-type="processing">
+          <view class="stat-value">{{stats.inRepairOrders || 0}}</view>
+          <view class="stat-label">维修中</view>
+        </view>
+        <view class="stat-card" bindtap="goToAccount">
+          <view class="stat-value amount">¥{{stats.accountBalance || 0}}</view>
+          <view class="stat-label">账户余额</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 待办事项区域 -->
+    <view class="todo-section" wx:if="{{hasTodo}}">
+      <view class="section-header-inline">
+        <view class="section-title">📋 待办事项</view>
+        <view class="more-link" bindtap="goToOrders" data-type="pending">查看全部 ›</view>
+      </view>
+
+      <!-- 待审批订单 -->
+      <view class="todo-group" wx:if="{{todo.pendingApprovalOrders.length > 0}}">
+        <view class="todo-group-header">
+          <text class="todo-badge red">待审批</text>
+          <text class="todo-count">{{todo.pendingApprovalOrders.length}}条</text>
+        </view>
+        <view class="todo-list">
+          <view
+            class="todo-item"
+            wx:for="{{todo.pendingApprovalOrders}}"
+            wx:key="orderId"
+            bindtap="goToOrderDetail"
+            data-id="{{item.orderId}}"
+          >
+            <view class="todo-item-left">
+              <view class="todo-plate">{{item.plateNumber}}</view>
+              <view class="todo-desc">
+                <text class="todo-type">{{item.type === 'maintenance' ? '保养' : '维修'}}</text>
+                <text class="todo-fault" wx:if="{{item.faultDescription}}"> · {{item.faultDescription}}</text>
+              </view>
+            </view>
+            <view class="todo-item-right">
+              <view class="todo-reporter">{{item.reporterName}}</view>
+              <view class="todo-time">{{item.timeAgo}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 待审批增项 -->
+      <view class="todo-group" wx:if="{{todo.pendingAddonOrders.length > 0}}">
+        <view class="todo-group-header">
+          <text class="todo-badge orange">待审批增项</text>
+          <text class="todo-count">{{todo.pendingAddonOrders.length}}条</text>
+        </view>
+        <view class="todo-list">
+          <view
+            class="todo-item"
+            wx:for="{{todo.pendingAddonOrders}}"
+            wx:key="orderId"
+            bindtap="goToOrderDetail"
+            data-id="{{item.orderId}}"
+          >
+            <view class="todo-item-left">
+              <view class="todo-plate">{{item.plateNumber}}</view>
+              <view class="todo-desc">
+                <text class="todo-technician">{{item.technicianName}}</text>提交了增项申请
+                <text class="todo-amount" wx:if="{{item.addonTotal}}"> · ¥{{item.addonTotal}}</text>
+              </view>
+            </view>
+            <view class="todo-item-right">
+              <view class="todo-time">{{item.timeAgo}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 待确认完工 -->
+      <view class="todo-group" wx:if="{{todo.pendingCompletionOrders.length > 0}}">
+        <view class="todo-group-header">
+          <text class="todo-badge green">待确认完工</text>
+          <text class="todo-count">{{todo.pendingCompletionOrders.length}}条</text>
+        </view>
+        <view class="todo-list">
+          <view
+            class="todo-item"
+            wx:for="{{todo.pendingCompletionOrders}}"
+            wx:key="orderId"
+            bindtap="goToOrderDetail"
+            data-id="{{item.orderId}}"
+          >
+            <view class="todo-item-left">
+              <view class="todo-plate">{{item.plateNumber}}</view>
+              <view class="todo-desc">
+                <text class="todo-technician">{{item.technicianName}}</text>已提交完工
+              </view>
+            </view>
+            <view class="todo-item-right">
+              <view class="todo-time">{{item.timeAgo}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态（无待办时显示） -->
+    <view class="empty-todo" wx:else>
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无待办事项</text>
+    </view>
+
+    <!-- 最近动态区域（可选） -->
+    <view class="activity-section" wx:if="{{recentActivities.length > 0}}">
+      <view class="section-header-inline">
+        <view class="section-title">📊 最近动态</view>
+      </view>
+      <view class="activity-list">
+        <view
+          class="activity-item"
+          wx:for="{{recentActivities}}"
+          wx:key="orderId"
+          bindtap="goToOrderDetail"
+          data-id="{{item.orderId}}"
+        >
+          <text class="activity-icon">{{item.icon}}</text>
+          <text class="activity-desc">{{item.description}} · {{item.title}}</text>
+          <text class="activity-time">{{item.time}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 其他角色保持原有菜单样式 -->
+  <view class="menu-section" wx:else>
     <view class="section-header">
       <view class="section-title">功能菜单</view>
-      <view class="section-subtitle">选择您需要的服务</view>
+      <view class="section-subtitle">请选择需要使用的功能</view>
     </view>
 
     <view class="menu-grid">
@@ -30,14 +176,6 @@
           <view class="menu-arrow">›</view>
         </view>
       </view>
-    </view>
-  </view>
-
-  <!-- 快捷操作区域 -->
-  <view class="quick-actions" wx:if="{{false}}">
-    <view class="action-btn" bindtap="onLogout">
-      <text class="action-icon">🚪</text>
-      <text class="action-text">退出登录</text>
     </view>
   </view>
 

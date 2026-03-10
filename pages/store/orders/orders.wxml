@@ -1,14 +1,9 @@
 <!--pages/store/orders/orders.wxml - 门店技师接单大厅-->
 <view class="page">
-  <!-- 🔴🔴🔴 强制刷新标识 v2 - 删除本行会触发重新编译 🔴🔴🔴 -->
-  <view style="background: #ff0000; color: #ffffff; padding: 30rpx; text-align: center; font-size: 32rpx; font-weight: bold; border: 4rpx solid #000; margin: 20rpx;">
-    ⚠️⚠️⚠️ 强制刷新 - 订单数量: {{orders.length}} - 删除此行可触发WXML重新编译 ⚠️⚠️⚠️
-  </view>
-
   <!-- 顶部标题栏 -->
   <view class="header">
     <view class="header-title">门店订单</view>
-    <view class="header-subtitle">维修订单管理</view>
+    <view class="header-subtitle">查看与处理门店订单</view>
   </view>
 
   <!-- 标签切换 -->
@@ -38,11 +33,6 @@
 
   <!-- 订单列表 -->
   <view class="orders-container">
-    <!-- 调试信息 -->
-    <view style="padding: 20rpx; background: #f0f0f0; margin-bottom: 20rpx;">
-      <text>订单数量: {{orders.length}}</text>
-    </view>
-
     <block wx:if="{{orders.length > 0}}">
       <view
         class="order-card"
@@ -60,8 +50,6 @@
         <!-- 订单元信息 -->
         <view class="order-meta">
           <text class="order-time">{{item.createdAtAgo}} · {{item.createdAt}}</text>
-          <!-- 调试信息：显示原始状态 -->
-          <text class="order-debug" wx:if="{{item.status}}">[{{item.status}}]</text>
         </view>
 
         <!-- 车辆信息 -->
@@ -103,7 +91,7 @@
           </view>
           <view class="info-row" wx:if="{{!item.appointment || !item.appointment.expectedDate}}">
             <text class="info-label">期望到店</text>
-            <text class="info-value">{{item.appointmentAt || '待确认'}}</text>
+            <text class="info-value">{{item.appointmentAt || '待确认到店时间'}}</text>
           </view>
           <view class="info-row" wx:if="{{item.milestone}}">
             <text class="info-label">当前里程</text>
@@ -115,13 +103,13 @@
           </view>
         </view>
 
-        <!-- 确认时间模块（待确认时间状态） -->
+        <!-- 确认时间模块（待确认到店时间状态） -->
         <view class="appointment-confirm-section" wx:if="{{item.status === 'awaiting_time_confirmation'}}">
           <!-- 折叠/展开提示条 -->
           <view class="confirm-time-hint" bindtap="toggleConfirmTime" data-id="{{item._id}}">
             <view class="hint-content">
               <text class="hint-icon">⏰</text>
-              <text class="hint-text">请确认到店时间（点击展开）</text>
+              <text class="hint-text">待确认到店时间（点击展开）</text>
               <text class="expand-icon">{{item.showConfirmTime ? '▼' : '▶'}}</text>
             </view>
           </view>
@@ -151,7 +139,7 @@
                 data-date="{{item.appointment.expectedDate}}"
                 data-slot="{{item.appointment.expectedTimeSlot}}"
               >
-                确认时间
+                确认到店时间
               </button>
               <button
                 class="confirm-btn adjust-action"
@@ -166,7 +154,7 @@
 
         <!-- 操作按钮：只在该角色有业务动作时显示 -->
         <view class="order-actions" wx:if="{{item.status}}">
-          <!-- 待确认时间：优先显示此按钮 -->
+          <!-- 待确认到店时间：优先显示此按钮 -->
           <block wx:if="{{item.status === 'awaiting_time_confirmation'}}">
             <view class="action-hint">⚠️ 需要确认到店时间</view>
             <button
@@ -187,7 +175,7 @@
             data-id="{{item._id}}"
           >
             <text class="btn-icon">🔍</text>
-            去接车检查
+            开始检查
           </button>
 
           <!-- 维修中：技师可以提交完工 -->
@@ -208,7 +196,7 @@
     <view wx:else class="empty-state">
       <text class="empty-icon">📋</text>
       <text class="empty-text">暂无订单</text>
-      <text class="empty-hint">当前标签下没有订单</text>
+      <text class="empty-hint">当前筛选条件下暂无订单</text>
     </view>
   </view>
 
@@ -234,7 +222,7 @@
       <view class="adjuster-content">
         <view class="adjuster-tip">
           <text class="tip-icon">💡</text>
-          <text class="tip-text">请选择时间后点击右下角"确定"按钮保存</text>
+          <text class="tip-text">请选择时间后点击“确定”保存</text>
         </view>
 
         <view class="time-slots">

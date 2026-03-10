@@ -142,12 +142,12 @@ Page({
         tip: '等待车队管理员审批分配门店'
       },
       'awaiting_time_confirmation': {
-        text: '待确认时间',
+        text: '待确认到店时间',
         type: 'warning',
-        tip: '技师确认到店时间后开始接车检查'
+        tip: '请先确认到店时间，再开始接车检查'
       },
       'pending_assessment': {
-        text: '待评估',
+        text: '待接车检查',
         type: 'warning',
         tip: '等待技师接车并进行故障评估'
       },
@@ -182,12 +182,12 @@ Page({
         tip: '车辆正在维修中'
       },
       'awaiting_addon_approval': {
-        text: '增项待审批',
+        text: '待审批增项',
         type: 'warning',
         tip: '维修增项等待车队管理员审批'
       },
       'pending_confirmation': {
-        text: '待确认',
+        text: '待确认完工',
         type: 'warning',
         tip: '维修已完成，等待司机确认'
       },
@@ -267,6 +267,20 @@ Page({
   quoteOrder() {
     wx.navigateTo({
       url: `/pages/store/quote/quote?id=${this.data.orderId}`
+    });
+  },
+
+  // 提交增项
+  handleAddon() {
+    wx.navigateTo({
+      url: `/pages/store/addon/addon?id=${this.data.orderId}`
+    });
+  },
+
+  // 完工
+  handleComplete() {
+    wx.navigateTo({
+      url: `/pages/store/complete/complete?id=${this.data.orderId}`
     });
   },
 

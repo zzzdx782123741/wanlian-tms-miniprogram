@@ -123,7 +123,7 @@ Page({
     } catch (error) {
       console.error('加载商品失败:', error);
       wx.showToast({
-        title: error.message || '加载失败',
+        title: error.message || '加载商品失败',
         icon: 'none'
       });
     } finally {

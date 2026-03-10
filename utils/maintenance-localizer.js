@@ -16,11 +16,24 @@ const EXACT_TEXT_MAP = {
   'ALL vehicles 8k-15k': '全车型 8千-1.5万公里'
 };
 
+// 档位本地化映射（新旧档位都支持）
 const TIER_MAP = {
-  basic: '基础',
+  // 英文映射
+  basic: '实惠',
   standard: '标准',
-  premium: '高级',
-  deluxe: '尊享'
+  premium: '优质',
+  deluxe: '尊享',
+  elite: '尊享',
+  // 旧档位映射（兼容）
+  基础: '实惠',
+  高级: '优质'
+};
+
+// 套餐分类本地化映射
+const CATEGORY_MAP = {
+  minor: '小保养',
+  major: '大保养',
+  special: '专项保养'
 };
 
 const ICON_MAP = {
@@ -48,7 +61,12 @@ function localizeText(value) {
 function localizeTier(tier) {
   if (typeof tier !== 'string') return tier;
   const key = tier.trim().toLowerCase();
-  return TIER_MAP[key] || tier;
+  return TIER_MAP[key] || TIER_MAP[tier] || tier;
+}
+
+function localizeCategory(category) {
+  if (typeof category !== 'string') return category;
+  return CATEGORY_MAP[category] || category;
 }
 
 function localizeIcon(icon) {
@@ -83,6 +101,15 @@ function localizePackage(pkg) {
   if (localized.description) localized.description = localizeText(localized.description);
   if (localized.recommendationReason) localized.recommendationReason = localizeText(localized.recommendationReason);
   if (localized.tier) localized.tier = localizeTier(localized.tier);
+  if (localized.tierName) localized.tierName = localizeTier(localized.tierName);
+
+  // 本地化分类
+  if (localized.category) {
+    localized.categoryName = localizeCategory(localized.category);
+  }
+  if (localized.categoryName) {
+    localized.categoryName = CATEGORY_MAP[localized.categoryName] || localized.categoryName;
+  }
 
   if (Array.isArray(localized.tags)) {
     localized.tags = localized.tags.map((tag) => localizeText(tag));
@@ -108,6 +135,9 @@ function localizePackage(pkg) {
 module.exports = {
   localizeText,
   localizeTier,
+  localizeCategory,
   localizeProduct,
-  localizePackage
+  localizePackage,
+  CATEGORY_MAP,
+  TIER_MAP
 };

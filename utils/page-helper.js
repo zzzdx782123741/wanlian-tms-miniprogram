@@ -104,8 +104,9 @@ function navigateToTechnicianPerformance(technicianId) {
     console.error('[navigateToTechnicianPerformance] 技师ID不能为空');
     return;
   }
-  wx.navigateTo({
-    url: `/pages/manager/technician-performance/technician-performance?id=${technicianId}`
+  wx.showToast({
+    title: '技师绩效页暂未开放',
+    icon: 'none'
   });
 }
 
@@ -130,8 +131,9 @@ function navigateToStockDetail(itemId) {
     console.error('[navigateToStockDetail] 商品ID不能为空');
     return;
   }
-  wx.navigateTo({
-    url: `/pages/manager/stock-detail/stock-detail?id=${itemId}`
+  wx.showToast({
+    title: '库存详情页暂未开放',
+    icon: 'none'
   });
 }
 

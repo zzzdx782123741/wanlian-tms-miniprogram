@@ -3,7 +3,7 @@
   <!-- 顶部标题 -->
   <view class="header-section">
     <text class="header-title">激活司机账号</text>
-    <text class="header-subtitle">请使用手机号激活您的账号</text>
+    <text class="header-subtitle">请使用手机号完成账号激活</text>
   </view>
 
   <!-- 提示信息 -->
@@ -47,11 +47,11 @@
           disabled="{{countdown > 0}}"
           bindtap="sendCode"
         >
-          {{countdown > 0 ? countdown + 's' : '获取验证码'}}
+          {{countdown > 0 ? countdown + 's' : '发送验证码'}}
         </button>
       </view>
       <text class="form-hint" wx:if="{{!codeRequired}}">
-        开发环境可选，生产环境必填
+        开发环境可选，正式环境必填
       </text>
     </view>
 

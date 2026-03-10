@@ -62,7 +62,7 @@
           <text class="appointment-icon">⏰</text>
           <text class="appointment-title">司机期望到店时间</text>
           <text class="appointment-status-tag appointment-{{order.appointment.status}}" wx:if="{{order.appointment.status}}">
-            {{order.appointment.status === 'pending' ? '待确认' : ''}}
+            {{order.appointment.status === 'pending' ? '待确认到店时间' : ''}}
             {{order.appointment.status === 'confirmed' ? '已确认' : ''}}
             {{order.appointment.status === 'adjusted' ? '已调整' : ''}}
           </text>
@@ -86,12 +86,12 @@
 
       <!-- 待确认提示 - 仅司机可见 -->
       <view class="appointment-hint" wx:if="{{order.appointment.status === 'pending' && userRole === 'DRIVER'}}">
-        门店确认时间后将通知您
+        门店确认到店时间后将通知您
       </view>
 
       <!-- 已调整提示 -->
       <view class="appointment-hint adjusted" wx:if="{{order.appointment.status === 'adjusted'}}">
-        门店已调整您的期望时间
+        门店已调整到店时间
       </view>
     </view>
 
@@ -449,7 +449,7 @@
         bindtap="onReviewOrder"
       >
         <text class="btn-icon">⭐</text>
-        去评价
+        立即评价
       </button>
 
       <!-- 司机重新提交按钮（被拒绝的订单） -->
@@ -525,7 +525,7 @@
       </scroll-view>
       <view class="store-picker-footer">
         <button class="store-picker-cancel" bindtap="onCloseStorePicker">取消</button>
-        <button class="store-picker-confirm" bindtap="onConfirmStoreSelect" disabled="{{!selectedStoreId}}">确认</button>
+        <button class="store-picker-confirm" bindtap="onConfirmStoreSelect" disabled="{{!selectedStoreId}}">确认选择</button>
       </view>
     </view>
   </view>

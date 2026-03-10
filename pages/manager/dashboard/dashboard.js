@@ -270,7 +270,7 @@ Page({
       lowStockItems: lowStockItems,
       recentActivities: [
         { id: 'a1', type: 'order', icon: '📋', title: '新报修申请', description: '粤A·99999 待审批', time: '10分钟前', orderId: 'o5' },
-        { id: 'a2', type: 'addon', icon: '⚠️', title: '增项待审批', description: '陈技师提交了 粤A·88888 增项', time: '25分钟前', orderId: 'o1' },
+        { id: 'a2', type: 'addon', icon: '⚠️', title: '待审批增项', description: '陈技师提交了 粤A·88888 增项', time: '25分钟前', orderId: 'o1' },
         { id: 'a3', type: 'completed', icon: '✅', title: '订单完成', description: '王技师完成了 粤D·11111 保养', time: '1小时前', orderId: 'o6' }
       ]
     });
@@ -321,8 +321,9 @@ Page({
    * 跳转到技师管理
    */
   goToTechnicians() {
-    wx.navigateTo({
-      url: '/pages/manager/technicians/technicians'
+    wx.showToast({
+      title: '技师管理页暂未开放',
+      icon: 'none'
     });
   },
 

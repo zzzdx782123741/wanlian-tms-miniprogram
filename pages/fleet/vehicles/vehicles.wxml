@@ -1,29 +1,25 @@
-<!--pages/fleet/vehicles/vehicles.wxml-->
 <view class="vehicles-container">
-  <!-- 统计卡片 -->
   <view class="stats-section">
     <view class="stat-card glass-card">
       <text class="stat-value">{{vehicles.length}}</text>
       <text class="stat-label">总车辆</text>
     </view>
     <view class="stat-card glass-card">
-      <text class="stat-value">{{activeCount}}</text>
-      <text class="stat-label">运营中</text>
+      <text class="stat-value">{{normalCount}}</text>
+      <text class="stat-label">正常</text>
     </view>
     <view class="stat-card glass-card">
-      <text class="stat-value">{{idleCount}}</text>
-      <text class="stat-label">闲置</text>
+      <text class="stat-value">{{repairingCount}}</text>
+      <text class="stat-label">维修中</text>
     </view>
   </view>
 
-  <!-- 操作栏 -->
   <view class="action-bar">
     <button class="add-btn glass-btn-cta" bindtap="addVehicle">
-      + 添加车辆
+      + 新增车辆
     </button>
   </view>
 
-  <!-- 车辆列表 -->
   <view class="vehicles-list">
     <block wx:if="{{vehicles.length > 0}}">
       <view
@@ -36,23 +32,22 @@
         <view class="vehicle-header">
           <text class="plate-number">{{item.plateNumber}}</text>
           <view class="status-badge status-{{item.status}}">
-            <text wx:if="{{item.status === 'ACTIVE'}}">运营中</text>
-            <text wx:else>闲置</text>
+            <text>{{item.statusText}}</text>
           </view>
         </view>
 
         <view class="vehicle-info">
           <view class="info-row">
-            <text class="label">车型：</text>
-            <text class="value">{{item.type}}</text>
+            <text class="label">车辆类型</text>
+            <text class="value">{{item.vehicleTypeText}}</text>
           </view>
           <view class="info-row">
-            <text class="label">载重：</text>
-            <text class="value">{{item.loadCapacity}}吨</text>
+            <text class="label">品牌型号</text>
+            <text class="value">{{item.brandModelText}}</text>
           </view>
           <view class="info-row">
-            <text class="label">司机：</text>
-            <text class="value">{{item.driverName || '未分配'}}</text>
+            <text class="label">当前司机</text>
+            <text class="value">{{item.assignedDriverText}}</text>
           </view>
         </view>
 
@@ -62,15 +57,13 @@
       </view>
     </block>
 
-    <!-- 空状态 -->
     <view wx:else class="empty-state">
       <image class="empty-icon" src="/images/icons/empty-car.png"></image>
       <text class="empty-text">暂无车辆</text>
-      <text class="empty-hint">点击上方按钮添加车辆</text>
+      <text class="empty-hint">点击上方按钮新增车辆</text>
     </view>
   </view>
 
-  <!-- 加载状态 -->
   <view wx:if="{{loading}}" class="loading-state">
     <text>加载中...</text>
   </view>

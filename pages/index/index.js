@@ -1,5 +1,6 @@
-// index.js - 万联驿站2.0首页 - 现代化设计
+// index.js - 万联驿站2.0首页
 const app = getApp();
+const request = require('../../utils/request');
 
 Page({
   data: {
@@ -7,7 +8,23 @@ Page({
     role: '',
     roleText: '',
     roleShortText: '',
-    menuList: []
+    menuList: [],
+    // 车队管理员首页数据
+    stats: {
+      totalVehicles: 0,
+      pendingApprovals: 0,
+      pendingAddons: 0,
+      pendingCompletion: 0,
+      inRepairOrders: 0,
+      accountBalance: 0
+    },
+    todo: {
+      pendingApprovalOrders: [],
+      pendingAddonOrders: [],
+      pendingCompletionOrders: []
+    },
+    recentActivities: [],
+    hasTodo: false
   },
 
   onLoad() {
@@ -84,8 +101,12 @@ Page({
       roleShortText: this.getRoleShortText(role)
     });
 
-    // 根据角色设置菜单
-    this.setupMenu(role);
+    // 根据角色设置菜单或加载首页数据
+    if (role === 'FLEET_MANAGER') {
+      this.loadFleetDashboard();
+    } else {
+      this.setupMenu(role);
+    }
   },
 
   /**
@@ -117,6 +138,62 @@ Page({
   },
 
   /**
+   * 加载车队管理员首页数据
+   */
+  async loadFleetDashboard() {
+    try {
+      const res = await request.get('/order-center/dashboard');
+
+      if (res.success) {
+        const data = res.data || {};
+        const stats = data.stats || {};
+        const todo = data.todo || {};
+        const recentActivities = data.recentActivities || [];
+
+        // 计算是否有待办事项
+        const hasTodo =
+          (todo.pendingApprovalOrders?.length || 0) > 0 ||
+          (todo.pendingAddonOrders?.length || 0) > 0 ||
+          (todo.pendingCompletionOrders?.length || 0) > 0;
+
+        this.setData({
+          stats: {
+            totalVehicles: stats.totalVehicles || 0,
+            pendingApprovals: stats.pendingApprovals || 0,
+            pendingAddons: stats.pendingAddons || 0,
+            pendingCompletion: stats.pendingCompletion || 0,
+            inRepairOrders: stats.inRepairOrders || 0,
+            accountBalance: this.formatMoney(stats.accountBalance || 0)
+          },
+          todo: {
+            pendingApprovalOrders: todo.pendingApprovalOrders || [],
+            pendingAddonOrders: todo.pendingAddonOrders || [],
+            pendingCompletionOrders: todo.pendingCompletionOrders || []
+          },
+          recentActivities,
+          hasTodo
+        });
+      }
+    } catch (error) {
+      console.error('加载车队首页数据失败:', error);
+      // 加载失败时显示空状态，不使用模拟数据
+      this.setData({
+        hasTodo: false
+      });
+    }
+  },
+
+  /**
+   * 格式化金额
+   */
+  formatMoney(amount) {
+    if (typeof amount !== 'number') {
+      amount = parseFloat(amount) || 0;
+    }
+    return amount.toFixed(2);
+  },
+
+  /**
    * 根据角色设置菜单
    */
   setupMenu(role) {
@@ -129,7 +206,7 @@ Page({
             id: 'report',
             title: '报修申请',
             icon: '🔧',
-            description: '快速提交车辆维修申请',
+            description: '提交车辆报修申请',
             url: '/pages/report/report',
             color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
           },
@@ -137,7 +214,7 @@ Page({
             id: 'maintenance',
             title: '保养申请',
             icon: '🧰',
-            description: '预约车辆定期保养',
+            description: '提交车辆保养申请',
             url: '/pages/report/report?type=maintenance',
             color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
           }
@@ -150,7 +227,7 @@ Page({
             id: 'vehicles',
             title: '车队车辆',
             icon: '🚛',
-            description: '管理车队所有车辆',
+            description: '查看车队全部车辆',
             url: '/pages/fleet-vehicles/fleet-vehicles',
             color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
           },
@@ -158,7 +235,7 @@ Page({
             id: 'orders',
             title: '维修订单',
             icon: '📋',
-            description: '查看和管理所有订单',
+            description: '查看并处理维修订单',
             url: '/pages/orders/orders',
             color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
           },
@@ -166,7 +243,7 @@ Page({
             id: 'account',
             title: '账户余额',
             icon: '💰',
-            description: '查看账户余额和交易',
+            description: '查看余额与交易记录',
             url: '/pages/account/account',
             color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
           }
@@ -265,6 +342,80 @@ Page({
   },
 
   /**
+   * 跳转到订单详情
+   */
+  goToOrderDetail(e) {
+    const { id } = e.currentTarget.dataset;
+    wx.navigateTo({
+      url: `/pages/order-detail/order-detail?id=${id}`
+    });
+  },
+
+  /**
+   * 跳转到车辆管理
+   */
+  goToVehicles() {
+    wx.navigateTo({
+      url: '/pages/fleet-vehicles/fleet-vehicles'
+    });
+  },
+
+  /**
+   * 跳转到订单列表
+   */
+  goToOrders(e) {
+    const { type } = e.currentTarget.dataset;
+    // tabBar 页面必须使用 switchTab，不支持传参
+    // 如果需要筛选，使用全局变量
+    if (type) {
+      app.globalData.orderFilterStatus = type;
+    }
+    wx.switchTab({
+      url: '/pages/orders/orders',
+      fail: () => {
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  /**
+   * 跳转到账户页面
+   */
+  goToAccount() {
+    // tabBar 页面必须使用 switchTab
+    wx.switchTab({
+      url: '/pages/account/account',
+      fail: () => {
+        wx.showToast({
+          title: '页面跳转失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  /**
+   * 跳转到车队车辆管理
+   */
+  goToFleetVehicles() {
+    wx.navigateTo({
+      url: '/pages/fleet-vehicles/fleet-vehicles'
+    });
+  },
+
+  /**
+   * 跳转到维保记录
+   */
+  goToReports() {
+    wx.navigateTo({
+      url: '/pages/fleet/report/report'
+    });
+  },
+
+  /**
    * 点击菜单项
    */
   onMenuTap(e) {
@@ -309,21 +460,16 @@ Page({
   },
 
   /**
-   * 退出登录
+   * 下拉刷新
    */
-  onLogout() {
-    wx.showModal({
-      title: '提示',
-      content: '确定要退出登录吗？',
-      confirmColor: '#667eea',
-      success: (res) => {
-        if (res.confirm) {
-          app.clearUserInfo();
-          wx.redirectTo({
-            url: '/pages/auth/login/login'
-          });
-        }
-      }
-    });
+  onPullDownRefresh() {
+    if (this.data.role === 'FLEET_MANAGER') {
+      this.loadFleetDashboard();
+    } else {
+      this.setupMenu(this.data.role);
+    }
+    setTimeout(() => {
+      wx.stopPullDownRefresh();
+    }, 1000);
   }
 });

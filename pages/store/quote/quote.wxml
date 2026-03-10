@@ -31,8 +31,8 @@
       </view>
 
       <view class="info-row">
-        <text class="label">预约时间</text>
-        <text class="value">{{appointmentConfirmed ? order.appointmentAtText : (order.appointmentAtText || '未预约')}}</text>
+        <text class="label">到店时间</text>
+        <text class="value">{{appointmentConfirmed ? order.appointmentAtText : (order.appointmentAtText || '待确认到店时间')}}</text>
       </view>
 
       <view class="info-row-block">
@@ -181,7 +181,7 @@
       <!-- 空状态提示 -->
       <view class="empty-products" wx:if="{{selectedItems.length === 0}}">
         <text class="empty-icon">📦</text>
-        <text class="empty-text">还未添加任何项目</text>
+          <text class="empty-text">尚未添加维修项目</text>
         <text class="empty-hint">点击下方按钮从项目库中选择</text>
       </view>
 

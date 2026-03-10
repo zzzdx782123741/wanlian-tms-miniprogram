@@ -1,7 +1,7 @@
 <view class="page">
   <view class="header">
     <view class="header-title">订单中心</view>
-    <view class="header-subtitle">管理和追踪您的订单</view>
+    <view class="header-subtitle">统一查看与处理订单</view>
   </view>
 
   <!-- 搜索框 -->
@@ -11,7 +11,7 @@
       <input
         class="search-input"
         type="text"
-        placeholder="搜索车牌号、订单号..."
+        placeholder="搜索车牌号或订单号"
         value="{{searchQuery}}"
         bindinput="onSearchInput"
         confirm-type="search"
@@ -64,8 +64,8 @@
   <view class="order-list">
     <view class="empty-state" wx:if="{{!loading && orders.length === 0}}">
       <text class="empty-icon">📋</text>
-      <text class="empty-text">{{filterVehicleId ? '该车辆暂无记录' : '暂无订单'}}</text>
-      <text class="empty-hint">{{filterVehicleId ? '可切换标签查看该车辆其他状态订单，或清除筛选' : '快去创建第一个维修订单吧'}}</text>
+      <text class="empty-text">{{filterVehicleId ? '该车辆暂无订单' : '暂无订单记录'}}</text>
+      <text class="empty-hint">{{filterVehicleId ? '可切换标签查看该车辆的其他订单，或清除筛选' : '当前没有可展示的订单'}}</text>
     </view>
 
     <view
@@ -170,7 +170,7 @@
           catchtap="onQuoteOrder"
           data-id="{{item._id}}"
         >
-          去接车检查
+          开始检查
         </button>
 
         <button
@@ -188,7 +188,7 @@
           catchtap="onApproveOrder"
           data-id="{{item._id}}"
         >
-          去审批
+          立即审批
         </button>
 
         <button
@@ -197,7 +197,7 @@
           catchtap="onApproveOrder"
           data-id="{{item._id}}"
         >
-          去审批
+          立即审批
         </button>
 
         <button
@@ -206,7 +206,7 @@
           catchtap="onApproveOrder"
           data-id="{{item._id}}"
         >
-          去审批
+          立即审批
         </button>
         <button
           class="confirm-btn"
@@ -214,7 +214,7 @@
           catchtap="onConfirmOrder"
           data-id="{{item._id}}"
         >
-          去确认
+          确认完工
         </button>
         <button
           class="review-btn"
@@ -222,7 +222,7 @@
           catchtap="onReviewOrder"
           data-id="{{item._id}}"
         >
-          去评价
+          立即评价
         </button>
         <view
           class="order-arrow"
@@ -251,7 +251,7 @@
         <view class="adjuster-content">
           <view class="adjuster-tip">
             <text class="tip-icon">💡</text>
-            <text class="tip-text">请选择时间后点击右下角“确定”按钮保存</text>
+            <text class="tip-text">请选择时间后点击“确定”保存</text>
           </view>
 
           <view class="time-slots">

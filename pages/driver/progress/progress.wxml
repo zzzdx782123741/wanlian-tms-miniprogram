@@ -12,7 +12,7 @@
 
     <!-- 时间线 -->
     <view class="timeline-section glass-card">
-      <view class="section-title">运输轨迹</view>
+      <view class="section-title">运输进度</view>
 
       <view class="timeline">
         <view

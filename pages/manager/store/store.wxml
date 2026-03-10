@@ -31,7 +31,7 @@
     </view>
     <view class="info-card">
       <view class="info-row" wx:if="{{!bankAccount.accountName}}">
-        <view class="empty-hint">未设置收款账户</view>
+        <view class="empty-hint">暂未设置收款账户</view>
       </view>
       <block wx:else>
         <view class="info-row">
@@ -65,13 +65,13 @@
       </view>
       <view class="empty-photos" wx:else>
         <view class="empty-icon">📷</view>
-        <view class="empty-text">暂无照片</view>
+        <view class="empty-text">暂无门店照片</view>
       </view>
     </view>
   </view>
 
   <!-- 操作按钮 -->
   <view class="action-buttons">
-    <button class="btn primary" bindtap="editStore">编辑门店信息</button>
+    <button class="btn primary" bindtap="editStore">编辑门店资料</button>
   </view>
 </view>

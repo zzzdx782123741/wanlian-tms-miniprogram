@@ -150,7 +150,7 @@ Page({
   onContactService() {
     wx.showModal({
       title: '联系客服',
-      content: '客服电话：400-888-8888\n工作时间：9:00-18:00',
+      content: '客服热线：400-888-8888\n服务时间：9:00-18:00',
       confirmText: '拨打电话',
       success: (res) => {
         if (res.confirm) {
@@ -168,8 +168,8 @@ Page({
 
   onAbout() {
     wx.showModal({
-      title: '关于万联驿站2.0',
-      content: '万联驿站2.0系统 v1.0\n为物流车队提供专业的车辆维修管理服务',
+      title: '关于万联驿站',
+      content: '万联驿站 2.0 v1.0\n为物流车队提供专业的车辆维修管理服务',
       showCancel: false
     });
   },

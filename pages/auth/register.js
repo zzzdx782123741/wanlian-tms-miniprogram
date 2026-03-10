@@ -1,5 +1,21 @@
-// pages/auth/register.js
 const request = require('../../../utils/request');
+
+const app = getApp();
+
+function normalizeRegisteredUser(user, fallbackRole) {
+  const roleType = typeof user?.role === 'string'
+    ? user.role
+    : (user?.role?.type || fallbackRole || 'DRIVER');
+
+  return {
+    roleType,
+    user: Object.assign({}, user || {}, {
+      role: typeof user?.role === 'object' && user.role
+        ? user.role
+        : { type: roleType, status: user?.roleStatus || 'normal' }
+    })
+  };
+}
 
 Page({
   data: {
@@ -12,11 +28,10 @@ Page({
     roleList: [
       { value: 'DRIVER', label: '司机' },
       { value: 'FLEET_MANAGER', label: '车队管理员' },
-      { value: 'STORE', label: '门店' }
+      { value: 'STORE', label: '门店入驻' }
     ]
   },
 
-  // 选择角色
   onRoleChange(e) {
     const index = e.detail.value;
     this.setData({
@@ -25,39 +40,33 @@ Page({
     });
   },
 
-  // 输入手机号
   onPhoneInput(e) {
     this.setData({
       phone: e.detail.value
     });
   },
 
-  // 输入用户名
   onUsernameInput(e) {
     this.setData({
       username: e.detail.value
     });
   },
 
-  // 输入密码
   onPasswordInput(e) {
     this.setData({
       password: e.detail.value
     });
   },
 
-  // 输入确认密码
   onConfirmPasswordInput(e) {
     this.setData({
       confirmPassword: e.detail.value
     });
   },
 
-  // 注册
   async handleRegister() {
     const { phone, password, confirmPassword, username, role } = this.data;
 
-    // 如果选择的是车队管理员或门店，跳转到完整注册页面
     if (role === 'FLEET_MANAGER') {
       wx.navigateTo({
         url: '/pages/auth/fleet-register/fleet-register'
@@ -72,8 +81,6 @@ Page({
       return;
     }
 
-    // 司机注册流程保持不变
-    // 表单验证
     if (!username) {
       wx.showToast({
         title: '请输入用户名',
@@ -108,7 +115,7 @@ Page({
 
     if (password.length < 6) {
       wx.showToast({
-        title: '密码至少6位',
+        title: '密码长度至少 6 位',
         icon: 'none'
       });
       return;
@@ -116,7 +123,7 @@ Page({
 
     if (password !== confirmPassword) {
       wx.showToast({
-        title: '两次密码不一致',
+        title: '两次输入的密码不一致',
         icon: 'none'
       });
       return;
@@ -130,20 +137,27 @@ Page({
         password,
         username,
         role
-      });
+      }, true);
 
       wx.hideLoading();
+
+      if (!res?.success || !res?.data?.token || !res?.data?.user) {
+        throw new Error(res?.message || '注册失败');
+      }
+
+      const normalized = normalizeRegisteredUser(res.data.user, role);
+      app.setUserInfo(res.data.token, normalized.user, normalized.roleType);
 
       wx.showToast({
         title: '注册成功',
         icon: 'success'
       });
 
-      // 延迟跳转到登录页
       setTimeout(() => {
-        wx.navigateBack();
-      }, 1500);
-
+        wx.switchTab({
+          url: '/pages/index/index'
+        });
+      }, 800);
     } catch (error) {
       wx.hideLoading();
       wx.showToast({
@@ -153,7 +167,6 @@ Page({
     }
   },
 
-  // 返回登录
   goToLogin() {
     wx.navigateBack();
   }

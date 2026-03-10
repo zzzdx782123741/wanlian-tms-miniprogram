@@ -47,7 +47,7 @@
     <!-- 空状态 -->
     <view wx:else class="empty-state">
       <image class="empty-icon" src="/images/icons/empty-order.png"></image>
-      <text class="empty-text">暂无运输中订单</text>
+      <text class="empty-text">暂无在途订单</text>
     </view>
   </view>
 

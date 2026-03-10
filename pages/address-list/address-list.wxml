@@ -3,7 +3,7 @@
   <!-- 顶部标题栏 -->
   <view class="header">
     <view class="header-title">服务地址管理</view>
-    <view class="header-subtitle">管理您的常用服务地址</view>
+    <view class="header-subtitle">查看与管理常用服务地址</view>
   </view>
 
   <!-- 地址列表 -->
@@ -11,7 +11,7 @@
     <view class="empty-tip" wx:if="{{addressList.length === 0}}">
       <text class="empty-icon">📍</text>
       <text class="empty-text">暂无服务地址</text>
-      <text class="empty-hint">点击下方按钮添加地址</text>
+      <text class="empty-hint">点击下方按钮新增地址</text>
     </view>
 
     <view class="address-list" wx:else>
@@ -54,7 +54,7 @@
   <view class="footer">
     <button class="add-btn" bindtap="onAddAddress">
       <text class="add-icon">+</text>
-      <text class="add-text">添加新地址</text>
+      <text class="add-text">新增地址</text>
     </button>
   </view>
 </view>

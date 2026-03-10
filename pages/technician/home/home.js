@@ -172,7 +172,7 @@ Page({
           driverName: '张师傅',
           driverPhone: '138****8001',
           status: 'awaiting_time_confirmation',
-          statusText: '待确认时间',
+          statusText: '待确认到店时间',
           statusIcon: '⏰',
           faultDescription: '刹车异响，制动距离变长',
           createTime: '今天 10:00'

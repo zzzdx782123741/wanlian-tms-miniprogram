@@ -1,6 +1,6 @@
 /**
- * 首页样式 - 万联驿站2.0 司机极简版
- * 注重：清晰、大字、高对比度
+ * 首页样式 - 万联驿站2.0
+ * 包含：司机端、车队管理员端、门店端、平台运营端
  */
 
 /* 页面容器 */
@@ -10,7 +10,7 @@
   padding-bottom: 120rpx;
 }
 
-/* 顶部装饰背景 - 移除蓝色背景，改为简洁白色 */
+/* 顶部装饰背景 */
 .header-bg {
   position: fixed;
   top: 0;
@@ -20,6 +20,286 @@
   background: linear-gradient(180deg, #F5F7FA 0%, #FFFFFF 100%);
   z-index: 0;
 }
+
+/* ==================== 车队管理员首页样式 ==================== */
+
+.fleet-home {
+  position: relative;
+  z-index: 1;
+  padding: var(--spacing-md);
+}
+
+/* 区域标题行（内联样式） */
+.section-header-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.more-link {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+}
+
+/* 数据概览区域 */
+.stats-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.stat-card {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-sm);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-glass);
+}
+
+.stat-value {
+  font-size: 44rpx;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  margin-bottom: 8rpx;
+}
+
+.stat-value.highlight {
+  color: #EF4444;
+}
+
+.stat-value.amount {
+  font-size: 32rpx;
+  color: #10B981;
+}
+
+.stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+/* 待办事项区域 */
+.todo-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.todo-group {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-glass);
+}
+
+.todo-group-header {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: #F9FAFB;
+  border-bottom: 1px solid var(--color-border-glass);
+}
+
+.todo-badge {
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  margin-right: var(--spacing-sm);
+}
+
+.todo-badge.red {
+  background: #FEF2F2;
+  color: #EF4444;
+}
+
+.todo-badge.orange {
+  background: #FFF7ED;
+  color: #F59E0B;
+}
+
+.todo-badge.green {
+  background: #ECFDF5;
+  color: #10B981;
+}
+
+.todo-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.todo-list {
+  padding: 0 var(--spacing-md);
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border-glass);
+}
+
+.todo-item:last-child {
+  border-bottom: none;
+}
+
+.todo-item-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.todo-plate {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 4rpx;
+}
+
+.todo-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todo-type {
+  color: var(--color-primary);
+}
+
+.todo-fault {
+  color: var(--color-text-tertiary);
+}
+
+.todo-technician {
+  color: #F59E0B;
+}
+
+.todo-amount {
+  color: #EF4444;
+  font-weight: var(--font-weight-semibold);
+}
+
+.todo-item-right {
+  text-align: right;
+  margin-left: var(--spacing-md);
+}
+
+.todo-reporter {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  margin-bottom: 4rpx;
+}
+
+.todo-time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* 空状态 */
+.empty-todo {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 80rpx var(--spacing-xl);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-glass);
+}
+
+.empty-icon {
+  font-size: 96rpx;
+  display: block;
+  margin-bottom: var(--spacing-md);
+}
+
+.empty-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-tertiary);
+}
+
+/* 快捷操作区域 */
+.quick-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
+}
+
+.quick-btn {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-glass);
+}
+
+.quick-btn:active {
+  background: var(--color-bg-card-hover);
+  transform: scale(0.98);
+}
+
+.quick-icon {
+  font-size: 56rpx;
+  margin-bottom: var(--spacing-xs);
+}
+
+.quick-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+}
+
+/* 最近动态区域 */
+.activity-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.activity-list {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 0 var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-glass);
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border-glass);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  font-size: 32rpx;
+  margin-right: var(--spacing-sm);
+}
+
+.activity-desc {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.activity-time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* ==================== 其他角色菜单样式 ==================== */
 
 /* 菜单区域 */
 .menu-section {
@@ -56,7 +336,7 @@
   gap: var(--spacing-md);
 }
 
-/* 菜单卡片 - 实体 */
+/* 菜单卡片 */
 .menu-card {
   position: relative;
   border-radius: var(--radius-lg);
@@ -77,18 +357,18 @@
   left: 0;
   right: 0;
   bottom: 0;
-  opacity: 0.1; /* 降低背景色透明度，保持清爽 */
+  opacity: 0.1;
 }
 
 .menu-content-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  padding: 40rpx var(--spacing-lg); /* 加大卡片内边距 */
+  padding: 40rpx var(--spacing-lg);
 }
 
 .menu-icon-wrapper {
-  width: 112rpx; /* 加大图标区域 */
+  width: 112rpx;
   height: 112rpx;
   display: flex;
   align-items: center;
@@ -99,7 +379,7 @@
 }
 
 .menu-icon {
-  font-size: 64rpx; /* 加大图标 */
+  font-size: 64rpx;
 }
 
 .menu-text {
@@ -107,7 +387,7 @@
 }
 
 .menu-title {
-  font-size: 40rpx; /* 加大标题 */
+  font-size: 40rpx;
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-xs);
@@ -141,7 +421,7 @@
   justify-content: center;
   background: #FFFFFF;
   color: var(--color-text-primary);
-  padding: 32rpx; /* 加大按钮高度 */
+  padding: 32rpx;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border-glass);
@@ -178,112 +458,4 @@
 .version {
   font-size: var(--font-size-sm);
   color: var(--color-text-tertiary);
-}
-
-/* 角色切换弹窗 */
-.role-switcher-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.role-switcher-content {
-  width: 640rpx;
-  background: #fff;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-xl);
-}
-
-.role-switcher-header {
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-.role-switcher-title {
-  display: block;
-  font-size: 44rpx;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-xs);
-}
-
-.role-switcher-subtitle {
-  display: block;
-  font-size: var(--font-size-base);
-  color: var(--color-error);
-}
-
-.role-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-}
-
-.role-item {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-md);
-  background: var(--color-bg-page);
-  border-radius: var(--radius-md);
-  border: 2rpx solid transparent;
-}
-
-.role-item-active {
-  background: #E6F7FF;
-  border-color: var(--color-primary);
-}
-
-.role-item-icon {
-  width: 96rpx;
-  height: 96rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: var(--radius-md);
-  font-size: 48rpx;
-  margin-right: var(--spacing-md);
-  border: 1px solid var(--color-border-glass);
-}
-
-.role-item-info {
-  flex: 1;
-}
-
-.role-item-name {
-  font-size: 36rpx;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-}
-
-.role-item-desc {
-  font-size: 28rpx;
-  color: var(--color-text-secondary);
-}
-
-.role-item-check {
-  font-size: 44rpx;
-  color: var(--color-primary);
-  font-weight: bold;
-}
-
-.role-switcher-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32rpx;
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: var(--radius-md);
-  font-size: 32rpx;
-  font-weight: var(--font-weight-bold);
 }

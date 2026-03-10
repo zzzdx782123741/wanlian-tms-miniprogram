@@ -40,7 +40,7 @@ Page({
     } catch (error) {
       this.setData({ loading: false });
       wx.showToast({
-        title: error.message || '加载失败',
+        title: error.message || '加载进度失败',
         icon: 'none'
       });
     }

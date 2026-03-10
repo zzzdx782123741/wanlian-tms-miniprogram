@@ -21,6 +21,7 @@
     "pages/store/orders/orders",
     "pages/store/order-detail/order-detail",
     "pages/store/quote/quote",
+    "pages/store/addon/addon",
     "pages/store/complete/complete",
     "pages/store/product-select/product-select",
     "pages/orders/orders",
@@ -82,6 +83,12 @@
         "text": "订单",
         "iconPath": "images/icons/goods.png",
         "selectedIconPath": "images/icons/goods-active.png"
+      },
+      {
+        "pagePath": "pages/vehicle/vehicle",
+        "text": "车辆",
+        "iconPath": "images/icons/business.png",
+        "selectedIconPath": "images/icons/business-active.png"
       },
       {
         "pagePath": "pages/technician/home/home",

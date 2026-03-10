@@ -3,7 +3,7 @@
   <!-- 顶部标题 -->
   <view class="header-section">
     <text class="header-title">车队注册</text>
-    <text class="header-subtitle">完成以下步骤，加入万联驿站2.0</text>
+    <text class="header-subtitle">请按步骤完成车队入驻申请</text>
   </view>
 
   <!-- 步骤指示器 -->
@@ -142,7 +142,7 @@
 
       <view class="tips-info">
         <text class="tips-icon">ℹ️</text>
-        <text class="tips-text">请填写车队管理员账号信息，审核通过后将使用此账号登录系统</text>
+        <text class="tips-text">请填写车队管理员账号信息，审核通过后将使用该账号登录系统</text>
       </view>
 
       <view class="form-item">
@@ -208,7 +208,7 @@
         <checkbox-group bindchange="onAgreementChange">
           <label class="agreement-label">
             <checkbox value="agree" checked="{{agreedToTerms}}" />
-            <text>我已阅读并同意《万联驿站车队注册协议》</text>
+            <text>我已阅读并同意《万联驿站车队入驻协议》</text>
           </label>
         </checkbox-group>
       </view>

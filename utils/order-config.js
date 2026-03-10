@@ -8,12 +8,12 @@
  */
 const ORDER_STATUS = {
   AWAITING_FLEET_APPROVAL: 'awaiting_fleet_approval',      // 待车队审批
-  AWAITING_TIME_CONFIRMATION: 'awaiting_time_confirmation', // 待门店确认时间
+  AWAITING_TIME_CONFIRMATION: 'awaiting_time_confirmation', // 待确认到店时间
   PENDING_ASSESSMENT: 'pending_assessment',                 // 待接车检查
   AWAITING_APPROVAL: 'awaiting_approval',                   // 待审批报价
   IN_REPAIR: 'in_repair',                                   // 维修中/保养进行中
-  AWAITING_ADDON_APPROVAL: 'awaiting_addon_approval',       // 增项待审批
-  PENDING_CONFIRMATION: 'pending_confirmation',             // 待确认
+  AWAITING_ADDON_APPROVAL: 'awaiting_addon_approval',       // 待审批增项
+  PENDING_CONFIRMATION: 'pending_confirmation',             // 待确认完工
   COMPLETED: 'completed',                                   // 已完成
   REJECTED: 'rejected',                                     // 已拒绝
   REFUNDED: 'refunded'                                      // 已退款
@@ -29,7 +29,7 @@ const ORDER_STATUS_CONFIG = {
     type: 'warning'
   },
   [ORDER_STATUS.AWAITING_TIME_CONFIRMATION]: {
-    label: '待确认时间',
+    label: '待确认到店时间',
     icon: '⏰',
     type: 'warning'
   },
@@ -49,12 +49,12 @@ const ORDER_STATUS_CONFIG = {
     type: 'primary'
   },
   [ORDER_STATUS.AWAITING_ADDON_APPROVAL]: {
-    label: '增项待审批',
+    label: '待审批增项',
     icon: '⚠️',
     type: 'warning'
   },
   [ORDER_STATUS.PENDING_CONFIRMATION]: {
-    label: '待确认',
+    label: '待确认完工',
     icon: '✅',
     type: 'success'
   },

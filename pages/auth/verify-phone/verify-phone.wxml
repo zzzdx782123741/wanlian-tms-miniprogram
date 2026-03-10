@@ -3,7 +3,7 @@
   <view class="header">
     <image class="logo" src="/images/logo.png" mode="aspectFit"></image>
     <text class="title">验证手机号</text>
-    <text class="subtitle">首次登录需要验证手机号以绑定微信</text>
+    <text class="subtitle">首次登录需要验证手机号并绑定微信</text>
   </view>
 
   <view class="form">
@@ -48,13 +48,13 @@
       disabled="{{loading}}"
       bindtap="onConfirm"
     >
-      {{loading ? '验证中...' : '确认绑定'}}
+      {{loading ? '绑定中...' : '确认绑定'}}
     </button>
 
     <!-- 提示信息 -->
     <view class="tips">
       <text class="tip-icon">ℹ️</text>
-      <text class="tip-text">请输入系统中的手机号，验证成功后将绑定当前微信</text>
+      <text class="tip-text">请输入系统登记的手机号，验证成功后将绑定当前微信</text>
     </view>
   </view>
 </view>

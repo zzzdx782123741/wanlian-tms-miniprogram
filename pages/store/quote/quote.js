@@ -507,7 +507,7 @@ Page({
     });
 
     wx.showToast({
-      title: '已确认预约时间',
+      title: '已确认到店时间',
       icon: 'success'
     });
   },
@@ -615,7 +615,7 @@ Page({
     });
 
     wx.showToast({
-      title: '预约时间已调整',
+      title: '到店时间已调整',
       icon: 'success'
     });
   }
