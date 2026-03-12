@@ -14,9 +14,22 @@
   <!-- 车队管理员账户余额 -->
   <block wx:if="{{isFleetManager}}">
     <view class="balance-section glass-card">
+      <!-- 账户总余额 -->
       <view class="balance-header">
-        <text class="balance-label">账户余额</text>
+        <text class="balance-label">账户总余额</text>
         <text class="balance-value">¥{{balance}}</text>
+      </view>
+
+      <!-- 可用余额 -->
+      <view class="balance-row">
+        <text class="balance-sublabel">可用余额</text>
+        <text class="balance-subvalue success">¥{{availableBalance}}</text>
+      </view>
+
+      <!-- 冻结金额 -->
+      <view class="balance-row">
+        <text class="balance-sublabel">冻结金额</text>
+        <text class="balance-subvalue warning">¥{{frozenAmount}}</text>
       </view>
 
       <view class="balance-actions">

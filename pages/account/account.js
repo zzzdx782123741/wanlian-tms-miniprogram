@@ -17,10 +17,33 @@ function extractVehicles(response) {
   return [];
 }
 
+function getRoleType(userInfo) {
+  const rawRole = app.globalData.role || wx.getStorageSync('role') || userInfo?.role;
+  return typeof rawRole === 'object' ? rawRole?.type : rawRole;
+}
+
+function isVehicleRole(role) {
+  return role === 'DRIVER' || role === 'FLEET_MANAGER' || role === 'PLATFORM_OPERATOR';
+}
+
+function getRoleText(role) {
+  const roleMap = {
+    DRIVER: '司机',
+    FLEET_MANAGER: '车队管理员',
+    STORE_TECHNICIAN: '门店技师',
+    STORE_MANAGER: '门店管理员',
+    PLATFORM_OPERATOR: '平台运营'
+  };
+
+  return roleMap[role] || '用户';
+}
+
 Page({
   data: {
     userInfo: null,
+    roleType: '',
     roleText: '',
+    secondaryStatLabel: '我的车辆',
     stats: {
       totalOrders: 0,
       vehicleCount: 0,
@@ -40,24 +63,12 @@ Page({
 
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       const tabBar = this.getTabBar();
+      const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+      const role = getRoleType(userInfo) || '';
 
-      // 重新加载角色（增强容错性）
-      const role = app.globalData.role || wx.getStorageSync('role') || '';
-      console.log('[我的] onShow - 当前角色:', role);
-
-      // 如果角色为空，尝试从userInfo中提取
-      if (!role) {
-        const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
-        if (userInfo && userInfo.role) {
-          const extractedRole = typeof userInfo.role === 'object' ? userInfo.role.type : userInfo.role;
-          if (extractedRole) {
-            app.globalData.role = extractedRole;
-            wx.setStorageSync('role', extractedRole);
-            console.log('[我的] 从userInfo提取角色:', extractedRole);
-            tabBar.setData({ role: extractedRole });
-          }
-        }
-      } else {
+      if (role) {
+        app.globalData.role = role;
+        wx.setStorageSync('role', role);
         tabBar.setData({ role });
       }
 
@@ -73,29 +84,34 @@ Page({
 
   initUserProfile() {
     const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
-    const role = app.globalData.role || wx.getStorageSync('role') || userInfo?.role?.type;
-
     if (!userInfo) return;
 
-    const roleMap = {
-      DRIVER: '司机',
-      FLEET_MANAGER: '车队管理员',
-      STORE_TECHNICIAN: '门店技师',
-      STORE_MANAGER: '门店管理员',
-      PLATFORM_OPERATOR: '平台运营'
-    };
+    const role = getRoleType(userInfo) || '';
 
     this.setData({
       userInfo,
-      roleText: roleMap[role] || '用户'
+      roleType: role,
+      roleText: getRoleText(role),
+      secondaryStatLabel: isVehicleRole(role) ? '我的车辆' : '待处理'
     });
   },
 
   async loadStats() {
-    await Promise.allSettled([
-      this.loadOrderStats(),
-      this.loadVehicleStats()
-    ]);
+    const role = this.data.roleType || getRoleType(this.data.userInfo);
+    const tasks = [this.loadOrderStats()];
+
+    if (isVehicleRole(role)) {
+      tasks.push(this.loadVehicleStats());
+    } else {
+      this.setData({
+        stats: {
+          ...this.data.stats,
+          vehicleCount: 0
+        }
+      });
+    }
+
+    await Promise.allSettled(tasks);
   },
 
   async loadOrderStats() {
@@ -104,7 +120,7 @@ Page({
       const orders = extractOrders(res);
 
       const totalOrders = orders.length;
-      const completedOrders = orders.filter((o) => o.status === 'completed' || o.status === 'refunded').length;
+      const completedOrders = orders.filter((item) => item.status === 'completed' || item.status === 'refunded').length;
 
       this.setData({
         stats: {
@@ -115,7 +131,7 @@ Page({
         }
       });
     } catch (error) {
-      console.error('加载订单统计失败:', error);
+      console.error('[我的] 加载订单统计失败:', error);
     }
   },
 
@@ -131,7 +147,7 @@ Page({
         }
       });
     } catch (error) {
-      console.error('加载车辆统计失败:', error);
+      console.error('[我的] 加载车辆统计失败:', error);
     }
   },
 
@@ -142,15 +158,34 @@ Page({
   },
 
   onMyVehicles() {
+    const role = this.data.roleType || getRoleType(this.data.userInfo);
+
+    if (!isVehicleRole(role)) {
+      wx.showToast({
+        title: '当前角色无车辆页',
+        icon: 'none'
+      });
+      return;
+    }
+
     wx.switchTab({
       url: '/pages/vehicle/vehicle'
     });
   },
 
+  onSecondaryStatTap() {
+    if (isVehicleRole(this.data.roleType)) {
+      this.onMyVehicles();
+      return;
+    }
+
+    this.onMyOrders();
+  },
+
   onContactService() {
     wx.showModal({
       title: '联系客服',
-      content: '客服热线：400-888-8888\n服务时间：9:00-18:00',
+      content: '客服热线：400-888-8888\n服务时间：09:00-18:00',
       confirmText: '拨打电话',
       success: (res) => {
         if (res.confirm) {

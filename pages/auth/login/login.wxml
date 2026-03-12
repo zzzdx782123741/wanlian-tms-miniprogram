@@ -51,7 +51,7 @@
       </view>
 
       <view class="test-login-footer">
-        <view class="password-tip">测试密码统一为：Test123456</view>
+        <view class="password-tip">测试密码统一为：123456</view>
       </view>
     </view>
   </view>

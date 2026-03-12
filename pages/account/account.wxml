@@ -17,12 +17,12 @@
       <view class="stat-label">我的订单</view>
     </view>
     <view class="stat-divider"></view>
-    <view class="stat-item" bindtap="onMyVehicles">
-      <view class="stat-value">{{stats.vehicleCount}}</view>
-      <view class="stat-label">我的车辆</view>
+    <view class="stat-item" bindtap="onSecondaryStatTap">
+      <view class="stat-value">{{roleType === 'STORE_MANAGER' || roleType === 'STORE_TECHNICIAN' ? stats.pendingOrders : stats.vehicleCount}}</view>
+      <view class="stat-label">{{secondaryStatLabel}}</view>
     </view>
     <view class="stat-divider"></view>
-    <view class="stat-item">
+    <view class="stat-item" bindtap="onMyOrders">
       <view class="stat-value">{{stats.completedOrders}}</view>
       <view class="stat-label">已完成</view>
     </view>

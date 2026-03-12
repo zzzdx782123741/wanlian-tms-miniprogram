@@ -118,7 +118,7 @@
         <view class="progress-text">{{item.progressText}}</view>
       </view>
 
-      <view class="appointment-confirm-section" wx:if="{{role === 'STORE_TECHNICIAN' && item.status === 'awaiting_time_confirmation'}}">
+      <view class="appointment-confirm-section" wx:if="{{role === 'STORE_MANAGER' && item.status === 'awaiting_time_confirmation'}}">
         <view class="confirm-time-hint" catchtap="toggleConfirmTime" data-id="{{item._id}}">
           <view class="hint-content">
             <text class="hint-icon">⏰</text>
@@ -184,7 +184,7 @@
 
         <button
           class="approve-btn"
-          wx:if="{{role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && item.status === 'awaiting_fleet_approval'}}"
+          wx:if="{{role === 'FLEET_MANAGER' && item.status === 'awaiting_fleet_approval'}}"
           catchtap="onApproveOrder"
           data-id="{{item._id}}"
         >
@@ -193,7 +193,7 @@
 
         <button
           class="approve-btn"
-          wx:if="{{role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && item.status === 'awaiting_approval'}}"
+          wx:if="{{role === 'FLEET_MANAGER' && item.status === 'awaiting_approval'}}"
           catchtap="onApproveOrder"
           data-id="{{item._id}}"
         >
@@ -202,7 +202,7 @@
 
         <button
           class="approve-btn"
-          wx:if="{{role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && item.status === 'awaiting_addon_approval'}}"
+          wx:if="{{role === 'FLEET_MANAGER' && item.status === 'awaiting_addon_approval'}}"
           catchtap="onApproveOrder"
           data-id="{{item._id}}"
         >
@@ -226,7 +226,7 @@
         </button>
         <view
           class="order-arrow"
-          wx:if="{{!(role !== 'DRIVER' && role !== 'STORE_TECHNICIAN' && (item.status === 'awaiting_fleet_approval' || item.status === 'awaiting_approval')) && !(role === 'DRIVER' && ((item.status === 'pending_confirmation') || (item.status === 'completed' && !item.isConfirmed))) && !(role === 'DRIVER' && item.canReview) && !(role === 'STORE_TECHNICIAN' && (item.status === 'pending_assessment' || item.status === 'in_repair'))}}"
+          wx:if="{{!(role === 'FLEET_MANAGER' && (item.status === 'awaiting_fleet_approval' || item.status === 'awaiting_approval' || item.status === 'awaiting_addon_approval')) && !(role === 'DRIVER' && ((item.status === 'pending_confirmation') || (item.status === 'completed' && !item.isConfirmed))) && !(role === 'DRIVER' && item.canReview) && !(role === 'STORE_TECHNICIAN' && (item.status === 'pending_assessment' || item.status === 'in_repair')) && !(role === 'STORE_MANAGER' && item.status === 'awaiting_time_confirmation')}}"
         >›</view>
       </view>
     </view>

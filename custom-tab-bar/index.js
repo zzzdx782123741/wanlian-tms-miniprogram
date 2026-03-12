@@ -1,24 +1,51 @@
-// custom-tab-bar/index.js - 自定义 tabBar 入口
 const app = getApp();
+
+const BASE_TABS = [
+  {
+    pagePath: '/pages/index/index',
+    text: '\u5de5\u4f5c\u53f0',
+    iconPath: '/images/icons/home.png',
+    selectedIconPath: '/images/icons/home-active.png'
+  },
+  {
+    pagePath: '/pages/orders/orders',
+    text: '\u8ba2\u5355',
+    iconPath: '/images/icons/goods.png',
+    selectedIconPath: '/images/icons/goods-active.png'
+  },
+  {
+    pagePath: '/pages/vehicle/vehicle',
+    text: '\u8f66\u8f86',
+    iconPath: '/images/icons/business.png',
+    selectedIconPath: '/images/icons/business-active.png'
+  },
+  {
+    pagePath: '/pages/account/account',
+    text: '\u6211\u7684',
+    iconPath: '/images/icons/usercenter.png',
+    selectedIconPath: '/images/icons/usercenter-active.png'
+  }
+];
+
+const VEHICLE_TAB_ROLES = ['DRIVER', 'FLEET_MANAGER', 'PLATFORM_OPERATOR'];
 
 Component({
   data: {
     selected: 0,
-    color: "#8C8C8C",
-    selectedColor: "#667eea",
+    color: '#8C8C8C',
+    selectedColor: '#667eea',
     list: [],
     role: ''
   },
 
   lifetimes: {
     attached() {
-      // 组件加载时获取当前角色
       this.loadUserRole();
     }
   },
 
   observers: {
-    'role': function(role) {
+    role(role) {
       if (role) {
         this.updateTabBar();
       }
@@ -26,28 +53,24 @@ Component({
   },
 
   methods: {
-    /**
-     * 加载用户角色（增强版，支持多种数据格式）
-     */
     loadUserRole() {
       let role = app.globalData.role || '';
 
-      // 如果globalData为空，尝试从storage读取
       if (!role) {
         const storedRole = wx.getStorageSync('role');
         if (storedRole) {
-          // 处理role可能是对象的情况
-          role = typeof storedRole === 'object' ? (storedRole.type || storedRole.role?.type || '') : storedRole;
+          role = typeof storedRole === 'object'
+            ? (storedRole.type || storedRole.role?.type || '')
+            : storedRole;
           if (role) {
             app.globalData.role = role;
           }
         }
       }
 
-      // 如果还是为空，尝试从userInfo中提取
       if (!role) {
         const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
-        if (userInfo && userInfo.role) {
+        if (userInfo?.role) {
           role = typeof userInfo.role === 'object' ? userInfo.role.type : userInfo.role;
           if (role) {
             app.globalData.role = role;
@@ -56,129 +79,50 @@ Component({
         }
       }
 
-      console.log('[TabBar] 加载用户角色:', role);
+      console.log('[TabBar] role:', role);
       this.setData({ role });
       this.updateTabBar();
     },
 
-    /**
-     * 更新 tabBar 配置
-     */
     updateTabBar() {
       const role = this.data.role;
-      console.log('[TabBar] 更新 tabBar，当前角色:', role);
-
       const list = this.getTabsByRole(role);
-      console.log('[TabBar] 过滤后的 tab 列表:', list);
 
       this.setData({ list });
-
-      // 获取当前页面路径，设置选中状态
       this.setCurrentSelected();
     },
 
-    /**
-     * 根据角色获取 tab 列表
-     */
     getTabsByRole(role) {
-      console.log('[TabBar] getTabsByRole 输入角色:', role, '类型:', typeof role);
-
-      // 所有可用的 tab 配置
-      const allTabs = [
-        {
-          pagePath: "/pages/index/index",
-          text: "首页",
-          iconPath: "/images/icons/home.png",
-          selectedIconPath: "/images/icons/home-active.png",
-          roles: ['DRIVER', 'FLEET_MANAGER']
-        },
-        {
-          pagePath: "/pages/technician/home/home",
-          text: "今日工作台",
-          iconPath: "/images/icons/home.png",
-          selectedIconPath: "/images/icons/home-active.png",
-          roles: ['STORE_TECHNICIAN']
-        },
-        {
-          pagePath: "/pages/manager/dashboard/dashboard",
-          text: "工作台",
-          iconPath: "/images/icons/home.png",
-          selectedIconPath: "/images/icons/home-active.png",
-          roles: ['STORE_MANAGER']
-        },
-        {
-          pagePath: "/pages/orders/orders",
-          text: "订单",
-          iconPath: "/images/icons/goods.png",
-          selectedIconPath: "/images/icons/goods-active.png",
-          roles: ['DRIVER', 'FLEET_MANAGER', 'STORE_TECHNICIAN', 'STORE_MANAGER', 'PLATFORM_OPERATOR']
-        },
-        {
-          pagePath: "/pages/vehicle/vehicle",
-          text: "车辆",
-          iconPath: "/images/icons/business.png",
-          selectedIconPath: "/images/icons/business-active.png",
-          roles: ['DRIVER', 'FLEET_MANAGER', 'PLATFORM_OPERATOR']
-        },
-        {
-          pagePath: "/pages/technician/products/products",
-          text: "商品库",
-          iconPath: "/images/icons/goods.png",
-          selectedIconPath: "/images/icons/goods-active.png",
-          roles: ['STORE_TECHNICIAN']
-        },
-        {
-          pagePath: "/pages/account/account",
-          text: "我的",
-          iconPath: "/images/icons/usercenter.png",
-          selectedIconPath: "/images/icons/usercenter-active.png",
-          roles: ['all']
-        }
-      ];
-
-      // 如果角色为空，只显示"我的"
-      if (!role || role === '' || role === 'undefined' || role === 'null') {
-        console.warn('[TabBar] 角色为空，只显示"我的"菜单');
-        return allTabs.filter(tab => tab.roles.includes('all'));
+      if (!role || role === 'undefined' || role === 'null') {
+        return BASE_TABS;
       }
 
-      // 过滤出当前角色可见的 tab
-      return allTabs.filter(tab => {
-        return tab.roles.includes('all') || tab.roles.includes(role);
-      });
+      if (!VEHICLE_TAB_ROLES.includes(role)) {
+        return BASE_TABS.filter((tab) => tab.pagePath !== '/pages/vehicle/vehicle');
+      }
+
+      return BASE_TABS;
     },
 
-    /**
-     * 设置当前选中的 tab
-     */
     setCurrentSelected() {
       const pages = getCurrentPages();
-      if (pages.length === 0) return;
+      if (pages.length === 0) {
+        return;
+      }
 
-      const currentPage = pages[pages.length - 1];
-      const currentRoute = '/' + currentPage.route;
-
-      // 找到匹配的 tab 索引
-      const selectedIndex = this.data.list.findIndex(tab => {
-        return tab.pagePath === currentRoute;
-      });
+      const currentRoute = `/${pages[pages.length - 1].route}`;
+      const selectedIndex = this.data.list.findIndex((tab) => tab.pagePath === currentRoute);
 
       if (selectedIndex !== -1) {
-        this.setData({
-          selected: selectedIndex
-        });
+        this.setData({ selected: selectedIndex });
       }
     },
 
-    /**
-     * 切换 tab
-     */
     switchTab(e) {
-      const data = e.currentTarget.dataset;
-      const url = data.path;
-
+      const url = e.currentTarget.dataset.path;
       const pages = getCurrentPages();
       const currentRoute = pages.length > 0 ? `/${pages[pages.length - 1].route}` : '';
+
       if (!url || currentRoute === url) {
         return;
       }
@@ -186,13 +130,13 @@ Component({
       wx.switchTab({
         url,
         fail: (error) => {
-          console.error('[TabBar] switchTab 失败，尝试使用 reLaunch 兜底:', url, error);
+          console.error('[TabBar] switchTab failed:', url, error);
           wx.reLaunch({
             url,
             fail: (relaunchError) => {
-              console.error('[TabBar] reLaunch 也失败:', url, relaunchError);
+              console.error('[TabBar] reLaunch failed:', url, relaunchError);
               wx.showToast({
-                title: '页面跳转失败',
+                title: '\u9875\u9762\u8df3\u8f6c\u5931\u8d25',
                 icon: 'none'
               });
             }

@@ -68,6 +68,33 @@
   color: var(--color-cta);
 }
 
+/* 余额详情行 */
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-xs);
+}
+
+.balance-sublabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.balance-subvalue {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.balance-subvalue.success {
+  color: #67c23a;
+}
+
+.balance-subvalue.warning {
+  color: #e6a23c;
+}
+
 .balance-actions {
   display: flex;
   gap: var(--spacing-md);

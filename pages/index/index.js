@@ -67,8 +67,8 @@ Page({
    * 初始化页面
    */
   initPage() {
-    const userInfo = app.globalData.userInfo;
-    const role = app.globalData.role;
+    const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+    const role = app.globalData.role || wx.getStorageSync('role') || userInfo?.role?.type;
 
     if (!userInfo || !role) {
       // 未登录，跳转到登录页
@@ -79,6 +79,20 @@ Page({
     }
 
     // 技师角色自动跳转到技师工作台
+    app.globalData.userInfo = userInfo;
+    app.globalData.role = role;
+
+    if (role === 'STORE_TECHNICIAN' || role === 'STORE_MANAGER') {
+      this.setData({
+        userInfo,
+        role,
+        roleText: this.getRoleText(role),
+        roleShortText: this.getRoleShortText(role)
+      });
+      this.setupMenu(role);
+      return;
+    }
+
     if (role === 'STORE_TECHNICIAN') {
       wx.switchTab({
         url: '/pages/technician/home/home'

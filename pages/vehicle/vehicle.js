@@ -15,7 +15,7 @@ Page({
     const role = userInfo?.role?.type;
 
     // 技师角色无权访问车辆管理（理论上不可能通过 tabBar 进入，保留检查以防万一）
-    if (role === 'STORE_TECHNICIAN') {
+    if (role === 'STORE_TECHNICIAN' || role === 'STORE_MANAGER') {
       wx.switchTab({
         url: '/pages/index/index'
       });
@@ -30,7 +30,7 @@ Page({
     const userInfo = wx.getStorageSync('userInfo');
     const role = userInfo?.role?.type;
 
-    if (role === 'STORE_TECHNICIAN') {
+    if (role === 'STORE_TECHNICIAN' || role === 'STORE_MANAGER') {
       wx.switchTab({
         url: '/pages/index/index'
       });
@@ -71,7 +71,7 @@ Page({
   async loadVehicles() {
     // 再次检查权限
     const userInfo = wx.getStorageSync('userInfo');
-    if (userInfo?.role?.type === 'STORE_TECHNICIAN') {
+    if (userInfo?.role?.type === 'STORE_TECHNICIAN' || userInfo?.role?.type === 'STORE_MANAGER') {
       this.setData({ hasPermission: false });
       return;
     }
@@ -126,7 +126,7 @@ Page({
   onMaintenance(e) {
     const vehicleId = e.currentTarget.dataset.vehicleId;
     wx.navigateTo({
-      url: `/pages/maintenance/maintenance?vehicleId=${vehicleId}`
+      url: `/pages/report/report?type=maintenance&vehicleId=${vehicleId}`
     });
   },
 

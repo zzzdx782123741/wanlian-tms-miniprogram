@@ -10,7 +10,7 @@ Page({
     testLoading: false,
     testAccounts: [
       {
-        username: 'driver_test',
+        username: 'driver001',
         nickname: '测试司机-张三',
         icon: '🚚',
         role: 'DRIVER',
@@ -204,7 +204,7 @@ Page({
 
       const res = await request.post('/auth/test-login', {
         username: account.username,
-        password: 'Test123456'
+        password: '123456'
       }, true);
 
       if (!res.success || !res.data?.token || !res.data?.user) {

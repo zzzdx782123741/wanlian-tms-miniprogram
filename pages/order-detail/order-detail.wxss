@@ -243,6 +243,14 @@
   margin-bottom: 20rpx;
 }
 
+.photos-title {
+  width: 100%;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #4A5568;
+  margin-bottom: 8rpx;
+}
+
 .fault-images,
 .quote-images,
 .completion-images,
@@ -765,6 +773,70 @@
   word-break: break-all;
 }
 
+.maint-package-highlight {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  margin: 20rpx 0;
+  padding: 20rpx 24rpx;
+  border-radius: 16rpx;
+  border: 1rpx solid transparent;
+}
+
+.maint-package-highlight.pending {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-color: #FDBA74;
+}
+
+.maint-package-highlight.selected {
+  background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
+  border-color: #86EFAC;
+}
+
+.maint-package-highlight-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.maint-package-highlight-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #4A5568;
+}
+
+.maint-package-highlight-badge {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.maint-package-highlight-badge.pending {
+  background: #FFEDD5;
+  color: #C2410C;
+}
+
+.maint-package-highlight-badge.selected {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.maint-package-highlight-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1F2937;
+  line-height: 1.4;
+}
+
+.maint-package-highlight-desc {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6B7280;
+}
+
 .maint-value.price {
   font-size: 32rpx;
   font-weight: 700;
@@ -905,6 +977,138 @@
   background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
   color: #fff;
   box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.3);
+}
+
+.package-selection-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-bottom: 8rpx;
+  padding: 24rpx;
+  background: linear-gradient(180deg, #FFF7ED 0%, #FFFFFF 100%);
+  border: 2rpx solid #FDBA74;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(249, 115, 22, 0.12);
+}
+
+.package-selection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.package-selection-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.package-selection-icon {
+  font-size: 30rpx;
+}
+
+.package-selection-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #9A3412;
+}
+
+.package-selection-badge {
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.package-selection-badge.pending {
+  background: #FFEDD5;
+  color: #C2410C;
+}
+
+.package-selection-badge.selected {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.package-selection-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.package-empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.package-empty-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #7C2D12;
+}
+
+.package-empty-desc {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #9A3412;
+}
+
+.action-btn.select-package {
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+  color: #fff;
+  box-shadow: 0 8rpx 20rpx rgba(234, 88, 12, 0.28);
+}
+
+.selected-package-tip {
+  margin: 0;
+}
+
+.selected-package-content {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx;
+  background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
+  border: 1rpx solid #86EFAC;
+  border-radius: 16rpx;
+  transition: all 0.2s ease;
+}
+
+.selected-package-tip:active .selected-package-content {
+  transform: scale(0.99);
+  background: #DCFCE7;
+}
+
+.package-icon {
+  font-size: 30rpx;
+}
+
+.selected-package-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.package-name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #166534;
+}
+
+.package-hint {
+  font-size: 24rpx;
+  color: #15803D;
+  opacity: 0.9;
+}
+
+.package-change-icon {
+  font-size: 34rpx;
+  color: #16A34A;
+  opacity: 0.7;
 }
 
 /* 我的位置信息 */
@@ -1531,4 +1735,3 @@
   color: #92400E;
   font-weight: 500;
 }
-

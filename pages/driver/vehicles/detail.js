@@ -121,7 +121,7 @@ Page({
 
   applyMaintenance() {
     wx.navigateTo({
-      url: `/pages/maintenance/maintenance?vehicleId=${this.data.vehicleId}`
+      url: `/pages/report/report?type=maintenance&vehicleId=${this.data.vehicleId}`
     });
   },
 

@@ -1185,8 +1185,9 @@ Page({
 
     // ===== 保养订单特殊验证 =====
     if (this.data.type === 'maintenance') {
-      // 验证保养套餐（必选）
-      if (this.data.selectedPackageIndex === -1) {
+      // 验证保养套餐
+      // 当车队不允许司机选门店时，套餐由车队管理员审批时选择，不要求司机选择
+      if (this.data.allowDriverSelectStore && this.data.selectedPackageIndex === -1) {
         wx.showToast({
           title: '请选择保养套餐',
           icon: 'none'
@@ -1227,7 +1228,12 @@ Page({
           uploadedMileagePhotos.push(uploadRes.url);
         } catch (error) {
           console.error('上传里程照片失败:', error);
+          throw new Error(error.message || '里程照片上传失败，请重新拍照后重试');
         }
+      }
+
+      if (uploadedMileagePhotos.length === 0 || uploadedMileagePhotos.length !== this.data.mileagePhotos.length) {
+        throw new Error('里程照片上传失败，请重新拍照后重试');
       }
 
       // 上传图片（维修专用）
@@ -1261,11 +1267,8 @@ Page({
         // ===== 保养订单提交 =====
         apiUrl = '/maintenance/driver/apply';
 
-        const selectedPackage = this.data.recommendedPackages[this.data.selectedPackageIndex];
-
         orderData = {
           vehicleId: vehicle._id,
-          packageId: selectedPackage._id,
           milestone: parseFloat(this.data.mileage),
           milestonePhotos: uploadedMileagePhotos,
           appointment: {
@@ -1274,6 +1277,12 @@ Page({
           },
           driverRemark: this.data.driverRemark || ''
         };
+
+        // 当车队允许司机选门店且已选择套餐时，添加套餐 ID
+        if (this.data.allowDriverSelectStore && this.data.selectedPackageIndex !== -1) {
+          const selectedPackage = this.data.recommendedPackages[this.data.selectedPackageIndex];
+          orderData.packageId = selectedPackage._id;
+        }
 
         // 如果司机选择了门店，添加门店 ID
         if (this.data.allowDriverSelectStore && this.data.selectedStoreIndex !== -1) {
@@ -1357,8 +1366,10 @@ Page({
    */
   uploadImage(filePath) {
     return new Promise((resolve, reject) => {
+      const baseUrl = typeof request.getBaseUrl === 'function' ? request.getBaseUrl() : app.globalData.baseUrl;
+
       wx.uploadFile({
-        url: `${app.globalData.baseUrl}/upload`,
+        url: `${baseUrl}/upload`,
         filePath: filePath,
         name: 'file',
         header: {
@@ -1366,11 +1377,22 @@ Page({
         },
         success: (res) => {
           try {
+            if (res.statusCode < 200 || res.statusCode >= 300) {
+              const errorData = res.data ? JSON.parse(res.data) : {};
+              reject(new Error(errorData.message || '图片上传失败'));
+              return;
+            }
+
             const data = JSON.parse(res.data);
-            if (data.success) {
-              resolve(data.data);
+            const uploadedUrl = data?.data?.url;
+
+            if (data.success && uploadedUrl) {
+              resolve({
+                ...data.data,
+                url: uploadedUrl
+              });
             } else {
-              reject(new Error(data.message));
+              reject(new Error(data.message || '图片上传失败'));
             }
           } catch (error) {
             reject(error);
@@ -1566,6 +1588,7 @@ Page({
 
   /**
    * 加载推荐套餐（根据车辆里程智能推荐）
+   * 注意：套餐是门店专属的，必须先选择门店才能加载套餐
    */
   async loadRecommendedPackages() {
     const vehicle = this.data.vehicles[this.data.selectedVehicleIndex];
@@ -1574,15 +1597,35 @@ Page({
       return;
     }
 
+    // 【重要】必须先选择门店才能加载套餐
+    // 如果车队不允许司机选门店，则不加载套餐（由车队管理员审批时选择）
+    if (!this.data.allowDriverSelectStore) {
+      console.log('车队配置不允许司机选门店，套餐由车队管理员审批时选择');
+      this.setData({
+        recommendedPackages: [],
+        selectedPackageIndex: -1,
+        expandedPackageIds: []
+      });
+      return;
+    }
+
+    // 如果允许选门店但尚未选择门店，也不加载套餐
+    if (this.data.selectedStoreIndex === -1) {
+      console.log('尚未选择门店，无法加载套餐');
+      this.setData({
+        recommendedPackages: [],
+        selectedPackageIndex: -1,
+        expandedPackageIds: []
+      });
+      return;
+    }
+
     try {
       const params = {
         vehicleGroupId: vehicle.groupId || vehicle.vehicleGroup || vehicle.vehicleType || vehicle.group || '牵引车',
-        mileage: Number(this.data.mileage || vehicle.mileage || 50000)
+        mileage: Number(this.data.mileage || vehicle.mileage || 50000),
+        storeId: this.data.stores[this.data.selectedStoreIndex]?._id // 必须传递门店ID
       };
-
-      if (this.data.allowDriverSelectStore && this.data.selectedStoreIndex !== -1) {
-        params.storeId = this.data.stores[this.data.selectedStoreIndex]?._id;
-      }
 
       const res = await request.get('/maintenance/recommendations', params);
       const payload = res.data || {};
@@ -1678,4 +1721,3 @@ Page({
     });
   }
 });
-

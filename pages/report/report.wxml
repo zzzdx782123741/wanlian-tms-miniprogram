@@ -218,14 +218,23 @@
         </view>
       </view>
 
-      <!-- 套餐列表 -->
-      <view wx:if="{{selectedVehicleIndex !== -1 && recommendedPackages.length > 0}}">
-        <view class="maintenance-tip" wx:if="{{recommendedPackages.length > 0}}">
+      <!-- 车队安排门店模式：提示车队管理员将选择套餐 -->
+      <view class="fleet-tip-card" wx:if="{{selectedVehicleIndex !== -1 && !allowDriverSelectStore}}">
+        <view class="tip-icon">👨‍💼</view>
+        <view class="tip-content">
+          <view class="tip-title">车队管理员将为您选择套餐</view>
+          <view class="tip-text">当前车队配置为"车队安排门店"，提交申请后，车队管理员将为您分配门店并选择保养套餐</view>
+        </view>
+      </view>
+
+      <!-- 套餐列表（仅在选择门店且允许选门店时显示） -->
+      <view wx:if="{{selectedVehicleIndex !== -1 && allowDriverSelectStore && selectedStoreIndex !== -1 && recommendedPackages.length > 0}}">
+        <view class="maintenance-tip">
           根据车辆里程（{{vehicles[selectedVehicleIndex].mileage}}km）为您推荐以下套餐：
         </view>
       </view>
 
-      <view class="packages-list" wx:if="{{selectedVehicleIndex !== -1 && recommendedPackages.length > 0}}">
+      <view class="packages-list" wx:if="{{selectedVehicleIndex !== -1 && allowDriverSelectStore && selectedStoreIndex !== -1 && recommendedPackages.length > 0}}">
         <view
           class="package-item {{selectedPackageIndex === index ? 'active' : ''}}"
           wx:for="{{recommendedPackages}}"

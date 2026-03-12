@@ -217,7 +217,7 @@ Page({
       wx.navigateBack();
     } else {
       wx.switchTab({
-        url: '/pages/technician/home/home'
+        url: '/pages/index/index'
       });
     }
   },

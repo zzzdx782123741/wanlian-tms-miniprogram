@@ -61,7 +61,9 @@ Page({
       const res = await request.get('/account/balance');
 
       this.setData({
-        balance: res.data?.balance || 0,
+        balance: res.data?.balance || '0.00',
+        frozenAmount: res.data?.frozenAmount || '0.00',
+        availableBalance: res.data?.availableBalance || '0.00',
         loading: false
       });
     } catch (error) {

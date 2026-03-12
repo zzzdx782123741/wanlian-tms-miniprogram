@@ -136,6 +136,7 @@ module.exports = {
   post: (url, data, noAuth = false) => request({ url, method: 'POST', data, noAuth }),
   put: (url, data) => request({ url, method: 'PUT', data }),
   delete: (url, data) => request({ url, method: 'DELETE', data }),
+  getBaseUrl,
   formatImageUrl,
   getServerUrl
 };

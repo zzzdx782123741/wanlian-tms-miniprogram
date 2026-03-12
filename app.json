@@ -13,7 +13,6 @@
     "pages/driver/report/report",
     "pages/driver/progress/progress",
     "pages/driver/review/review",
-    "pages/maintenance/maintenance",
     "pages/fleet/vehicles/vehicles",
     "pages/fleet/report/report",
     "pages/fleet/approve/approve",
@@ -51,13 +50,13 @@
     "backgroundColor": "#F5F7FA",
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#667eea",
-    "navigationBarTitleText": "万联驿站2.0",
+    "navigationBarTitleText": "\u4e07\u8054\u9a7e\u7ad92.0",
     "navigationBarTextStyle": "white",
     "enablePullDownRefresh": false
   },
   "permission": {
     "scope.userLocation": {
-      "desc": "您的位置信息将用于获取附近维修门店和显示当前位置"
+      "desc": "\u60a8\u7684\u4f4d\u7f6e\u4fe1\u606f\u5c06\u7528\u4e8e\u83b7\u53d6\u9644\u8fd1\u7ef4\u4fee\u95e8\u5e97\u548c\u663e\u793a\u5f53\u524d\u4f4d\u7f6e"
     }
   },
   "requiredPrivateInfos": [
@@ -74,43 +73,25 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
+        "text": "\u5de5\u4f5c\u53f0",
         "iconPath": "images/icons/home.png",
         "selectedIconPath": "images/icons/home-active.png"
       },
       {
         "pagePath": "pages/orders/orders",
-        "text": "订单",
+        "text": "\u8ba2\u5355",
         "iconPath": "images/icons/goods.png",
         "selectedIconPath": "images/icons/goods-active.png"
       },
       {
         "pagePath": "pages/vehicle/vehicle",
-        "text": "车辆",
+        "text": "\u8f66\u8f86",
         "iconPath": "images/icons/business.png",
         "selectedIconPath": "images/icons/business-active.png"
       },
       {
-        "pagePath": "pages/technician/home/home",
-        "text": "工作台",
-        "iconPath": "images/icons/home.png",
-        "selectedIconPath": "images/icons/home-active.png"
-      },
-      {
-        "pagePath": "pages/manager/dashboard/dashboard",
-        "text": "工作台",
-        "iconPath": "images/icons/home.png",
-        "selectedIconPath": "images/icons/home-active.png"
-      },
-      {
-        "pagePath": "pages/technician/products/products",
-        "text": "商品库",
-        "iconPath": "images/icons/goods.png",
-        "selectedIconPath": "images/icons/goods-active.png"
-      },
-      {
         "pagePath": "pages/account/account",
-        "text": "我的",
+        "text": "\u6211\u7684",
         "iconPath": "images/icons/usercenter.png",
         "selectedIconPath": "images/icons/usercenter-active.png"
       }

@@ -93,7 +93,7 @@ Page({
   applyMaintenance(e) {
     const { id } = e.currentTarget.dataset;
     wx.navigateTo({
-      url: `/pages/maintenance/maintenance?vehicleId=${id}`
+      url: `/pages/report/report?type=maintenance&vehicleId=${id}`
     });
   }
 });
