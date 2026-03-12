@@ -95,6 +95,14 @@ Page({
           text: '已拒绝',
           nextAction: ''
         },
+        'cancelled': {
+          text: '已撤销',
+          nextAction: '如需服务可重新发起申请'
+        },
+        'expired': {
+          text: '已超时关闭',
+          nextAction: '门店超时未确认，可重新发起申请'
+        },
         'refunded': {
           text: '已退款',
           nextAction: ''

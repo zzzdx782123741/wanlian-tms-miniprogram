@@ -189,12 +189,20 @@ Page({
         } else if (activeTab === 'completed') {
           status = 'pending_confirmation,completed';
         }
+      } else if (role === 'STORE_MANAGER') {
+        if (activeTab === 'pending') {
+          status = 'awaiting_time_confirmation';
+        } else if (activeTab === 'processing') {
+          status = 'pending_assessment,awaiting_approval,in_repair,awaiting_addon_approval';
+        } else if (activeTab === 'completed') {
+          status = 'pending_confirmation,completed';
+        }
       } else {
         // 其他角色
         if (activeTab === 'pending') {
-          status = 'awaiting_fleet_approval,pending_assessment';
+          status = 'awaiting_fleet_approval,awaiting_approval,pending_assessment';
         } else if (activeTab === 'processing') {
-          status = 'awaiting_approval,in_repair,awaiting_addon_approval';
+          status = 'in_repair,awaiting_addon_approval';
         } else if (activeTab === 'completed') {
           status = 'pending_confirmation,completed';
         }
@@ -349,7 +357,9 @@ Page({
         'pending_confirmation': { text: '待确认完工', type: 'warning' },
         'completed': { text: '已完成', type: 'success' },
         'confirmed': { text: '已完成', type: 'success' },
-        'rejected': { text: '已拒绝', type: 'error' }
+        'rejected': { text: '已拒绝', type: 'error' },
+        'cancelled': { text: '已撤销', type: 'default' },
+        'expired': { text: '已超时关闭', type: 'warning' }
       };
 
       const statusInfo = statusMap[order.status] || { text: '未知', type: 'default' };
@@ -449,7 +459,9 @@ Page({
       'pending_confirmation': 'warning',
       'completed': 'success',
       'confirmed': 'success',
-      'rejected': 'error'
+      'rejected': 'error',
+      'cancelled': 'default',
+      'expired': 'warning'
     };
     return typeMap[status] || '';
   },
@@ -504,7 +516,7 @@ Page({
   },
 
   /**
-   * 技师：确认到店时间
+   * 门店管理员：确认到店时间
    */
   async onConfirmAppointmentTime(e) {
     const id = e.currentTarget.dataset.id;

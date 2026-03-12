@@ -138,8 +138,27 @@
     <view class="info-card" wx:if="{{order.type === 'repair'}}">
       <view class="card-title">故障描述</view>
       <view class="fault-content">{{order.faultDescription}}</view>
+      <view class="info-row" wx:if="{{order.milestone}}">
+        <text class="info-label">当前里程</text>
+        <text class="info-value">{{order.milestone}} 公里</text>
+      </view>
+      <view class="fault-images" wx:if="{{order.milestonePhotos && order.milestonePhotos.length > 0}}">
+        <view class="photos-title">里程照片</view>
+        <image
+          class="fault-image"
+          wx:for="{{order.milestonePhotos}}"
+          wx:for-item="image"
+          wx:key="*this"
+          src="{{image}}"
+          mode="aspectFill"
+          bindtap="onPreviewImage"
+          data-url="{{image}}"
+          data-urls="{{order.milestonePhotos}}"
+        />
+      </view>
       <!-- 故障图片 -->
       <view class="fault-images" wx:if="{{order.faultImages && order.faultImages.length > 0}}">
+        <view class="photos-title">故障照片</view>
         <image
           class="fault-image"
           wx:for="{{order.faultImages}}"
@@ -173,6 +192,20 @@
       <view class="maint-info-row">
         <text class="maint-label">套餐：</text>
         <text class="maint-value">{{order.maintenanceOrder.packageName || order.maintenanceOrder.selectedTier}}</text>
+      </view>
+      <view class="maint-package-highlight {{(selectedPackageId || order.maintenanceOrder.packageId || order.maintenanceOrder.packageName || order.maintenanceOrder.selectedTier) ? 'selected' : 'pending'}}">
+        <view class="maint-package-highlight-head">
+          <text class="maint-package-highlight-title">套餐状态</text>
+          <text class="maint-package-highlight-badge {{(selectedPackageId || order.maintenanceOrder.packageId || order.maintenanceOrder.packageName || order.maintenanceOrder.selectedTier) ? 'selected' : 'pending'}}">
+            {{(selectedPackageId || order.maintenanceOrder.packageId || order.maintenanceOrder.packageName || order.maintenanceOrder.selectedTier) ? '已选择' : '待选择'}}
+          </text>
+        </view>
+        <text class="maint-package-highlight-name">
+          {{selectedPackageName || order.maintenanceOrder.packageName || order.maintenanceOrder.selectedTier || '暂未选择保养套餐'}}
+        </text>
+        <text class="maint-package-highlight-desc">
+          {{(selectedPackageId || order.maintenanceOrder.packageId || order.maintenanceOrder.packageName || order.maintenanceOrder.selectedTier) ? '当前套餐已展示在订单中，点击底部区域可更换套餐。' : '请在页面底部先选择门店套餐，再继续审批流程。'}}
+        </text>
       </view>
       <view class="maint-info-row" wx:if="{{order.maintenanceOrder.serviceLocation}}">
         <text class="maint-label">服务地址：</text>
@@ -219,7 +252,7 @@
         </view>
       </view>
       <!-- 司机和车队管理员可以联系门店，门店技师不需要 -->
-      <button class="contact-btn" wx:if="{{userRole !== 'STORE_TECHNICIAN'}}" bindtap="onContactStore">
+      <button class="contact-btn" wx:if="{{userRole !== 'STORE_TECHNICIAN' && userRole !== 'STORE_MANAGER'}}" bindtap="onContactStore">
         <text class="btn-icon">📞</text>
         联系门店
       </button>
@@ -374,10 +407,50 @@
           </view>
         </view>
 
+        <!-- 保养订单：套餐选择区域 -->
+        <view class="package-selection-panel" wx:if="{{order.type === 'maintenance' && (order.storeId || selectedStoreId)}}">
+          <view class="package-selection-header">
+            <view class="package-selection-title-wrap">
+              <text class="package-selection-icon">📦</text>
+              <text class="package-selection-title">保养套餐</text>
+            </view>
+            <text class="package-selection-badge {{(selectedPackageId || order.maintenanceOrder.packageId) ? 'selected' : 'pending'}}">
+              {{(selectedPackageId || order.maintenanceOrder.packageId) ? '已选择' : '待选择'}}
+            </text>
+          </view>
+
+          <view class="package-selection-body" wx:if="{{!selectedPackageId && !order.maintenanceOrder.packageId}}">
+            <view class="package-empty-state">
+              <text class="package-empty-title">当前还没有为该订单选择套餐</text>
+              <text class="package-empty-desc">请选择当前门店可提供的保养套餐后再提交审批</text>
+            </view>
+            <button
+              class="action-btn select-package"
+              bindtap="onSelectPackage"
+            >
+              <text class="btn-icon">📦</text>
+              立即选择保养套餐
+            </button>
+          </view>
+
+          <view class="selected-package-tip" wx:if="{{selectedPackageId || order.maintenanceOrder.packageId}}" bindtap="onSelectPackage">
+            <view class="selected-package-content">
+              <text class="package-icon">📦</text>
+              <view class="selected-package-info">
+                <text class="package-name">{{selectedPackageName || order.maintenanceOrder.packageName}}</text>
+                <text class="package-hint">已为该订单锁定套餐，点击可重新选择</text>
+              </view>
+              <text class="package-change-icon">›</text>
+            </view>
+          </view>
+        </view>
+
         <!-- 审批按钮（已分配门店后显示） -->
+        <!-- 保养订单：已选门店和套餐后才能审批 -->
+        <!-- 维修订单：已选门店后即可审批 -->
         <button
           class="action-btn approve"
-          wx:if="{{order.storeId || selectedStoreId}}"
+          wx:if="{{(order.type === 'maintenance' && (order.storeId || selectedStoreId) && (selectedPackageId || order.maintenanceOrder.packageId)) || (order.type === 'repair' && (order.storeId || selectedStoreId))}}"
           bindtap="onFleetApproveWithStore"
         >
           <text class="btn-icon">✓</text>
@@ -414,6 +487,16 @@
         拒绝报价
       </button>
 
+      <!-- 门店管理员操作按钮 -->
+      <button
+        class="action-btn primary"
+        wx:if="{{order.status === 'awaiting_time_confirmation' && userRole === 'STORE_MANAGER'}}"
+        bindtap="onConfirmAppointmentTime"
+      >
+        <text class="btn-icon">🕒</text>
+        确认到店时间
+      </button>
+
       <!-- 门店技师操作按钮 -->
       <button
         class="action-btn primary"
@@ -433,6 +516,14 @@
       </button>
 
       <!-- 司机确认按钮 -->
+      <button
+        class="action-btn reject"
+        wx:if="{{order.canCancelOrder}}"
+        bindtap="onCancelOrder"
+      >
+        <text class="btn-icon">×</text>
+        撤销订单
+      </button>
       <button
         class="action-btn confirm"
         wx:if="{{userRole === 'DRIVER' && (order.status === 'pending_confirmation' || (order.status === 'completed' && !(order.completion && order.completion.confirmedBy)))}}"
@@ -455,7 +546,7 @@
       <!-- 司机重新提交按钮（被拒绝的订单） -->
       <button
         class="action-btn resubmit"
-        wx:if="{{order.status === 'rejected' && userRole === 'DRIVER'}}"
+        wx:if="{{order.canResubmit && userRole === 'DRIVER'}}"
         bindtap="onResubmitOrder"
       >
         <text class="btn-icon">🔄</text>
@@ -605,6 +696,125 @@
       <!-- 底部操作 -->
       <view class="store-detail-footer">
         <button class="detail-close-btn" bindtap="onCloseStoreDetail">关闭</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 套餐选择弹窗（车队管理员审批保养订单） -->
+  <view class="package-picker-mask" wx:if="{{showPackagePicker}}" bindtap="onClosePackagePicker">
+    <view class="package-picker-popup" catchtap="">
+      <view class="package-picker-header">
+        <text class="package-picker-title">选择保养套餐</text>
+        <text class="package-picker-close" bindtap="onClosePackagePicker">✕</text>
+      </view>
+      <scroll-view class="package-picker-content" scroll-y>
+        <!-- 小保养分类 -->
+        <view class="package-category" wx:if="{{categorizedPackages.minor.packages.length > 0}}">
+          <view class="category-header" data-category="minor" bindtap="onToggleCategory">
+            <view class="category-info">
+              <text class="category-icon">🛢️</text>
+              <text class="category-name">小保养</text>
+              <text class="category-count">{{categorizedPackages.minor.packages.length}} 个套餐</text>
+            </view>
+            <text class="category-arrow {{categorizedPackages.minor.expanded ? 'expanded' : ''}}">▼</text>
+          </view>
+          <view class="category-packages" wx:if="{{categorizedPackages.minor.expanded}}">
+            <view
+              class="picker-package-item {{selectedPackageId === item._id ? 'active' : ''}}"
+              wx:for="{{categorizedPackages.minor.packages}}"
+              wx:key="_id"
+              wx:for-item="pkg"
+              bindtap="onSelectPackageItem"
+              data-package-id="{{pkg._id}}"
+              data-package-name="{{pkg.name}}"
+            >
+              <view class="package-item-main">
+                <view class="package-item-header">
+                  <text class="package-item-name">{{pkg.name}}</text>
+                  <view class="package-item-check" wx:if="{{selectedPackageId === pkg._id}}">✓</view>
+                </view>
+                <text class="package-item-tier">{{pkg.tierName || pkg.tier}}</text>
+                <text class="package-item-price">¥{{pkg.price}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 大保养分类 -->
+        <view class="package-category" wx:if="{{categorizedPackages.major.packages.length > 0}}">
+          <view class="category-header" data-category="major" bindtap="onToggleCategory">
+            <view class="category-info">
+              <text class="category-icon">🔧</text>
+              <text class="category-name">大保养</text>
+              <text class="category-count">{{categorizedPackages.major.packages.length}} 个套餐</text>
+            </view>
+            <text class="category-arrow {{categorizedPackages.major.expanded ? 'expanded' : ''}}">▼</text>
+          </view>
+          <view class="category-packages" wx:if="{{categorizedPackages.major.expanded}}">
+            <view
+              class="picker-package-item {{selectedPackageId === item._id ? 'active' : ''}}"
+              wx:for="{{categorizedPackages.major.packages}}"
+              wx:key="_id"
+              wx:for-item="pkg"
+              bindtap="onSelectPackageItem"
+              data-package-id="{{pkg._id}}"
+              data-package-name="{{pkg.name}}"
+            >
+              <view class="package-item-main">
+                <view class="package-item-header">
+                  <text class="package-item-name">{{pkg.name}}</text>
+                  <view class="package-item-check" wx:if="{{selectedPackageId === pkg._id}}">✓</view>
+                </view>
+                <text class="package-item-tier">{{pkg.tierName || pkg.tier}}</text>
+                <text class="package-item-price">¥{{pkg.price}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 专项保养分类 -->
+        <view class="package-category" wx:if="{{categorizedPackages.special.packages.length > 0}}">
+          <view class="category-header" data-category="special" bindtap="onToggleCategory">
+            <view class="category-info">
+              <text class="category-icon">⚙️</text>
+              <text class="category-name">专项保养</text>
+              <text class="category-count">{{categorizedPackages.special.packages.length}} 个套餐</text>
+            </view>
+            <text class="category-arrow {{categorizedPackages.special.expanded ? 'expanded' : ''}}">▼</text>
+          </view>
+          <view class="category-packages" wx:if="{{categorizedPackages.special.expanded}}">
+            <view
+              class="picker-package-item {{selectedPackageId === item._id ? 'active' : ''}}"
+              wx:for="{{categorizedPackages.special.packages}}"
+              wx:key="_id"
+              wx:for-item="pkg"
+              bindtap="onSelectPackageItem"
+              data-package-id="{{pkg._id}}"
+              data-package-name="{{pkg.name}}"
+            >
+              <view class="package-item-main">
+                <view class="package-item-header">
+                  <text class="package-item-name">{{pkg.name}}</text>
+                  <view class="package-item-check" wx:if="{{selectedPackageId === pkg._id}}">✓</view>
+                </view>
+                <text class="package-item-tier">{{pkg.tierName || pkg.tier}}</text>
+                <text class="package-item-price">¥{{pkg.price}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="package-empty" wx:if="{{categorizedPackages.minor.packages.length === 0 && categorizedPackages.major.packages.length === 0 && categorizedPackages.special.packages.length === 0}}">
+          <text class="empty-icon">📦</text>
+          <text class="empty-text">该门店暂无可用套餐</text>
+        </view>
+      </scroll-view>
+
+      <!-- 底部操作按钮 -->
+      <view class="package-picker-footer">
+        <button class="package-picker-cancel" bindtap="onClosePackagePicker">取消</button>
+        <button class="package-picker-confirm" bindtap="onConfirmPackageSelect" disabled="{{!selectedPackageId}}">确认选择</button>
       </view>
     </view>
   </view>

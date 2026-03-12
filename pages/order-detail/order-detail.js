@@ -20,7 +20,19 @@ Page({
     selectedStoreId: '',
     selectedStoreName: '',
     storeDetail: null,
-    storeDetailReviews: []
+    storeDetailReviews: [],
+
+    // 套餐选择相关（车队管理员审批保养订单时使用）
+    showPackagePicker: false,
+    packageList: [],
+    categorizedPackages: {
+      minor: { name: '小保养', key: 'minor', packages: [], expanded: true },
+      major: { name: '大保养', key: 'major', packages: [], expanded: false },
+      special: { name: '专项保养', key: 'special', packages: [], expanded: false }
+    },
+    selectedPackageId: '',
+    selectedPackageName: '',
+    expandedCategory: 'minor'
   },
 
   onLoad(options) {
@@ -37,7 +49,9 @@ Page({
 
     this.setData({
       orderId: options.id,
-      userRole: app.globalData.role,
+      userRole: (typeof (app.globalData.role || wx.getStorageSync('role') || (app.globalData.userInfo || wx.getStorageSync('userInfo'))?.role) === 'object'
+        ? (app.globalData.role || wx.getStorageSync('role') || (app.globalData.userInfo || wx.getStorageSync('userInfo'))?.role)?.type
+        : (app.globalData.role || wx.getStorageSync('role') || (app.globalData.userInfo || wx.getStorageSync('userInfo'))?.role)) || '',
       action: options.action || '' // 记录操作类型
     });
 
@@ -158,6 +172,7 @@ Page({
       } : null,
       // 处理预约时间
       appointment: processAppointment(order.appointment),
+      milestonePhotos: processImages(order.milestonePhotos),
       faultImages: processImages(order.faultImages),
       // 处理接车检查照片
       receiveCheck: order.receiveCheck ? {
@@ -172,7 +187,7 @@ Page({
           ...item,
           item: format.decodeHTMLEntities(item.item) || ''
         })) || [],
-        images: processImages(order.quote.images)
+        images: processImages(order.quote.images || order.quote.quoteImages)
       } : null,
       // 处理完工图片
       completion: order.completion ? {
@@ -211,6 +226,12 @@ Page({
     // 获取订单类型（repair或maintenance）
     const orderType = order.type || 'repair';
     const isMaintenance = orderType === 'maintenance';
+    const cancelRules = {
+      DRIVER: ['awaiting_fleet_approval', 'awaiting_time_confirmation'],
+      FLEET_MANAGER: ['awaiting_fleet_approval', 'awaiting_time_confirmation', 'pending_assessment'],
+      STORE_MANAGER: ['awaiting_time_confirmation']
+    };
+    const canCancelOrder = cancelRules[this.data.userRole]?.includes(order.status) || false;
 
     const statusMap = {
       'awaiting_fleet_approval': {
@@ -355,6 +376,26 @@ Page({
       }
     };
 
+    statusMap.cancelled = {
+      text: '已撤销',
+      hint: order.cancellation?.reasonText || '订单已撤销',
+      icon: '✖',
+      timeline: [
+        { title: '订单已提交', completed: true },
+        { title: '订单已撤销', completed: true }
+      ],
+      canResubmit: true
+    };
+    statusMap.expired = {
+      text: '已超时关闭',
+      hint: order.cancellation?.reasonText || '门店长时间未确认，系统已自动关闭订单',
+      icon: '⌛',
+      timeline: [
+        { title: '订单已提交', completed: true },
+        { title: '订单已超时关闭', completed: true }
+      ],
+      canResubmit: true
+    };
     const statusInfo = statusMap[order.status] || { text: '未知状态', hint: '', icon: '❓', timeline: [] };
 
     // 判断是否已评价
@@ -374,8 +415,10 @@ Page({
       statusHint: statusInfo.hint,
       statusIcon: statusInfo.icon,
       timeline: statusInfo.timeline,
+      canCancelOrder,
       isReviewed,
       canReview,
+      canResubmit: !!statusInfo.canResubmit,
       createdAtText: this.formatTime(formattedOrder.createdAt),
       logs: formattedOrder.logs.map(log => ({
         ...log,
@@ -449,6 +492,60 @@ Page({
         if (res.confirm) {
           wx.makePhoneCall({
             phoneNumber: store.phone
+          });
+        }
+      }
+    });
+  },
+
+  /**
+   * 门店管理员确认到店时间
+   */
+  onConfirmAppointmentTime() {
+    const { order, orderId } = this.data;
+
+    if (!order?.appointment?.expectedDate) {
+      wx.showToast({
+        title: '预约信息不完整',
+        icon: 'none'
+      });
+      return;
+    }
+
+    const confirmedDate = order.appointment.expectedDate;
+    const confirmedTimeSlot = order.appointment.expectedTimeSlot || '08:00-10:00';
+
+    wx.showModal({
+      title: '确认到店时间',
+      content: `司机期望时间：${confirmedDate} ${confirmedTimeSlot}\n\n确认后将进入接车检查流程`,
+      confirmText: '确认',
+      confirmColor: '#10B981',
+      success: async (res) => {
+        if (!res.confirm) {
+          return;
+        }
+
+        try {
+          wx.showLoading({ title: '确认中...' });
+
+          await request.put(`/orders/${orderId}/confirm-time`, {
+            confirmedDate,
+            confirmedTimeSlot,
+            adjusted: false
+          });
+
+          wx.hideLoading();
+          wx.showToast({
+            title: '已确认到店时间',
+            icon: 'success'
+          });
+
+          this.loadOrderDetail();
+        } catch (error) {
+          wx.hideLoading();
+          wx.showToast({
+            title: error.message || '确认失败',
+            icon: 'none'
           });
         }
       }
@@ -792,13 +889,58 @@ Page({
   /**
    * 重新提交订单（被拒绝后）
    */
+  async onCancelOrder() {
+    wx.showModal({
+      title: '撤销订单',
+      content: '请确认是否撤销当前订单。撤销后可重新发起申请。',
+      editable: true,
+      placeholderText: '请输入撤销原因',
+      confirmText: '确认撤销',
+      cancelText: '取消',
+      confirmColor: '#EF4444',
+      success: async (res) => {
+        if (!res.confirm) {
+          return;
+        }
+
+        const reason = String(res.content || '').trim();
+        if (!reason) {
+          wx.showToast({
+            title: '请填写撤销原因',
+            icon: 'none'
+          });
+          return;
+        }
+
+        try {
+          wx.showLoading({ title: '撤销中...' });
+          await request.post(`/orders/${this.data.orderId}/cancel`, { reason });
+          wx.hideLoading();
+          wx.showToast({
+            title: '订单已撤销',
+            icon: 'success'
+          });
+          this.loadOrderDetail();
+        } catch (error) {
+          wx.hideLoading();
+          wx.showToast({
+            title: error.message || '撤销失败',
+            icon: 'none'
+          });
+        }
+      }
+    });
+  },
+
   async onResubmitOrder() {
     const order = this.data.order;
+    const reasonText = order.rejectReason || order.cancellation?.reasonText || '未填写';
+    const statusText = order.status === 'rejected' ? '被拒绝' : '已关闭';
 
     // 确认对话框
     wx.showModal({
       title: '重新提交订单',
-      content: `订单被拒绝原因：${order.rejectReason || '未填写'}\n\n请根据拒绝原因修改订单信息后重新提交。`,
+      content: `订单当前${statusText}，原因：${reasonText}\n\n确认后将重新进入车队审批。`,
       confirmText: '去修改',
       cancelText: '取消',
       success: (res) => {
@@ -956,20 +1098,47 @@ Page({
     }
 
     const storeName = this.data.selectedStoreName || this.data.order?.storeId?.name || '未知门店';
+    const order = this.data.order;
+
+    // 保养订单：检查是否已选择套餐
+    if (order.type === 'maintenance') {
+      const packageId = this.data.selectedPackageId || order?.maintenanceOrder?.packageId;
+      if (!packageId) {
+        wx.showToast({
+          title: '请先选择保养套餐',
+          icon: 'none'
+        });
+        return;
+      }
+    }
+
+    // 构建确认消息
+    let confirmMessage = `确认审批通过此订单？\n门店：${storeName}`;
+    if (order.type === 'maintenance') {
+      const packageName = this.data.selectedPackageName || order?.maintenanceOrder?.packageName;
+      confirmMessage += `\n套餐：${packageName || '已选择'}`;
+    }
 
     wx.showModal({
       title: '确认审批',
-      content: `确认审批通过此订单？\n门店：${storeName}`,
+      content: confirmMessage,
       confirmColor: '#10B981',
       success: async (res) => {
         if (res.confirm) {
           try {
             wx.showLoading({ title: '处理中...' });
 
-            await request.post(`/orders/${this.data.orderId}/fleet-approve`, {
+            const approveData = {
               storeId: storeId,
               remark: ''
-            });
+            };
+
+            // 保养订单：添加套餐ID
+            if (order.type === 'maintenance') {
+              approveData.packageId = this.data.selectedPackageId || order?.maintenanceOrder?.packageId;
+            }
+
+            await request.post(`/orders/${this.data.orderId}/fleet-approve`, approveData);
 
             wx.hideLoading();
             wx.showToast({
@@ -977,10 +1146,12 @@ Page({
               icon: 'success'
             });
 
-            // 清除选择的门店
+            // 清除选择的门店和套餐
             this.setData({
               selectedStoreId: '',
-              selectedStoreName: ''
+              selectedStoreName: '',
+              selectedPackageId: '',
+              selectedPackageName: ''
             });
 
             this.loadOrderDetail();
@@ -1081,6 +1252,163 @@ Page({
   onCloseStoreDetail() {
     this.setData({
       showStoreDetail: false
+    });
+  },
+
+  // ==================== 套餐选择相关方法（车队管理员审批保养订单） ====================
+
+  /**
+   * 打开套餐选择弹窗
+   */
+  async onSelectPackage() {
+    const order = this.data.order;
+    const storeId = this.data.selectedStoreId || order?.storeId?._id;
+
+    if (!storeId) {
+      wx.showToast({
+        title: '请先选择门店',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 获取车辆信息用于加载套餐
+    const vehicle = order?.vehicleId;
+    if (!vehicle) {
+      wx.showToast({
+        title: '无法获取车辆信息',
+        icon: 'none'
+      });
+      return;
+    }
+
+    try {
+      wx.showLoading({ title: '加载套餐中...' });
+
+      // 调用推荐套餐API
+      const params = {
+        vehicleGroupId: vehicle.groupId || vehicle.vehicleGroup || vehicle.vehicleType || '牵引车',
+        mileage: vehicle.mileage || 50000,
+        storeId: storeId
+      };
+
+      const res = await request.get('/maintenance/recommendations', params);
+      const payload = res.data || {};
+      const categorizedPackages = payload.categorizedPackages || {};
+
+      // 合并所有套餐到列表
+      let allPackages = [];
+      if (Array.isArray(payload.topRecommendations)) {
+        allPackages = payload.topRecommendations;
+      } else {
+        allPackages = Object.values(categorizedPackages).flatMap(category => category?.packages || []);
+      }
+
+      wx.hideLoading();
+
+      if (allPackages.length === 0) {
+        wx.showModal({
+          title: '暂无套餐',
+          content: '该门店暂无可用套餐，请选择其他门店',
+          showCancel: false
+        });
+        return;
+      }
+
+      this.setData({
+        categorizedPackages: {
+          minor: {
+            name: '小保养',
+            key: 'minor',
+            packages: (categorizedPackages.minor?.packages || []).map(p => ({...p, category: 'minor'})),
+            expanded: true
+          },
+          major: {
+            name: '大保养',
+            key: 'major',
+            packages: (categorizedPackages.major?.packages || []).map(p => ({...p, category: 'major'})),
+            expanded: false
+          },
+          special: {
+            name: '专项保养',
+            key: 'special',
+            packages: (categorizedPackages.special?.packages || []).map(p => ({...p, category: 'special'})),
+            expanded: false
+          }
+        },
+        showPackagePicker: true,
+        selectedPackageId: this.data.selectedPackageId || '',
+        expandedCategory: 'minor'
+      });
+
+    } catch (error) {
+      wx.hideLoading();
+      console.error('加载套餐失败:', error);
+      wx.showToast({
+        title: error.message || '加载套餐失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  /**
+   * 关闭套餐选择弹窗
+   */
+  onClosePackagePicker() {
+    this.setData({
+      showPackagePicker: false
+    });
+  },
+
+  /**
+   * 展开/收起套餐分类
+   */
+  onToggleCategory(e) {
+    const { category } = e.currentTarget.dataset;
+    const currentExpanded = this.data.categorizedPackages[category]?.expanded;
+
+    // 手风琴效果：只允许展开一个分类
+    const updatedCategories = { ...this.data.categorizedPackages };
+    for (const key in updatedCategories) {
+      updatedCategories[key].expanded = (key === category && !currentExpanded);
+    }
+
+    this.setData({
+      categorizedPackages: updatedCategories,
+      expandedCategory: updatedCategories[category].expanded ? category : null
+    });
+  },
+
+  /**
+   * 选择套餐
+   */
+  onSelectPackageItem(e) {
+    const { packageId, packageName } = e.currentTarget.dataset;
+    this.setData({
+      selectedPackageId: packageId,
+      selectedPackageName: packageName
+    });
+  },
+
+  /**
+   * 确认选择套餐
+   */
+  onConfirmPackageSelect() {
+    if (!this.data.selectedPackageId) {
+      wx.showToast({
+        title: '请选择套餐',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.setData({
+      showPackagePicker: false
+    });
+
+    wx.showToast({
+      title: `已选择：${this.data.selectedPackageName}`,
+      icon: 'success'
     });
   },
 
