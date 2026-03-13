@@ -5,6 +5,7 @@ App({
     token: '',
     userInfo: null,
     role: '', // DRIVER, FLEET_MANAGER, STORE_TECHNICIAN, PLATFORM_OPERATOR
+    allowTestLoginUi: false,
   },
 
   onLaunch() {

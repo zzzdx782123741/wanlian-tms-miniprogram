@@ -48,8 +48,12 @@ Page({
 
   isTestLoginUiEnabled() {
     try {
+      if (!app?.globalData?.allowTestLoginUi) {
+        return false;
+      }
+
       const accountInfo = wx.getAccountInfoSync();
-      return accountInfo?.miniProgram?.envVersion !== 'release';
+      return accountInfo?.miniProgram?.envVersion === 'develop';
     } catch (error) {
       return false;
     }
