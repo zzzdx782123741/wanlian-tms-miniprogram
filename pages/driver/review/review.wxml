@@ -1,36 +1,30 @@
-<!--pages/driver/review/review.wxml - 门店评价页面-->
+<!--pages/driver/review/review.wxml-->
 <view class="review-page">
-  <!-- 加载状态 -->
   <view class="loading-container" wx:if="{{loading}}">
     <view class="loading-spinner"></view>
     <text class="loading-text">加载中...</text>
   </view>
 
-  <!-- 评价表单 -->
   <view class="review-form" wx:if="{{!loading && order && store}}">
-    <!-- 顶部提示 -->
     <view class="review-header">
       <text class="header-title">服务评价</text>
       <text class="header-subtitle">您的评价将帮助我们持续提升服务</text>
     </view>
 
-    <!-- 门店信息 -->
     <view class="store-info-card" wx:if="{{store}}">
       <view class="store-name">{{store.name || '维修门店'}}</view>
       <view class="store-address" wx:if="{{store.address}}">
-        <text class="address-icon">📍</text>
+        <image class="address-icon svg-icon-sm" src="/images/icons/location-pin.svg" mode="aspectFit" />
         <text wx:if="{{store.address.full}}">{{store.address.full}}</text>
         <text wx:elif="{{store.address.city}}">{{store.address.city}}{{store.address.district || ''}}{{store.address.detail || ''}}</text>
         <text wx:else>{{store.address}}</text>
       </view>
     </view>
 
-    <!-- 评分区域 -->
     <view class="rating-section">
-      <!-- 维修技术 -->
       <view class="rating-item">
         <view class="rating-label">
-          <text class="label-icon">🔧</text>
+          <image class="label-icon svg-icon-md" src="/images/icons/wrench.svg" mode="aspectFit" />
           <text class="label-text">维修技术</text>
         </view>
         <view class="rating-stars">
@@ -48,10 +42,9 @@
         <view class="rating-text">{{ratingTexts[ratings.technicalSkill]}}</view>
       </view>
 
-      <!-- 服务质量 -->
       <view class="rating-item">
         <view class="rating-label">
-          <text class="label-icon">⚡</text>
+          <image class="label-icon svg-icon-md" src="/images/icons/check-circle.svg" mode="aspectFit" />
           <text class="label-text">服务质量</text>
         </view>
         <view class="rating-stars">
@@ -69,10 +62,9 @@
         <view class="rating-text">{{ratingTexts[ratings.serviceEfficiency]}}</view>
       </view>
 
-      <!-- 收费透明 -->
       <view class="rating-item">
         <view class="rating-label">
-          <text class="label-icon">💰</text>
+          <image class="label-icon svg-icon-md" src="/images/icons/money.svg" mode="aspectFit" />
           <text class="label-text">收费透明</text>
         </view>
         <view class="rating-stars">
@@ -91,57 +83,23 @@
       </view>
     </view>
 
-    <!-- 快捷标签 -->
     <view class="tags-section">
       <view class="section-title">
         <text class="title-text">服务印象</text>
         <text class="title-hint">（多选）</text>
       </view>
       <view class="tags-container">
-        <view
-          class="tag-item {{tagsStatus['技术专业'] ? 'active' : ''}}"
-          catchtap="onToggleTag"
-          data-tag="技术专业"
-        >🔧 技术专业</view>
-        <view
-          class="tag-item {{tagsStatus['服务热情'] ? 'active' : ''}}"
-          catchtap="onToggleTag"
-          data-tag="服务热情"
-        >😊 服务热情</view>
-        <view
-          class="tag-item {{tagsStatus['完工迅速'] ? 'active' : ''}}"
-          catchtap="onToggleTag"
-          data-tag="完工迅速"
-        >⚡ 完工迅速</view>
-        <view
-          class="tag-item {{tagsStatus['价格公道'] ? 'active' : ''}}"
-          catchtap="onToggleTag"
-          data-tag="价格公道"
-        >💰 价格公道</view>
-        <view
-          class="tag-item {{tagsStatus['环境整洁'] ? 'active' : ''}}"
-          catchtap="onToggleTag"
-          data-tag="环境整洁"
-        >✨ 环境整洁</view>
-        <view
-          class="tag-item {{tagsStatus['响应及时'] ? 'active' : ''}}"
-          catchtap="onToggleTag"
-          data-tag="响应及时"
-        >📞 响应及时</view>
-        <view
-          class="tag-item {{tagsStatus['收费透明'] ? 'active' : ''}}"
-          catchtap="onToggleTag"
-          data-tag="收费透明"
-        >📋 收费透明</view>
-        <view
-          class="tag-item {{tagsStatus['值得信赖'] ? 'active' : ''}}"
-          catchtap="onToggleTag"
-          data-tag="值得信赖"
-        >⭐ 值得信赖</view>
+        <view class="tag-item {{tagsStatus['技术专业'] ? 'active' : ''}}" catchtap="onToggleTag" data-tag="技术专业">技术专业</view>
+        <view class="tag-item {{tagsStatus['服务热情'] ? 'active' : ''}}" catchtap="onToggleTag" data-tag="服务热情">服务热情</view>
+        <view class="tag-item {{tagsStatus['完工迅速'] ? 'active' : ''}}" catchtap="onToggleTag" data-tag="完工迅速">完工迅速</view>
+        <view class="tag-item {{tagsStatus['价格公道'] ? 'active' : ''}}" catchtap="onToggleTag" data-tag="价格公道">价格公道</view>
+        <view class="tag-item {{tagsStatus['环境整洁'] ? 'active' : ''}}" catchtap="onToggleTag" data-tag="环境整洁">环境整洁</view>
+        <view class="tag-item {{tagsStatus['响应及时'] ? 'active' : ''}}" catchtap="onToggleTag" data-tag="响应及时">响应及时</view>
+        <view class="tag-item {{tagsStatus['收费透明'] ? 'active' : ''}}" catchtap="onToggleTag" data-tag="收费透明">收费透明</view>
+        <view class="tag-item {{tagsStatus['值得信赖'] ? 'active' : ''}}" catchtap="onToggleTag" data-tag="值得信赖">值得信赖</view>
       </view>
     </view>
 
-    <!-- 文字评价（可选） -->
     <view class="comment-section">
       <view class="section-title">
         <text class="title-text">详细评价</text>
@@ -158,7 +116,6 @@
       <view class="char-count">{{comment.length}}/100</view>
     </view>
 
-    <!-- 匿名选项 -->
     <view class="anonymous-section">
       <view class="anonymous-option" bindtap="toggleAnonymous">
         <view class="checkbox {{anonymous ? 'checked' : ''}}">
@@ -169,15 +126,9 @@
       <view class="anonymous-hint">匿名后将隐藏您的昵称</view>
     </view>
 
-    <!-- 提交按钮 -->
     <view class="submit-section">
-      <button class="submit-btn" bindtap="onSubmit">
-        <text class="btn-icon">✓</text>
-        提交评价
-      </button>
-      <button class="skip-btn" bindtap="onSkip">
-        暂不评价
-      </button>
+      <button class="submit-btn" bindtap="onSubmit">提交评价</button>
+      <button class="skip-btn" bindtap="onSkip">暂不评价</button>
     </view>
   </view>
 </view>

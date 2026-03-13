@@ -1,0 +1,123 @@
+.withdraw-page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.hero-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+  color: #fff;
+  box-shadow: 0 12rpx 28rpx rgba(102, 126, 234, 0.24);
+}
+
+.hero-label {
+  font-size: 26rpx;
+  opacity: 0.88;
+}
+
+.hero-amount {
+  margin-top: 18rpx;
+  font-size: 56rpx;
+  font-weight: bold;
+}
+
+.card,
+.tips-card {
+  margin-top: 24rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.06);
+}
+
+.card-title,
+.tips-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.amount-input-row {
+  margin-top: 24rpx;
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid #eef1f5;
+  padding-bottom: 18rpx;
+}
+
+.currency {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #222;
+  margin-right: 16rpx;
+}
+
+.amount-input {
+  flex: 1;
+  height: 72rpx;
+  font-size: 44rpx;
+  color: #222;
+}
+
+.quick-actions {
+  margin-top: 24rpx;
+  display: flex;
+}
+
+.quick-btn {
+  min-width: 180rpx;
+  padding: 18rpx 28rpx;
+  border-radius: 999rpx;
+  background: rgba(102, 126, 234, 0.12);
+  color: #5b67d8;
+  font-size: 26rpx;
+  text-align: center;
+  margin-right: 20rpx;
+}
+
+.quick-btn.light {
+  background: #f3f5f8;
+  color: #666;
+}
+
+.bank-title {
+  margin-top: 20rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.bank-sub,
+.empty-hint,
+.tips-line {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.link-btn {
+  margin-top: 24rpx;
+  display: inline-block;
+  font-size: 26rpx;
+  color: #667eea;
+}
+
+.submit-btn {
+  margin-top: 32rpx;
+  height: 92rpx;
+  line-height: 92rpx;
+  border-radius: 999rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 12rpx 28rpx rgba(102, 126, 234, 0.24);
+}
+
+.submit-btn[disabled] {
+  opacity: 0.55;
+}

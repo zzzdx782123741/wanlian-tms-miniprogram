@@ -200,7 +200,7 @@ Page({
       } else {
         // 其他角色
         if (activeTab === 'pending') {
-          status = 'awaiting_fleet_approval,awaiting_approval,pending_assessment';
+          status = 'awaiting_fleet_approval,awaiting_approval,awaiting_addon_approval,pending_assessment';
         } else if (activeTab === 'processing') {
           status = 'in_repair,awaiting_addon_approval';
         } else if (activeTab === 'completed') {
@@ -660,6 +660,8 @@ Page({
     });
   },
 
+  noop() {},
+
   /**
    * 选择时间段
    */
@@ -763,6 +765,11 @@ Page({
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = formatDate(tomorrow);
+    const buildSlotDisplay = (dayLabel, dateText, option) => ({
+      displayTime: `${dayLabel} ${option.label}`,
+      displayText: `${dayLabel} ${option.label}`,
+      description: `${dateText} · ${option.description}`
+    });
 
     // 生成今天的时间段（只保留未过时的）
     timeOptions.forEach(option => {
@@ -778,7 +785,8 @@ Page({
           timeSlot: option.timeSlot,
           displayTime: option.label,
           displayText: `今天 ${option.timeSlot}`,
-          description: option.description
+          description: option.description,
+          ...buildSlotDisplay('今天', todayStr, option)
         });
       }
     });
@@ -791,7 +799,8 @@ Page({
         timeSlot: option.timeSlot,
         displayTime: option.label,
         displayText: `明天 ${option.timeSlot}`,
-        description: option.description
+        description: option.description,
+        ...buildSlotDisplay('明天', tomorrowStr, option)
       });
     });
 

@@ -102,7 +102,7 @@
         <text class="label required">营业执照照片</text>
         <view class="upload-section">
           <button class="upload-btn" wx:if="{{!formData.businessLicense.url}}" bindtap="chooseBusinessLicense">
-            <text class="icon">📷</text>
+            <image class="icon svg-icon-xl" src="/images/icons/camera.svg" mode="aspectFit" />
             <text>点击上传</text>
           </button>
           <view class="uploaded-preview" wx:else>
@@ -122,7 +122,7 @@
         <text class="label">道路运输许可证</text>
         <view class="upload-section">
           <button class="upload-btn" wx:if="{{!formData.transportLicense.url}}" bindtap="chooseTransportLicense">
-            <text class="icon">📷</text>
+            <image class="icon svg-icon-xl" src="/images/icons/camera.svg" mode="aspectFit" />
             <text>点击上传</text>
           </button>
           <view class="uploaded-preview" wx:else>
@@ -141,7 +141,7 @@
       <view class="card-title">管理员账号</view>
 
       <view class="tips-info">
-        <text class="tips-icon">ℹ️</text>
+        <image class="tips-icon svg-icon-md" src="/images/icons/info-circle.svg" mode="aspectFit" />
         <text class="tips-text">请填写车队管理员账号信息，审核通过后将使用该账号登录系统</text>
       </view>
 

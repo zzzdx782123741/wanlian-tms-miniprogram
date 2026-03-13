@@ -282,16 +282,23 @@ Page({
       return sum + (parseFloat(item.price) || 0) * (item.quantity || 1);
     }, 0);
     this.setData({ totalAmount: total.toFixed(2) });
+    return total;
   },
 
   // 计算总价
   calculateTotal() {
-    return this.updateTotal();
+    return this.data.selectedItems.reduce((sum, item) => {
+      return sum + (parseFloat(item.price) || 0) * (item.quantity || 1);
+    }, 0);
   },
 
   // 提交报价
   async handleSubmit() {
     const { orderId, selectedItems, diagnosis, checkinPhotos, description, quoteImages } = this.data;
+
+    if (this.data.submitting) {
+      return;
+    }
 
     // 表单验证
     if (selectedItems.length === 0) {
@@ -377,9 +384,7 @@ Page({
         console.log('============================');
       }
 
-      const response = await request.post(`/orders/${orderId}/quote`, quoteData);
-
-      wx.hideLoading();
+      await request.post(`/orders/${orderId}/quote`, quoteData, { silentError: true });
 
       wx.showToast({
         title: '报价提交成功',
@@ -394,13 +399,14 @@ Page({
 
     } catch (error) {
       console.error('提交报价失败:', error);
-      this.setData({ submitting: false });
-      wx.hideLoading();
       wx.showToast({
         title: error.message || '提交失败',
         icon: 'none',
         duration: 3000
       });
+    } finally {
+      this.setData({ submitting: false });
+      wx.hideLoading();
     }
   },
 

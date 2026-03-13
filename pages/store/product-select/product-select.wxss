@@ -44,7 +44,8 @@
   right: 28rpx;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 36rpx;
+  width: 36rpx;
+  height: 36rpx;
 }
 
 /* 分类标签滚动 */
@@ -241,7 +242,8 @@
 }
 
 .models-icon {
-  font-size: 26rpx;
+  width: 26rpx;
+  height: 26rpx;
   margin-right: 8rpx;
   flex-shrink: 0;
 }
@@ -334,7 +336,8 @@
 }
 
 .empty-icon {
-  font-size: 140rpx;
+  width: 140rpx;
+  height: 140rpx;
   margin-bottom: 24rpx;
   opacity: 0.4;
   filter: grayscale(0.5);

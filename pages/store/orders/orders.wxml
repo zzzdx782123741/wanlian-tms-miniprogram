@@ -1,4 +1,5 @@
 <!--pages/store/orders/orders.wxml - 门店技师接单大厅-->
+<page-meta page-style="{{showTimeAdjuster ? 'overflow: hidden; height: 100vh;' : ''}}" />
 <view class="page">
   <!-- 顶部标题栏 -->
   <view class="header">
@@ -54,7 +55,7 @@
 
         <!-- 车辆信息 -->
         <view class="order-section" bindtap="viewDetail" data-id="{{item._id}}">
-          <view class="section-title">🚛 车辆信息</view>
+          <view class="section-title">车辆信息</view>
           <view class="vehicle-info">
             <text class="vehicle-plate">{{item.vehicleId.plateNumber}}</text>
             <text class="vehicle-model">{{item.vehicleId.brand}} {{item.vehicleId.model}}</text>
@@ -63,7 +64,7 @@
 
         <!-- 故障描述 -->
         <view class="order-section" bindtap="viewDetail" data-id="{{item._id}}">
-          <view class="section-title">🔧 故障描述</view>
+          <view class="section-title">故障描述</view>
           <view class="fault-description">{{item.faultDescription}}</view>
           <view class="fault-images" wx:if="{{item.faultImages && item.faultImages.length > 0}}">
             <image
@@ -108,7 +109,7 @@
           <!-- 折叠/展开提示条 -->
           <view class="confirm-time-hint" bindtap="toggleConfirmTime" data-id="{{item._id}}">
             <view class="hint-content">
-              <text class="hint-icon">⏰</text>
+              <image class="hint-icon svg-icon-lg" src="/images/icons/clock.svg" mode="aspectFit" />
               <text class="hint-text">待确认到店时间（点击展开）</text>
               <text class="expand-icon">{{item.showConfirmTime ? '▼' : '▶'}}</text>
             </view>
@@ -156,13 +157,12 @@
         <view class="order-actions" wx:if="{{item.status}}">
           <!-- 待确认到店时间：优先显示此按钮 -->
           <block wx:if="{{item.status === 'awaiting_time_confirmation'}}">
-            <view class="action-hint">⚠️ 需要确认到店时间</view>
+            <view class="action-hint">需要确认到店时间</view>
             <button
               class="action-btn action-btn-warning"
               bindtap="toggleConfirmTime"
               data-id="{{item._id}}"
             >
-              <text class="btn-icon">⏰</text>
               确认到店时间
             </button>
           </block>
@@ -174,7 +174,6 @@
             bindtap="quoteOrder"
             data-id="{{item._id}}"
           >
-            <text class="btn-icon">🔍</text>
             开始检查
           </button>
 
@@ -185,7 +184,6 @@
             bindtap="submitComplete"
             data-id="{{item._id}}"
           >
-            <text class="btn-icon">✅</text>
             提交完工
           </button>
         </view>
@@ -194,7 +192,7 @@
 
     <!-- 空状态 -->
     <view wx:else class="empty-state">
-      <text class="empty-icon">📋</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/clipboard.svg" mode="aspectFit" />
       <text class="empty-text">暂无订单</text>
       <text class="empty-hint">当前筛选条件下暂无订单</text>
     </view>
@@ -206,8 +204,8 @@
   </view>
 
   <!-- 时间调整弹窗 -->
-  <view class="time-adjuster-mask" wx:if="{{showTimeAdjuster}}" bindtap="onCloseTimeAdjuster">
-    <view class="time-adjuster-popup" catchtap="">
+  <view class="time-adjuster-mask" wx:if="{{showTimeAdjuster}}" bindtap="onCloseTimeAdjuster" catchtouchmove="noop">
+    <view class="time-adjuster-popup" catchtap="noop" catchtouchmove="noop">
       <view class="adjuster-header">
         <text class="adjuster-title">调整到店时间</text>
         <text class="adjuster-close" bindtap="onCloseTimeAdjuster">✕</text>
@@ -219,9 +217,9 @@
         <text class="display-value">{{selectedTimeDisplayText}}</text>
       </view>
 
-      <view class="adjuster-content">
+      <scroll-view class="adjuster-content" scroll-y enhanced="{{true}}" show-scrollbar="{{false}}">
         <view class="adjuster-tip">
-          <text class="tip-icon">💡</text>
+          <image class="tip-icon svg-icon-md" src="/images/icons/lightbulb.svg" mode="aspectFit" />
           <text class="tip-text">请选择时间后点击“确定”保存</text>
         </view>
 
@@ -237,7 +235,7 @@
             <view class="slot-desc">{{item.description}}</view>
           </view>
         </view>
-      </view>
+      </scroll-view>
 
       <view class="adjuster-footer">
         <view class="adjuster-btn cancel-btn" bindtap="onCloseTimeAdjuster">取消</view>

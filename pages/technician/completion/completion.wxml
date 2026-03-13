@@ -4,7 +4,7 @@
   <view class="page-header">
     <view class="header-content">
       <view class="back-btn" bindtap="goBack">
-        <text class="back-icon">‹</text>
+        <text class="back-icon">←</text>
       </view>
       <view class="page-title">完工记录</view>
     </view>
@@ -46,7 +46,6 @@
 
   <!-- 完工记录列表 -->
   <view class="record-list">
-    <!-- 统计卡片 -->
     <view class="stats-summary" wx:if="{{records.length > 0}}">
       <view class="stat-item">
         <text class="stat-label">当前筛选</text>
@@ -54,7 +53,6 @@
       </view>
     </view>
 
-    <!-- 记录卡片 -->
     <view
       class="record-card"
       wx:for="{{records}}"
@@ -62,7 +60,6 @@
       bindtap="goToDetail"
       data-id="{{item.id}}"
     >
-      <!-- 订单头部 -->
       <view class="record-header">
         <view class="plate-info">
           <text class="plate-number">{{item.plateNumber}}</text>
@@ -71,32 +68,30 @@
           </view>
         </view>
         <view class="status-badge">
-          <text class="status-icon">✓</text>
+          <image class="status-icon svg-icon-sm" src="/images/icons/check-circle.svg" mode="aspectFit" />
           <text class="status-text">已完工</text>
         </view>
       </view>
 
-      <!-- 完工信息 -->
       <view class="completion-info">
         <view class="info-row">
-          <text class="info-icon">👤</text>
+          <image class="info-icon svg-icon-sm" src="/images/icons/user.svg" mode="aspectFit" />
           <text class="info-text">{{item.driverName}}</text>
         </view>
         <view class="info-row">
-          <text class="info-icon">🔧</text>
-          <text class="info-text">技师: {{item.technicianName}}</text>
+          <image class="info-icon svg-icon-sm" src="/images/icons/wrench.svg" mode="aspectFit" />
+          <text class="info-text">技师 {{item.technicianName}}</text>
         </view>
         <view class="info-row">
-          <text class="info-icon">✅</text>
+          <image class="info-icon svg-icon-sm" src="/images/icons/check-circle.svg" mode="aspectFit" />
           <text class="info-text">{{item.completedAt}}</text>
         </view>
         <view class="info-row" wx:if="{{item.description}}">
-          <text class="info-icon">📝</text>
+          <image class="info-icon svg-icon-sm" src="/images/icons/note.svg" mode="aspectFit" />
           <text class="info-text info-desc">{{item.description}}</text>
         </view>
       </view>
 
-      <!-- 完工图片 -->
       <view class="completion-images" wx:if="{{item.images && item.images.length > 0}}">
         <image
           class="completion-image"
@@ -112,16 +107,14 @@
         ></image>
       </view>
 
-      <!-- 底部信息 -->
       <view class="record-footer">
         <text class="footer-text">查看详情</text>
-        <text class="footer-arrow">›</text>
+        <text class="footer-arrow">→</text>
       </view>
     </view>
 
-    <!-- 空状态 -->
     <view class="empty-state" wx:if="{{records.length === 0}}">
-      <text class="empty-icon">✅</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/check-circle.svg" mode="aspectFit" />
       <text class="empty-title">暂无完工记录</text>
       <text class="empty-desc">当前筛选条件下没有找到完工记录</text>
     </view>

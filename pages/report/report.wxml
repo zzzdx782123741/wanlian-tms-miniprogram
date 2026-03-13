@@ -20,7 +20,7 @@
           <text class="compact-select-value">{{vehicles[selectedVehicleIndex].label}}</text>
         </view>
         <view class="compact-select-placeholder" wx:else>
-          <text class="placeholder-icon-small">🚛</text>
+          <image class="placeholder-icon-small svg-icon-md" src="/images/icons/truck.svg" mode="aspectFit" />
           <text class="compact-select-text">点击选择车辆</text>
         </view>
         <text class="compact-select-arrow">›</text>
@@ -34,7 +34,7 @@
         服务地址
       </view>
       <view class="service-location-card">
-        <view class="location-icon">📍</view>
+        <image class="location-icon svg-icon-md" src="/images/icons/location-pin.svg" mode="aspectFit" />
         <view class="location-content">
           <view class="location-address">{{serviceLocation.address || '获取位置中...'}}</view>
           <view class="location-tip">维修服务地点，可修改</view>
@@ -58,7 +58,7 @@
           </text>
         </view>
         <view class="compact-select-placeholder" wx:else>
-          <text class="placeholder-icon-small">🔧</text>
+          <image class="placeholder-icon-small svg-icon-md" src="/images/icons/store.svg" mode="aspectFit" />
           <text class="compact-select-text">点击选择门店</text>
         </view>
         <text class="compact-select-arrow">›</text>
@@ -69,7 +69,7 @@
     <view class="form-group" wx:if="{{!allowDriverSelectStore}}">
       <view class="form-label">门店安排</view>
       <view class="fleet-tip-card">
-        <view class="tip-icon">ℹ️</view>
+        <image class="tip-icon svg-icon-md" src="/images/icons/info-circle.svg" mode="aspectFit" />
         <view class="tip-content">
           <view class="tip-title">由车队管理员安排门店</view>
           <view class="tip-text">提交订单后，车队管理员将为您安排合适的门店，请留意订单状态更新</view>
@@ -95,7 +95,7 @@
           class="date-picker-btn"
         >
           <view class="date-picker-content">
-            <text class="date-icon">📅</text>
+            <image class="date-icon svg-icon-md" src="/images/icons/calendar.svg" mode="aspectFit" />
             <text class="date-value">{{expectedDate || '请选择日期'}}</text>
             <text class="picker-arrow">›</text>
           </view>
@@ -105,49 +105,21 @@
       <!-- 时间段选项标签 -->
       <view class="time-slots">
         <view
-          class="time-slot {{expectedTimeSlotIndex === 0 ? 'active' : ''}}"
+          wx:for="{{availableTimeSlotOptions}}"
+          wx:key="value"
+          class="time-slot {{expectedTimeSlotIndex === index ? 'active' : ''}}"
           bindtap="onSelectTimeSlot"
-          data-index="0"
+          data-index="{{index}}"
         >
-          <text class="time-slot-label">08:00-10:00</text>
-          <text class="time-slot-icon">🌅</text>
+          <text class="time-slot-label">{{item.label}}</text>
         </view>
-        <view
-          class="time-slot {{expectedTimeSlotIndex === 1 ? 'active' : ''}}"
-          bindtap="onSelectTimeSlot"
-          data-index="1"
-        >
-          <text class="time-slot-label">10:00-12:00</text>
-          <text class="time-slot-icon">☀️</text>
-        </view>
-        <view
-          class="time-slot {{expectedTimeSlotIndex === 2 ? 'active' : ''}}"
-          bindtap="onSelectTimeSlot"
-          data-index="2"
-        >
-          <text class="time-slot-label">14:00-16:00</text>
-          <text class="time-slot-icon">🌤</text>
-        </view>
-        <view
-          class="time-slot {{expectedTimeSlotIndex === 3 ? 'active' : ''}}"
-          bindtap="onSelectTimeSlot"
-          data-index="3"
-        >
-          <text class="time-slot-label">16:00-18:00</text>
-          <text class="time-slot-icon">🌇</text>
-        </view>
-        <view
-          class="time-slot {{expectedTimeSlotIndex === 4 ? 'active' : ''}}"
-          bindtap="onSelectTimeSlot"
-          data-index="4"
-        >
-          <text class="time-slot-label">18:00-20:00</text>
-          <text class="time-slot-icon">🌙</text>
-        </view>
+      </view>
+      <view class="form-tip" wx:if="{{availableTimeSlotOptions.length === 0}}">
+        今日可预约时段已过，请选择其他日期
       </view>
 
       <view class="form-tip">
-        💡 门店将根据您的期望时间确认具体到店时间
+        门店将根据您的期望时间确认具体到店时间
       </view>
     </view>
 
@@ -168,7 +140,7 @@
           maxlength="7"
         />
         <view class="mileage-photo-btn" bindtap="onChooseMileagePhoto">
-          <text class="mileage-photo-icon">📷</text>
+          <image class="mileage-photo-icon svg-icon-md" src="/images/icons/camera.svg" mode="aspectFit" />
           <text class="mileage-photo-text">拍照</text>
         </view>
       </view>
@@ -211,7 +183,7 @@
 
       <!-- 未选择车辆的提示 -->
       <view class="fleet-tip-card" wx:if="{{selectedVehicleIndex === -1}}">
-        <view class="tip-icon">💡</view>
+        <image class="tip-icon svg-icon-md" src="/images/icons/lightbulb.svg" mode="aspectFit" />
         <view class="tip-content">
           <view class="tip-title">请先选择车辆</view>
           <view class="tip-text">我们将根据车辆里程智能推荐合适的保养套餐</view>
@@ -220,7 +192,7 @@
 
       <!-- 车队安排门店模式：提示车队管理员将选择套餐 -->
       <view class="fleet-tip-card" wx:if="{{selectedVehicleIndex !== -1 && !allowDriverSelectStore}}">
-        <view class="tip-icon">👨‍💼</view>
+        <image class="tip-icon svg-icon-md" src="/images/icons/users-group.svg" mode="aspectFit" />
         <view class="tip-content">
           <view class="tip-title">车队管理员将为您选择套餐</view>
           <view class="tip-text">当前车队配置为"车队安排门店"，提交申请后，车队管理员将为您分配门店并选择保养套餐</view>
@@ -334,7 +306,7 @@
       </view>
       <!-- 语音输入提示 -->
       <view class="voice-input-hint">
-        <text class="hint-icon">💬</text>
+        <image class="hint-icon svg-icon-md" src="/images/icons/comment-bubble.svg" mode="aspectFit" />
         <text class="hint-text">说出故障更省事，长按输入框试试</text>
       </view>
       <view class="tags-container tags-compact">
@@ -369,7 +341,7 @@
         <!-- 上传按钮卡片 -->
         <view class="media-item upload-btn-card" bindtap="openMediaPicker">
           <view class="upload-icon-wrapper">
-            <text class="upload-icon">📷</text>
+            <image class="upload-icon svg-icon-md" src="/images/icons/camera.svg" mode="aspectFit" />
           </view>
           <text class="upload-text">添加</text>
         </view>
@@ -419,7 +391,7 @@
         </view>
       </view>
       <view class="form-tip">
-        💡 最多可上传9张图片或3个视频
+        最多可上传9张图片或3个视频
       </view>
     </view>
 
@@ -448,7 +420,7 @@
 
     <!-- 提示信息 -->
     <view class="tips">
-      <view class="tip-title">💡 温馨提示</view>
+      <view class="tip-title">温馨提示</view>
       <view class="tip-item" wx:if="{{type === 'repair'}}">• 可使用语音输入或点选故障标签快速填写</view>
       <view class="tip-item">• 必须上传里程照片</view>
       <view class="tip-item" wx:if="{{type === 'repair'}}">• 必须上传图片或视频才能提交</view>
@@ -501,7 +473,10 @@
             </view>
             <view class="store-item-info">
               <text class="store-item-distance" wx:if="{{item.distance !== undefined}}">{{item.distance}}km</text>
-              <text class="store-item-location" wx:if="{{item.address && item.address.district}}">📍 {{item.address.district}}</text>
+              <view class="store-item-location" wx:if="{{item.address && item.address.district}}">
+                <image class="store-item-inline-icon svg-icon-sm" src="/images/icons/location-pin.svg" mode="aspectFit" />
+                <text>{{item.address.district}}</text>
+              </view>
               <text class="store-item-rating" wx:if="{{item.ratingStats && item.ratingStats.overallRating > 0}}">
                 {{item.ratingStats.overallRating}}分
                 <text wx:if="{{item.ratingStats.reviewCount > 0}}">（{{item.ratingStats.reviewCount}}条）</text>
@@ -510,11 +485,11 @@
             </view>
             <view class="store-item-details">
               <view class="store-item-detail" wx:if="{{item.businessHours}}">
-                <text class="detail-icon">🕐</text>
+                <image class="detail-icon svg-icon-sm" src="/images/icons/clock.svg" mode="aspectFit" />
                 <text class="detail-text">{{item.businessHours}}</text>
               </view>
               <view class="store-item-detail" wx:if="{{item.contactPhone}}">
-                <text class="detail-icon">📞</text>
+                <image class="detail-icon svg-icon-sm" src="/images/icons/phone.svg" mode="aspectFit" />
                 <text class="detail-text phone-tap" catchtap="makePhoneCall" data-phone="{{item.contactPhone}}">{{item.contactPhone}}</text>
               </view>
             </view>
@@ -560,15 +535,15 @@
           <view class="detail-section-title">门店信息</view>
           <view class="detail-info-list">
             <view class="detail-info-item" wx:if="{{storeDetail.address}}">
-              <text class="info-icon">📍</text>
+              <image class="info-icon svg-icon-md" src="/images/icons/location-pin.svg" mode="aspectFit" />
               <text class="info-text">{{storeDetail.address.city}} {{storeDetail.address.district}} {{storeDetail.address.detail}}</text>
             </view>
             <view class="detail-info-item" wx:if="{{storeDetail.businessHours}}">
-              <text class="info-icon">🕐</text>
+              <image class="info-icon svg-icon-md" src="/images/icons/clock.svg" mode="aspectFit" />
               <text class="info-text">{{storeDetail.businessHours}}</text>
             </view>
             <view class="detail-info-item" wx:if="{{storeDetail.contactPhone}}">
-              <text class="info-icon">📞</text>
+              <image class="info-icon svg-icon-md" src="/images/icons/phone.svg" mode="aspectFit" />
               <text class="info-text">{{storeDetail.contactPhone}}</text>
             </view>
           </view>
@@ -596,7 +571,7 @@
         <!-- 暂无评价提示 -->
         <view class="detail-section" wx:else>
           <view class="no-reviews">
-            <text class="no-reviews-icon">💬</text>
+            <image class="no-reviews-icon svg-icon-lg" src="/images/icons/comment-bubble.svg" mode="aspectFit" />
             <text class="no-reviews-text">暂无评价</text>
             <text class="no-reviews-hint">成为第一个评价的人</text>
           </view>
@@ -680,11 +655,11 @@
         <view class="media-picker-title">选择上传方式</view>
         <view class="media-picker-buttons">
           <view class="media-picker-btn" bindtap="onChooseImage">
-            <text class="media-picker-big-icon">📷</text>
+            <image class="media-picker-big-icon" src="/images/icons/camera.svg" mode="aspectFit" />
             <text class="media-picker-btn-text">拍照/相册</text>
           </view>
           <view class="media-picker-btn" bindtap="onChooseVideo">
-            <text class="media-picker-big-icon">🎥</text>
+            <image class="media-picker-big-icon" src="/images/icons/video.svg" mode="aspectFit" />
             <text class="media-picker-btn-text">录制视频</text>
           </view>
         </view>
@@ -703,7 +678,7 @@
       <scroll-view class="location-picker-content" scroll-y="{{true}}">
         <!-- 地图选择 -->
         <view class="location-picker-option" bindtap="onLocationSelect">
-          <view class="location-option-icon">📍</view>
+          <image class="location-option-icon svg-icon-md" src="/images/icons/location-pin.svg" mode="aspectFit" />
           <view class="location-option-text">
             <view class="location-option-title">在地图上选择</view>
             <view class="location-option-desc">精确定位到您的位置</view>
@@ -722,7 +697,7 @@
           bindtap="onSelectSavedAddress"
           data-address="{{item}}"
         >
-          <view class="address-item-icon">📋</view>
+          <image class="address-item-icon svg-icon-md" src="/images/icons/clipboard.svg" mode="aspectFit" />
           <view class="address-item-content">
             <view class="address-item-name">{{item.name}}</view>
             <view class="address-item-detail">{{item.address}}</view>
@@ -732,7 +707,7 @@
 
         <!-- 管理常用地址入口 -->
         <view class="location-manage-btn" bindtap="onManageAddresses">
-          <text class="manage-icon">⚙️</text>
+          <image class="manage-icon svg-icon-md" src="/images/icons/settings.svg" mode="aspectFit" />
           <text class="manage-text">管理常用地址</text>
         </view>
 

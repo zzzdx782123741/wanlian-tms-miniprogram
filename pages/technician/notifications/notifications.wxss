@@ -27,12 +27,6 @@ page {
   border-radius: 24rpx;
 }
 
-.btn-icon {
-  font-size: 28rpx;
-  color: #FFFFFF;
-  font-weight: 600;
-}
-
 .btn-text {
   font-size: 26rpx;
   color: #FFFFFF;
@@ -131,7 +125,8 @@ page {
 }
 
 .notification-icon .icon {
-  font-size: 40rpx;
+  width: 40rpx;
+  height: 40rpx;
 }
 
 /* 通知内容 */
@@ -211,7 +206,8 @@ page {
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   opacity: 0.3;
 }
 

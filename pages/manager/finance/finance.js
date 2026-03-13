@@ -1,36 +1,38 @@
-// pages/manager/finance/finance.js
 const app = getApp();
 const request = require('../../../utils/request');
+const { WITHDRAWAL_STATUS_MAP, normalizeWithdrawal, formatMoneyYuan } = require('../../../utils/store-finance');
 
 Page({
   data: {
     todayIncome: '0.00',
     monthIncome: '0.00',
-    pendingBalance: '0.00',
-    settledBalance: '0.00',
+    withdrawableBalance: '0.00',
+    settledIncome: '0.00',
+    pendingSettlement: '0.00',
     withdrawRecords: [],
-    statusMap: {
-      'pending': '审核中',
-      'processing': '处理中',
-      'completed': '已完成',
-      'rejected': '已拒绝'
-    }
+    loading: false,
+    statusMap: WITHDRAWAL_STATUS_MAP
   },
 
   onLoad() {
+    this._skipNextOnShow = true;
     this.initPage();
   },
 
   onShow() {
-    // 每次显示页面时刷新数据
-    this.loadData();
+    if (this._skipNextOnShow) {
+      this._skipNextOnShow = false;
+      return;
+    }
+
+    if (this._initialized) {
+      this.loadData();
+    }
   },
 
-  /**
-   * 初始化页面
-   */
   initPage() {
-    const userInfo = app.globalData.userInfo;
+    const userInfo = app.globalData.userInfo || wx.getStorageSync('userInfo');
+    const role = app.globalData.role || wx.getStorageSync('role');
 
     if (!userInfo) {
       wx.redirectTo({
@@ -39,113 +41,103 @@ Page({
       return;
     }
 
-    // 检查是否为店长或技师
-    const role = app.globalData.role;
-    if (role !== 'STORE_MANAGER' && role !== 'STORE_TECHNICIAN') {
+    if (role !== 'STORE_MANAGER') {
       wx.showToast({
-        title: '权限不足',
+        title: '仅门店管理员可访问',
         icon: 'none'
       });
       setTimeout(() => {
         wx.switchTab({
           url: '/pages/index/index'
         });
-      }, 1500);
+      }, 1200);
       return;
     }
 
+    this._initialized = true;
     this.loadData();
   },
 
-  /**
-   * 加载数据
-   */
   async loadData() {
+    if (this.data.loading) {
+      return;
+    }
+
+    this.setData({ loading: true });
+
     try {
-      // 获取门店财务数据
-      const res = await request.get('/store/finance');
+      const [financeResult, accountResult, withdrawalResult] = await Promise.allSettled([
+        request.get('/store/finance', {}, { silentError: true }),
+        request.get('/store/account', {}, { silentError: true }),
+        request.get('/store/withdrawals', { page: 1, limit: 5 }, { silentError: true })
+      ]);
 
-      if (res.success) {
-        const data = res.data || {};
-        this.setData({
-          todayIncome: data.income?.today || '0.00',
-          monthIncome: data.income?.month || '0.00',
-          pendingBalance: data.balance?.pending || '0.00',
-          settledBalance: data.balance?.settled || '0.00',
-          withdrawRecords: (data.withdrawRecords || []).map(record => {
-            // 预先格式化金额
-            const amount = record.withdrawalAmount || 0;
-            const formattedAmount = typeof amount === 'number'
-              ? (amount / 100).toFixed(2)
-              : '0.00';
+      const nextData = {};
+      let hasSuccess = false;
 
-            return {
-              ...record,
-              withdrawalAmountText: formattedAmount,
-              appliedAtText: this.formatTime(record.appliedAt || record.createdAt)
-            };
-          })
-        });
+      if (financeResult.status === 'fulfilled' && financeResult.value?.success) {
+        hasSuccess = true;
+        const financeData = financeResult.value.data || {};
+        nextData.todayIncome = financeData.income?.today || '0.00';
+        nextData.monthIncome = financeData.income?.month || '0.00';
       }
+
+      if (accountResult.status === 'fulfilled' && accountResult.value?.success) {
+        hasSuccess = true;
+        const account = accountResult.value.data?.account || {};
+        nextData.withdrawableBalance = formatMoneyYuan(account.withdrawableBalance);
+        nextData.settledIncome = formatMoneyYuan(account.settledIncome);
+        nextData.pendingSettlement = formatMoneyYuan(account.pendingSettlement);
+      }
+
+      if (withdrawalResult.status === 'fulfilled' && withdrawalResult.value?.success) {
+        hasSuccess = true;
+        nextData.withdrawRecords = (withdrawalResult.value.data?.list || [])
+          .map(item => normalizeWithdrawal(item, { amountUnit: 'cent' }));
+      }
+
+      if (!hasSuccess) {
+        throw new Error('load_failed');
+      }
+
+      this.setData(nextData);
     } catch (error) {
-      console.error('加载数据失败:', error);
+      console.error('加载财务数据失败:', error);
       wx.showToast({
         title: '加载财务数据失败',
         icon: 'none'
       });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 
-  /**
-   * 申请提现
-   */
   goToWithdraw() {
-    wx.showToast({
-      title: '提现页面暂未开放',
-      icon: 'none'
+    wx.navigateTo({
+      url: '/pages/manager/withdraw/apply'
     });
   },
 
-  /**
-   * 查看提现记录
-   */
   goToWithdrawRecords() {
-    wx.showToast({
-      title: '提现记录页暂未开放',
-      icon: 'none'
+    wx.navigateTo({
+      url: '/pages/manager/withdraw/list'
     });
   },
 
-  /**
-   * 查看提现详情
-   */
   viewWithdrawal(e) {
-    wx.showToast({
-      title: '提现详情页暂未开放',
-      icon: 'none'
+    const { id } = e.currentTarget.dataset;
+    if (!id) {
+      return;
+    }
+
+    wx.navigateTo({
+      url: `/pages/manager/withdraw/detail?id=${id}`
     });
   },
 
-  /**
-   * 格式化时间
-   */
-  formatTime(time) {
-    if (!time) return '-';
-    const date = new Date(time);
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hour = String(date.getHours()).padStart(2, '0');
-    const minute = String(date.getMinutes()).padStart(2, '0');
-    return `${month}-${day} ${hour}:${minute}`;
-  },
-
-  /**
-   * 下拉刷新
-   */
   onPullDownRefresh() {
-    this.loadData();
-    setTimeout(() => {
+    this.loadData().finally(() => {
       wx.stopPullDownRefresh();
-    }, 1000);
+    });
   }
 });

@@ -42,7 +42,8 @@
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   margin-bottom: 32rpx;
 }
 
@@ -124,7 +125,8 @@
 }
 
 .address-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   flex-shrink: 0;
 }
 

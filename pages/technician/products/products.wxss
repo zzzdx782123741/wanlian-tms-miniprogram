@@ -35,7 +35,8 @@
 }
 
 .search-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   margin-right: 12rpx;
 }
 
@@ -64,6 +65,11 @@
   font-size: 32rpx;
   flex-shrink: 0;
   box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+}
+
+.scan-btn-icon {
+  width: 32rpx;
+  height: 32rpx;
 }
 
 /* ===== 商品分类 ===== */
@@ -275,7 +281,8 @@
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   margin-bottom: 24rpx;
   opacity: 0.3;
 }

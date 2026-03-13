@@ -14,9 +14,18 @@
 }
 
 .header-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
   font-size: 40rpx;
   font-weight: 700;
   margin-bottom: 16rpx;
+}
+
+.header-icon {
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .header-subtitle {
@@ -36,8 +45,10 @@
 }
 
 .location-icon {
-  font-size: 64rpx;
+  width: 64rpx;
+  height: 64rpx;
   margin-right: 24rpx;
+  flex-shrink: 0;
 }
 
 .location-info {
@@ -115,8 +126,10 @@
 }
 
 .btn-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   margin-right: 12rpx;
+  flex-shrink: 0;
 }
 
 /* 配置信息 */
@@ -129,10 +142,20 @@
 }
 
 .config-title {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
   font-size: 28rpx;
   font-weight: 700;
   color: #2D3748;
   margin-bottom: 24rpx;
+}
+
+.config-title-icon,
+.log-title-icon {
+  width: 24rpx;
+  height: 24rpx;
+  flex-shrink: 0;
 }
 
 .config-item {
@@ -184,6 +207,12 @@
   font-weight: 700;
   color: #2D3748;
   margin-bottom: 24rpx;
+}
+
+.heading-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
 }
 
 .log-list {

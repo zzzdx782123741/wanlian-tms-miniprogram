@@ -116,7 +116,7 @@
 
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{users.length === 0 && !loading}}">
-      <text class="empty-icon">👥</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/users-group.svg" mode="aspectFit" />
       <text class="empty-text">暂无用户数据</text>
     </view>
   </view>

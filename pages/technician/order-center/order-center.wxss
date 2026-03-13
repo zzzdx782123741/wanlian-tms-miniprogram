@@ -62,7 +62,8 @@ page {
 }
 
 .scan-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 /* ========== 搜索框 ========== */
@@ -77,7 +78,8 @@ page {
   left: 52rpx;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   opacity: 0.4;
 }
 
@@ -278,7 +280,8 @@ page {
 }
 
 .info-icon {
-  font-size: 24rpx;
+  width: 24rpx;
+  height: 24rpx;
   opacity: 0.6;
   flex-shrink: 0;
 }
@@ -327,7 +330,8 @@ page {
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   opacity: 0.3;
 }
 

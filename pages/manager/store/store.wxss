@@ -100,7 +100,8 @@
 }
 
 .empty-icon {
-  font-size: 80rpx;
+  width: 80rpx;
+  height: 80rpx;
   margin-bottom: 20rpx;
   opacity: 0.3;
 }

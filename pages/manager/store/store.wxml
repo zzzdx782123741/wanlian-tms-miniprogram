@@ -64,7 +64,7 @@
         </view>
       </view>
       <view class="empty-photos" wx:else>
-        <view class="empty-icon">📷</view>
+        <image class="empty-icon svg-icon-xl" src="/images/icons/camera.svg" mode="aspectFit" />
         <view class="empty-text">暂无门店照片</view>
       </view>
     </view>

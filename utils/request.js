@@ -91,7 +91,7 @@ const request = (options) => {
 
           // 对于常用地址接口的403错误，静默处理（功能暂未实现）
           const isAddressApi = fullUrl.includes('/user/addresses');
-          if (!isAddressApi) {
+          if (!isAddressApi && !options.silentError) {
             wx.showToast({
               title: res.data.message || '请求失败',
               icon: 'none'
@@ -110,7 +110,7 @@ const request = (options) => {
         const isAddressApi = fullUrl.includes('/user/addresses');
         const errMsg = err?.errMsg || '';
         const isDomainBlocked = errMsg.includes('url not in domain list');
-        if (!isAddressApi) {
+        if (!isAddressApi && !options.silentError) {
           wx.showToast({
             title: isDomainBlocked ? '域名未配置' : '网络请求失败',
             icon: 'none'
@@ -132,10 +132,15 @@ const request = (options) => {
 };
 
 module.exports = {
-  get: (url, data) => request({ url, method: 'GET', data }),
-  post: (url, data, noAuth = false) => request({ url, method: 'POST', data, noAuth }),
-  put: (url, data) => request({ url, method: 'PUT', data }),
-  delete: (url, data) => request({ url, method: 'DELETE', data }),
+  get: (url, data, options = {}) => request({ url, method: 'GET', data, ...options }),
+  post: (url, data, noAuthOrOptions = false) => {
+    const options = typeof noAuthOrOptions === 'boolean'
+      ? { noAuth: noAuthOrOptions }
+      : (noAuthOrOptions || {});
+    return request({ url, method: 'POST', data, ...options });
+  },
+  put: (url, data, options = {}) => request({ url, method: 'PUT', data, ...options }),
+  delete: (url, data, options = {}) => request({ url, method: 'DELETE', data, ...options }),
   getBaseUrl,
   formatImageUrl,
   getServerUrl

@@ -61,6 +61,16 @@
   line-height: 1.6;
 }
 
+.order-type {
+  display: inline-block;
+  padding: 8rpx 20rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #475569;
+  background: #f1f5f9;
+}
+
 .order-time {
   display: block;
   font-size: 24rpx;
@@ -87,6 +97,12 @@
   display: flex;
   align-items: center;
   gap: 12rpx;
+}
+
+.section-title-icon {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
 }
 
 /* 车辆信息卡片 */

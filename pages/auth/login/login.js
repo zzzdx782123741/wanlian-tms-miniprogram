@@ -12,28 +12,28 @@ Page({
       {
         username: 'driver001',
         nickname: '测试司机-张三',
-        icon: '🚚',
+        icon: '/images/icons/role-driver.svg',
         role: 'DRIVER',
         desc: '司机端'
       },
       {
         username: 'fleet001',
         nickname: '测试车队-李经理',
-        icon: '🏢',
+        icon: '/images/icons/building.svg',
         role: 'FLEET_MANAGER',
         desc: '车队管理'
       },
       {
         username: 'tech001',
         nickname: '测试技师-王师傅',
-        icon: '🔧',
+        icon: '/images/icons/wrench.svg',
         role: 'STORE_TECHNICIAN',
         desc: '门店技师'
       },
       {
         username: 'store001',
         nickname: '测试店长-赵经理',
-        icon: '🏪',
+        icon: '/images/icons/store.svg',
         role: 'STORE_MANAGER',
         desc: '门店管理'
       }

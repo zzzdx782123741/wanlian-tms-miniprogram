@@ -44,6 +44,9 @@
     "pages/manager/dashboard/dashboard",
     "pages/manager/store/store",
     "pages/manager/finance/finance",
+    "pages/manager/withdraw/apply",
+    "pages/manager/withdraw/list",
+    "pages/manager/withdraw/detail",
     "pages/manager/analytics/analytics"
   ],
   "window": {

@@ -29,7 +29,10 @@
   <view class="test-login-mask" wx:if="{{showTestLogin}}" bindtap="onCloseTestLogin">
     <view class="test-login-panel" catchtap="noop">
       <view class="test-login-header">
-        <view class="test-login-title">🚀 快速测试登录</view>
+        <view class="test-login-title">
+          <image class="test-login-title-icon svg-icon-md" src="/images/icons/user.svg" mode="aspectFit" />
+          <text>快速测试登录</text>
+        </view>
         <view class="test-login-subtitle">选择角色后快速登录</view>
       </view>
 
@@ -41,7 +44,7 @@
           bindtap="onQuickLogin"
           data-account="{{item}}"
         >
-          <view class="account-icon">{{item.icon}}</view>
+          <image class="account-icon svg-icon-lg" src="{{item.icon}}" mode="aspectFit" />
           <view class="account-info">
             <view class="account-nickname">{{item.nickname}}</view>
             <view class="account-username">{{item.username}}</view>

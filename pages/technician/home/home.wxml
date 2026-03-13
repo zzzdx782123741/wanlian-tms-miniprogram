@@ -12,13 +12,13 @@
         <view class="tech-info">技师端 · {{storeName}}</view>
       </view>
       <view class="scan-btn" bindtap="scanCode">
-        <text class="scan-icon">🔲</text>
+        <image class="scan-icon svg-icon-lg" src="/images/icons/scan.svg" mode="aspectFit" />
       </view>
     </view>
 
     <!-- 搜索框 -->
     <view class="search-box">
-      <text class="search-icon">🔍</text>
+      <image class="search-icon svg-icon-md" src="/images/icons/search.svg" mode="aspectFit" />
       <input
         class="search-input"
         type="text"
@@ -61,7 +61,7 @@
     <!-- 订单列表 -->
     <view class="order-list">
       <view class="empty-state" wx:if="{{orderList.length === 0}}">
-        <text class="empty-icon">📋</text>
+        <image class="empty-icon svg-icon-xl" src="/images/icons/clipboard.svg" mode="aspectFit" />
         <text class="empty-text">暂无待处理订单</text>
       </view>
 
@@ -79,7 +79,7 @@
             <text class="vehicle-model">{{item.vehicleModel}}</text>
           </view>
           <view class="status-badge status-{{item.statusKey}}">
-            <text class="status-icon">{{item.statusIcon}}</text>
+            <image class="status-icon" src="{{item.statusIcon}}" mode="aspectFit" />
             <text class="status-text">{{item.statusText}}</text>
           </view>
         </view>
@@ -87,11 +87,11 @@
         <!-- 订单信息 -->
         <view class="order-info">
           <view class="info-row">
-            <text class="info-icon">👤</text>
+            <image class="info-icon svg-icon-sm" src="/images/icons/user.svg" mode="aspectFit" />
             <text class="info-text">{{item.driverName}} · {{item.driverPhone}}</text>
           </view>
           <view class="info-row">
-            <text class="info-icon">⚠️</text>
+            <image class="info-icon svg-icon-sm" src="/images/icons/warning-triangle.svg" mode="aspectFit" />
             <text class="info-text info-desc">{{item.faultDescription}}</text>
           </view>
         </view>
@@ -111,15 +111,15 @@
   <!-- 底部导航栏 -->
   <view class="tab-bar">
     <view class="tab-item active" bindtap="switchTab" data-tab="home">
-      <text class="tab-icon">🏠</text>
+      <image class="tab-icon" src="/images/icons/home.svg" mode="aspectFit" />
       <text class="tab-label">工作台</text>
     </view>
     <view class="tab-item" bindtap="switchTab" data-tab="orders">
-      <text class="tab-icon">📋</text>
+      <image class="tab-icon" src="/images/icons/clipboard.svg" mode="aspectFit" />
       <text class="tab-label">订单</text>
     </view>
     <view class="tab-item" bindtap="switchTab" data-tab="profile">
-      <text class="tab-icon">👤</text>
+      <image class="tab-icon" src="/images/icons/user.svg" mode="aspectFit" />
       <text class="tab-label">我的</text>
     </view>
   </view>

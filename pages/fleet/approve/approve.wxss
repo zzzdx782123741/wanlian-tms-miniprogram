@@ -136,7 +136,8 @@
 }
 
 .location-icon {
-  font-size: 28rpx;
+  width: 28rpx;
+  height: 28rpx;
   margin-right: 12rpx;
 }
 
@@ -169,7 +170,8 @@
 }
 
 .reporter-icon {
-  font-size: 24rpx;
+  width: 24rpx;
+  height: 24rpx;
 }
 
 .reporter-label {
@@ -286,7 +288,8 @@
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   margin-bottom: 32rpx;
   opacity: 0.3;
 }

@@ -20,7 +20,8 @@
 }
 
 .no-permission-icon {
-  font-size: 160rpx;
+  width: 160rpx;
+  height: 160rpx;
   margin-bottom: 40rpx;
   opacity: 0.5;
 }
@@ -139,10 +140,10 @@
 }
 
 .detail-icon {
-  font-size: 40rpx;
+  width: 40rpx;
+  height: 40rpx;
   margin-right: 16rpx;
   width: 48rpx;
-  text-align: center;
 }
 
 .detail-info {
@@ -249,7 +250,8 @@
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   margin-bottom: 32rpx;
   opacity: 0.3;
 }

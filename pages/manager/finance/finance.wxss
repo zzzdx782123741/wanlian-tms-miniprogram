@@ -128,7 +128,13 @@
 .withdraw-amount {
   font-size: 32rpx;
   font-weight: bold;
-  color: #f5222d;
+  color: #222;
+}
+
+.withdraw-no {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #999;
 }
 
 .withdraw-info {
@@ -147,6 +153,11 @@
 
 .withdraw-status.completed {
   color: #52c41a;
+}
+
+.withdraw-status.cancelled,
+.withdraw-status.rejected {
+  color: #999;
 }
 
 .withdraw-time {

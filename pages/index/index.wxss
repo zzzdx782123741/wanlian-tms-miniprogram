@@ -214,7 +214,8 @@
 }
 
 .empty-icon {
-  font-size: 96rpx;
+  width: 96rpx;
+  height: 96rpx;
   display: block;
   margin-bottom: var(--spacing-md);
 }
@@ -284,8 +285,10 @@
 }
 
 .activity-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   margin-right: var(--spacing-sm);
+  flex-shrink: 0;
 }
 
 .activity-desc {
@@ -321,6 +324,16 @@
   color: #1A202C;
   margin-bottom: 4rpx;
   padding-left: var(--spacing-sm);
+}
+
+.section-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.section-title-icon {
+  flex-shrink: 0;
 }
 
 .section-subtitle {
@@ -379,7 +392,8 @@
 }
 
 .menu-icon {
-  font-size: 64rpx;
+  width: 64rpx;
+  height: 64rpx;
 }
 
 .menu-text {

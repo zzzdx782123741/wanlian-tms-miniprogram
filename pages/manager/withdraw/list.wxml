@@ -1,0 +1,41 @@
+<view class="list-page">
+  <scroll-view class="tabs" scroll-x enable-flex show-scrollbar="{{false}}">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="value"
+      class="tab {{activeStatus === item.value ? 'active' : ''}}"
+      data-status="{{item.value}}"
+      bindtap="onTabChange"
+    >
+      {{item.label}}
+    </view>
+  </scroll-view>
+
+  <view class="summary">共 {{total}} 条记录</view>
+
+  <view wx:if="{{records.length > 0}}">
+    <view
+      class="record-card"
+      wx:for="{{records}}"
+      wx:key="_id"
+      data-id="{{item._id}}"
+      bindtap="goDetail"
+    >
+      <view class="record-top">
+        <view class="record-amount">¥{{item.withdrawalAmountText}}</view>
+        <view class="record-status {{item.status}}">{{item.statusText}}</view>
+      </view>
+      <view class="record-bottom">
+        <view class="record-no">{{item.withdrawalNo}}</view>
+        <view class="record-time">{{item.appliedAtText}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:else>
+    <view class="empty-text">暂无提现记录</view>
+  </view>
+
+  <view class="footer-text" wx:if="{{records.length > 0 && loading}}">加载中...</view>
+  <view class="footer-text" wx:elif="{{records.length > 0 && !hasMore}}">没有更多了</view>
+</view>

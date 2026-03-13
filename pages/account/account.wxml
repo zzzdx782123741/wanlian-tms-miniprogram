@@ -30,22 +30,22 @@
 
   <view class="function-list">
     <view class="function-item" bindtap="onContactService">
-      <text class="function-icon">📞</text>
+      <image class="function-icon svg-icon-lg" src="/images/icons/phone.svg" mode="aspectFit" />
       <view class="function-title">联系客服</view>
       <text class="function-arrow">›</text>
     </view>
     <view class="function-item" bindtap="onAddressManage">
-      <text class="function-icon">📍</text>
+      <image class="function-icon svg-icon-lg" src="/images/icons/location-pin.svg" mode="aspectFit" />
       <view class="function-title">常用地址</view>
       <text class="function-arrow">›</text>
     </view>
     <view class="function-item" bindtap="onAbout">
-      <text class="function-icon">ℹ️</text>
+      <image class="function-icon svg-icon-lg" src="/images/icons/info-circle.svg" mode="aspectFit" />
       <view class="function-title">关于平台</view>
       <text class="function-arrow">›</text>
     </view>
     <view class="function-item" bindtap="onLogout">
-      <text class="function-icon">🚪</text>
+      <image class="function-icon svg-icon-lg" src="/images/icons/logout.svg" mode="aspectFit" />
       <view class="function-title">退出登录</view>
       <text class="function-arrow">›</text>
     </view>

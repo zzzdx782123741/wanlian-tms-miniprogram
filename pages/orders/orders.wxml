@@ -1,3 +1,4 @@
+<page-meta page-style="{{showTimeAdjuster ? 'overflow: hidden; height: 100vh;' : ''}}" />
 <view class="page">
   <view class="header">
     <view class="header-title">订单中心</view>
@@ -7,7 +8,7 @@
   <!-- 搜索框 -->
   <view class="search-container">
     <view class="search-box">
-      <text class="search-icon">🔍</text>
+      <image class="search-icon svg-icon-md" src="/images/icons/search.svg" mode="aspectFit" />
       <input
         class="search-input"
         type="text"
@@ -63,7 +64,7 @@
 
   <view class="order-list">
     <view class="empty-state" wx:if="{{!loading && orders.length === 0}}">
-      <text class="empty-icon">📋</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/clipboard.svg" mode="aspectFit" />
       <text class="empty-text">{{filterVehicleId ? '该车辆暂无订单' : '暂无订单记录'}}</text>
       <text class="empty-hint">{{filterVehicleId ? '可切换标签查看该车辆的其他订单，或清除筛选' : '当前没有可展示的订单'}}</text>
     </view>
@@ -90,7 +91,7 @@
       <view class="order-time">{{item.createdAtText}}</view>
 
       <view class="order-vehicle">
-        <text class="vehicle-icon">🚗</text>
+        <image class="vehicle-icon svg-icon-lg" src="/images/icons/car.svg" mode="aspectFit" />
         <view class="vehicle-info">
           <view class="vehicle-plate">{{item.vehicleInfo.plateNumber}}</view>
           <view class="vehicle-model">{{item.vehicleInfo.brand}} {{item.vehicleInfo.model}}</view>
@@ -121,7 +122,7 @@
       <view class="appointment-confirm-section" wx:if="{{role === 'STORE_MANAGER' && item.status === 'awaiting_time_confirmation'}}">
         <view class="confirm-time-hint" catchtap="toggleConfirmTime" data-id="{{item._id}}">
           <view class="hint-content">
-            <text class="hint-icon">⏰</text>
+            <image class="hint-icon svg-icon-lg" src="/images/icons/clock.svg" mode="aspectFit" />
             <text class="hint-text">待确认到店时间（点击展开）</text>
             <text class="expand-icon">{{item.showConfirmTime ? '▼' : '▶'}}</text>
           </view>
@@ -236,8 +237,8 @@
       <text class="loading-text">加载中...</text>
     </view>
 
-    <view class="time-adjuster-mask" wx:if="{{showTimeAdjuster}}" catchtap="onCloseTimeAdjuster">
-      <view class="time-adjuster-popup" catchtap="">
+    <view class="time-adjuster-mask" wx:if="{{showTimeAdjuster}}" catchtap="onCloseTimeAdjuster" catchtouchmove="noop">
+      <view class="time-adjuster-popup" catchtap="noop" catchtouchmove="noop">
         <view class="adjuster-header">
           <text class="adjuster-title">调整到店时间</text>
           <text class="adjuster-close" catchtap="onCloseTimeAdjuster">✕</text>
@@ -248,9 +249,9 @@
           <text class="display-value">{{selectedTimeDisplayText}}</text>
         </view>
 
-        <view class="adjuster-content">
+        <scroll-view class="adjuster-content" scroll-y enhanced="{{true}}" show-scrollbar="{{false}}">
           <view class="adjuster-tip">
-            <text class="tip-icon">💡</text>
+            <image class="tip-icon svg-icon-md" src="/images/icons/lightbulb.svg" mode="aspectFit" />
             <text class="tip-text">请选择时间后点击“确定”保存</text>
           </view>
 
@@ -266,7 +267,7 @@
               <view class="slot-desc">{{item.description}}</view>
             </view>
           </view>
-        </view>
+        </scroll-view>
 
         <view class="adjuster-footer">
           <view class="adjuster-btn cancel-btn" catchtap="onCloseTimeAdjuster">取消</view>

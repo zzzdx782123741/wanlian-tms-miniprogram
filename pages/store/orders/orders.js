@@ -54,60 +54,24 @@ Page({
         // 全部：显示所有分配给该门店的订单
         params.status = ''; // 不过滤状态
       } else if (activeTab === 'processing') {
-        // 处理中：待确认到店时间、待接车检查、待审批报价、维修中、待审批增项
+        // 处理中：仅展示仍需门店继续处理的订单
         params.status = 'awaiting_time_confirmation,pending_assessment,awaiting_approval,in_repair,awaiting_addon_approval';
       } else if (activeTab === 'completed') {
-        // 待确认完工 + 已完成
+        // 已完成：包含待确认完工和真正已完成的订单
         params.status = 'pending_confirmation,completed';
       }
 
       const res = await request.get('/orders', params);
-      console.log('========== API响应调试 ==========');
-      console.log('完整响应对象:', res);
-      console.log('响应success:', res.success);
-      console.log('响应data:', res.data);
-      console.log('API返回的订单数量:', res.data.orders?.length || 0);
-
-      if (res.data.orders && res.data.orders.length > 0) {
-        res.data.orders.forEach((order, index) => {
-          console.log(`\n订单${index + 1} 原始数据:`);
-          console.log('  _id:', order._id);
-          console.log('  orderNumber:', order.orderNumber);
-          console.log('  status:', order.status);
-          console.log('  status类型:', typeof order.status);
-          console.log('  storeId:', order.storeId);
-          console.log('  appointment:', order.appointment);
-        });
-      } else {
-        console.log('⚠️ 订单列表为空！');
-      }
-      console.log('====================================\n');
 
       let orders = this.formatOrders(res.data.orders || []);
 
-      // 调试日志：检查订单状态
-      console.log('========== 订单状态调试 ==========');
-      orders.forEach((order, index) => {
-        console.log(`\n格式化后订单${index + 1}:`);
-        console.log('  ID:', order._id);
-        console.log('  原始状态:', order.status);
-        console.log('  状态类型:', typeof order.status);
-        console.log('  状态文本:', order.statusText);
-        console.log('  状态类型(样式):', order.statusType);
-      });
-      console.log('====================================\n');
-
-      // 过滤技师自己的订单（对于进行中的订单）
-      const userInfo = wx.getStorageSync('userInfo');
+      // 当前门店分配到的订单全部展示
       const myOrders = orders.filter(order => {
-        // 所有分配到该门店的订单都显示
         return true;
       });
 
       // 排序：按创建时间倒序（最新的在最上面）
       myOrders.sort((a, b) => b.sortTime - a.sortTime);
-
-      console.log('最终设置到data的订单数量:', myOrders.length);
 
       this.setData({
         orders: myOrders,
@@ -150,24 +114,12 @@ Page({
 
   // 格式化订单数据
   formatOrders(orders) {
-    console.log('========== formatOrders 调试 ==========');
-    console.log('原始订单数量:', orders.length);
-
     return orders.map(order => {
-      console.log(`订单 ${order.orderNumber}:`);
-      console.log('  - 原始状态:', order.status);
-      console.log('  - appointment:', JSON.stringify(order.appointment));
-
-      // 判断是否已确认
-      const isConfirmed = order.completion && order.completion.confirmedBy;
-
       // 获取状态文本
       let statusText = this.getStatusText(order.status, order);
-      console.log('  - 状态文本:', statusText);
 
       // 获取状态类型
       let statusType = this.getStatusType(order.status);
-      console.log('  - 状态类型:', statusType);
 
       // 计算相对时间
       const createdAtAgo = this.getTimeAgo(order.createdAt);
@@ -200,10 +152,6 @@ Page({
         // 用于排序的时间戳
         sortTime: new Date(order.createdAt).getTime()
       };
-
-      console.log('  - 格式化后状态:', formattedOrder.status);
-      console.log('  - 格式化后状态文本:', formattedOrder.statusText);
-      console.log('====================================');
 
       return formattedOrder;
     });
@@ -247,12 +195,6 @@ Page({
 
   // 获取状态文本
   getStatusText(status, order) {
-    console.log('getStatusText 调用 - 原始状态:', status);
-    console.log('getStatusText 调用 - 订单对象:', order);
-
-    // 判断是否已确认
-    const isConfirmed = order && order.completion && order.completion.confirmedBy;
-
     const statusMap = {
       'awaiting_fleet_approval': '待车队审批',
       'awaiting_time_confirmation': '待确认到店时间',
@@ -271,9 +213,7 @@ Page({
       'refunded': '已退款'
     };
 
-    const result = statusMap[status] || status || '未知状态';
-    console.log('getStatusText 返回:', result);
-    return result;
+    return statusMap[status] || status || '未知状态';
   },
 
   // 检查对象属性是否存在
@@ -341,16 +281,7 @@ Page({
   async onConfirmAppointmentTime(e) {
     const { id, date, slot } = e.currentTarget.dataset;
 
-    console.log('========== 确认时间调试 ==========');
-    console.log('订单ID:', id);
-    console.log('日期:', date);
-    console.log('时间段:', slot);
-
     const order = this.data.orders.find(o => o._id === id);
-
-    console.log('找到的订单:', order);
-    console.log('订单状态:', order?.status);
-    console.log('预约信息:', order?.appointment);
 
     if (!order) {
       wx.showToast({
@@ -369,8 +300,6 @@ Page({
       return;
     }
 
-    const request = require('../../../utils/request');
-
     // 使用格式化后的日期（如果有的话），否则使用原始日期
     let confirmedDate = date;
     if (!confirmedDate && order.appointment.expectedDate) {
@@ -378,10 +307,6 @@ Page({
     }
 
     const confirmedTimeSlot = slot || order.appointment.expectedTimeSlot || '08:00-10:00';
-
-    console.log('确认日期:', confirmedDate);
-    console.log('确认时间段:', confirmedTimeSlot);
-    console.log('====================================');
 
     wx.showModal({
       title: '确认到店时间',
@@ -451,6 +376,8 @@ Page({
     });
   },
 
+  noop() {},
+
   // 选择时间段
   onSelectTimeSlot(e) {
     const { time } = e.currentTarget.dataset;
@@ -475,7 +402,6 @@ Page({
       return;
     }
 
-    const request = require('../../../utils/request');
     const selectedSlot = this.data.availableTimeSlots.find(
       slot => slot.time === this.data.selectedTimeSlot
     );
@@ -541,6 +467,11 @@ Page({
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = this.formatDate(tomorrow);
+    const buildSlotDisplay = (dayLabel, dateText, option) => ({
+      displayTime: `${dayLabel} ${option.label}`,
+      displayText: `${dayLabel} ${option.label}`,
+      description: `${dateText} · ${option.description}`
+    });
 
     // 生成今天的时间段（只保留未过时的）
     timeOptions.forEach(option => {
@@ -555,7 +486,8 @@ Page({
           timeSlot: option.timeSlot,
           displayTime: option.label,
           displayText: `今天 ${option.timeSlot}`,
-          description: option.description
+          description: option.description,
+          ...buildSlotDisplay('今天', todayStr, option)
         });
       }
     });
@@ -568,7 +500,8 @@ Page({
         timeSlot: option.timeSlot,
         displayTime: option.label,
         displayText: `明天 ${option.timeSlot}`,
-        description: option.description
+        description: option.description,
+        ...buildSlotDisplay('明天', tomorrowStr, option)
       });
     });
 

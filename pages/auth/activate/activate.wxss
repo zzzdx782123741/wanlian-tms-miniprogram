@@ -37,8 +37,10 @@
 }
 
 .tips-icon {
-  font-size: 48rpx;
   margin-right: 20rpx;
+  width: 48rpx;
+  height: 48rpx;
+  flex-shrink: 0;
 }
 
 .tips-content {

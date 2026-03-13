@@ -89,7 +89,7 @@
 
     <!-- 提示信息 -->
     <view class="tips-section">
-      <view class="tips-title">💡 温馨提示</view>
+      <view class="tips-title">温馨提示</view>
       <view class="tips-list">
         <view class="tip-item">• 地址信息将用于维修/保养申请时的服务地址</view>
         <view class="tip-item">• 设为默认地址后，会自动优先使用</view>

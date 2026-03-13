@@ -2,7 +2,7 @@
 <view class="page">
   <!-- 无权限提示 -->
   <view class="no-permission" wx:if="{{!hasPermission}}">
-    <text class="no-permission-icon">🔒</text>
+    <image class="no-permission-icon svg-icon-xl" src="/images/icons/lock.svg" mode="aspectFit" />
     <text class="no-permission-title">暂无访问权限</text>
     <text class="no-permission-text">技师角色无法访问车辆管理功能</text>
     <button class="back-home-btn" bindtap="goHome">
@@ -22,7 +22,7 @@
     <view class="vehicle-list">
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{!loading && vehicles.length === 0}}">
-      <text class="empty-icon">🚚</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/truck.svg" mode="aspectFit" />
       <text class="empty-text">暂无车辆记录</text>
       <text class="empty-hint">请联系管理员为您分配车辆</text>
     </view>
@@ -44,7 +44,7 @@
       <!-- 车辆详情 -->
       <view class="vehicle-details">
         <view class="detail-row">
-          <text class="detail-icon">🚗</text>
+          <image class="detail-icon svg-icon-lg" src="/images/icons/car.svg" mode="aspectFit" />
           <view class="detail-info">
             <text class="detail-label">品牌车型</text>
             <text class="detail-value">{{item.brand}} {{item.model}}</text>
@@ -52,7 +52,7 @@
         </view>
 
         <view class="detail-row" wx:if="{{item.year}}">
-          <text class="detail-icon">📅</text>
+          <image class="detail-icon svg-icon-lg" src="/images/icons/calendar.svg" mode="aspectFit" />
           <view class="detail-info">
             <text class="detail-label">年份</text>
             <text class="detail-value">{{item.year}}年</text>
@@ -60,7 +60,7 @@
         </view>
 
         <view class="detail-row" wx:if="{{item.vin}}">
-          <text class="detail-icon">🔢</text>
+          <image class="detail-icon svg-icon-lg" src="/images/icons/hash.svg" mode="aspectFit" />
           <view class="detail-info">
             <text class="detail-label">车架号</text>
             <text class="detail-value">{{item.vin}}</text>
@@ -76,7 +76,6 @@
           data-vehicle-id="{{item._id}}"
           disabled="{{item.status !== 'normal'}}"
         >
-          <text class="btn-icon">🔧</text>
           <text>报修</text>
         </button>
         <button
@@ -85,7 +84,6 @@
           data-vehicle-id="{{item._id}}"
           disabled="{{item.status !== 'normal'}}"
         >
-          <text class="btn-icon">🛠️</text>
           <text>保养</text>
         </button>
         <button
@@ -94,7 +92,6 @@
           data-vehicle-id="{{item._id}}"
           data-vehicle-plate="{{item.plateNumber}}"
         >
-          <text class="btn-icon">📋</text>
           <text>订单</text>
         </button>
       </view>

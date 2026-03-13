@@ -5,7 +5,7 @@ const { formatMoney, formatRelativeTime } = require('../../../utils/format');
 const { ACTIVITY_CONFIG } = require('../../../utils/constants');
 const { updateTabBarRole } = require('../../../utils/tabbar-helper');
 const { navigateToOrderDetail, navigateToTechnicianPerformance, navigateToOrders, navigateToStockDetail, standardPullRefresh } = require('../../../utils/page-helper');
-const { getStatusText } = require('../../../utils/order-config');
+const { getStatusText, normalizeOrderStatus } = require('../../../utils/order-config');
 
 Page({
   data: {
@@ -155,17 +155,17 @@ Page({
       if (description && description.includes('-')) {
         const parts = description.split('-');
         plateNumber = parts[0].trim();
-        const status = parts[1].trim();
-        // 将英文状态转换为中文
-        statusText = getStatusText(status) || status;
-        description = `${plateNumber} ${statusText}`;
+        const rawStatus = parts.slice(1).join('-').trim();
+        const normalizedStatus = normalizeOrderStatus(rawStatus);
+        statusText = getStatusText(normalizedStatus);
+        description = `${plateNumber} ${statusText === '未知状态' ? '订单状态更新' : statusText}`;
       }
 
       return {
         id: act._id,
         type: act.type,
         icon: config.icon,
-        title: '订单动态',  // 统一标题
+        title: act.title && !/[a-z]{3,}/i.test(act.title) ? act.title : '订单动态',
         description: description,
         time: formatRelativeTime(act.createdAt),
         orderId: act.orderId
@@ -269,9 +269,9 @@ Page({
       ],
       lowStockItems: lowStockItems,
       recentActivities: [
-        { id: 'a1', type: 'order', icon: '📋', title: '新报修申请', description: '粤A·99999 待审批', time: '10分钟前', orderId: 'o5' },
-        { id: 'a2', type: 'addon', icon: '⚠️', title: '待审批增项', description: '陈技师提交了 粤A·88888 增项', time: '25分钟前', orderId: 'o1' },
-        { id: 'a3', type: 'completed', icon: '✅', title: '订单完成', description: '王技师完成了 粤D·11111 保养', time: '1小时前', orderId: 'o6' }
+        { id: 'a1', type: 'order', icon: '/images/icons/clipboard.svg', title: '新报修申请', description: '粤A·99999 待审批', time: '10分钟前', orderId: 'o5' },
+        { id: 'a2', type: 'addon', icon: '/images/icons/warning-triangle.svg', title: '待审批增项', description: '陈技师提交了 粤A·88888 增项', time: '25分钟前', orderId: 'o1' },
+        { id: 'a3', type: 'completed', icon: '/images/icons/check-circle.svg', title: '订单完成', description: '王技师完成了 粤D·11111 保养', time: '1小时前', orderId: 'o6' }
       ]
     });
   },

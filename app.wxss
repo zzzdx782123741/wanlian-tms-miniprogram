@@ -55,6 +55,32 @@ text {
   word-break: break-all;
 }
 
+image.svg-icon {
+  width: 28rpx;
+  height: 28rpx;
+  flex-shrink: 0;
+}
+
+image.svg-icon-sm {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+image.svg-icon-md {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+image.svg-icon-lg {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+image.svg-icon-xl {
+  width: 96rpx;
+  height: 96rpx;
+}
+
 /* 标题样式 */
 .heading-1 {
   font-size: var(--font-size-3xl);

@@ -120,7 +120,7 @@
 
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{fleets.length === 0 && !loading}}">
-      <text class="empty-icon">🏢</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/building.svg" mode="aspectFit" />
       <text class="empty-text">暂无车队数据</text>
     </view>
   </view>

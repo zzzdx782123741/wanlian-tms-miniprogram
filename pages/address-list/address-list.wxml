@@ -9,7 +9,7 @@
   <!-- 地址列表 -->
   <view class="content">
     <view class="empty-tip" wx:if="{{addressList.length === 0}}">
-      <text class="empty-icon">📍</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/location-pin.svg" mode="aspectFit" />
       <text class="empty-text">暂无服务地址</text>
       <text class="empty-hint">点击下方按钮新增地址</text>
     </view>
@@ -38,7 +38,7 @@
         </view>
 
         <view class="address-detail">
-          <text class="address-icon">📍</text>
+          <image class="address-icon svg-icon-md" src="/images/icons/location-pin.svg" mode="aspectFit" />
           <text class="address-text">{{item.address}}</text>
         </view>
 

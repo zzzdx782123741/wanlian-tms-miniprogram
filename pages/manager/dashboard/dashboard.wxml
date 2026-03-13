@@ -4,28 +4,28 @@
     <view class="section-title">今日订单</view>
     <view class="stats-grid">
       <view class="stat-card" bindtap="goToOrders" data-type="pending">
-        <view class="stat-icon pending">📋</view>
+        <image class="stat-icon pending" src="/images/icons/clipboard.svg" mode="aspectFit" />
         <view class="stat-info">
           <view class="stat-count">{{stats.pendingOrders || 0}}</view>
           <view class="stat-label">待处理</view>
         </view>
       </view>
       <view class="stat-card" bindtap="goToOrders" data-type="processing">
-        <view class="stat-icon processing">🔧</view>
+        <image class="stat-icon processing" src="/images/icons/wrench.svg" mode="aspectFit" />
         <view class="stat-info">
           <view class="stat-count">{{stats.processingOrders || 0}}</view>
           <view class="stat-label">处理中</view>
         </view>
       </view>
       <view class="stat-card" bindtap="goToOrders" data-type="completed">
-        <view class="stat-icon completed">✅</view>
+        <image class="stat-icon completed" src="/images/icons/check-circle.svg" mode="aspectFit" />
         <view class="stat-info">
           <view class="stat-count">{{stats.completedToday || 0}}</view>
           <view class="stat-label">今日完成</view>
         </view>
       </view>
       <view class="stat-card" bindtap="goToOrders" data-type="all">
-        <view class="stat-icon income">💰</view>
+        <image class="stat-icon income" src="/images/icons/money.svg" mode="aspectFit" />
         <view class="stat-info">
           <view class="stat-value">¥{{todayIncome}}</view>
           <view class="stat-label">今日营收</view>
@@ -55,7 +55,7 @@
           </view>
           <view class="technician-name">{{item.name}}</view>
           <view class="technician-task">
-            <text class="task-icon">{{item.status === 'busy' ? '🔧' : '🕘'}}</text>
+            <image class="task-icon" src="{{item.status === 'busy' ? '/images/icons/wrench.svg' : '/images/icons/clock.svg'}}" mode="aspectFit" />
             <text>{{item.currentTaskText}}</text>
           </view>
           <view class="technician-stats">
@@ -80,7 +80,7 @@
         data-activity="{{item}}"
       >
         <view class="activity-icon {{item.type}}">
-          <text class="icon-text">{{item.icon}}</text>
+          <image class="icon-text" src="{{item.icon}}" mode="aspectFit" />
         </view>
         <view class="activity-content">
           <view class="activity-title">{{item.title}}</view>

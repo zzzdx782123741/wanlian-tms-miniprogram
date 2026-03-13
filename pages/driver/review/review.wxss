@@ -91,7 +91,9 @@
 
 .address-icon {
   margin-right: 8rpx;
-  font-size: 28rpx;
+  width: 28rpx;
+  height: 28rpx;
+  flex-shrink: 0;
 }
 
 /* 评分区域 */
@@ -121,8 +123,10 @@
 }
 
 .label-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   margin-right: 12rpx;
+  flex-shrink: 0;
 }
 
 .label-text {
@@ -320,11 +324,6 @@
 
 .submit-btn::after {
   border: none;
-}
-
-.submit-btn .btn-icon {
-  font-size: 32rpx;
-  margin-right: 12rpx;
 }
 
 .skip-btn {

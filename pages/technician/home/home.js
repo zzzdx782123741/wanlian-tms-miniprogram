@@ -173,7 +173,7 @@ Page({
           driverPhone: '138****8001',
           status: 'awaiting_time_confirmation',
           statusText: '待确认到店时间',
-          statusIcon: '⏰',
+          statusIcon: '/images/icons/clock.svg',
           faultDescription: '刹车异响，制动距离变长',
           createTime: '今天 10:00'
         },
@@ -185,7 +185,7 @@ Page({
           driverPhone: '139****6666',
           status: 'pending_assessment',
           statusText: '待接车检查',
-          statusIcon: '🔍',
+          statusIcon: '/images/icons/search.svg',
           faultDescription: '离合器打滑，挂挡困难',
           createTime: '今天 11:30'
         },
@@ -197,7 +197,7 @@ Page({
           driverPhone: '137****1234',
           status: 'in_repair',
           statusText: '维修中',
-          statusIcon: '🔧',
+          statusIcon: '/images/icons/wrench.svg',
           faultDescription: '定期保养（10万公里）',
           createTime: '今天 15:00'
         }

@@ -108,7 +108,8 @@
 }
 
 .placeholder-icon-small {
-  font-size: 40rpx;
+  width: 40rpx;
+  height: 40rpx;
   margin-right: 12rpx;
 }
 
@@ -500,8 +501,8 @@
 }
 
 .mileage-photo-icon {
-  font-size: 32rpx;
-  line-height: 1;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .mileage-photo-text {
@@ -607,7 +608,8 @@
 }
 
 .upload-icon {
-  font-size: 36rpx;
+  width: 36rpx;
+  height: 36rpx;
 }
 
 .upload-text {
@@ -1053,7 +1055,8 @@
 }
 
 .media-picker-big-icon {
-  font-size: 88rpx;
+  width: 88rpx;
+  height: 88rpx;
   margin-bottom: 16rpx;
 }
 
@@ -1084,7 +1087,8 @@
 }
 
 .location-icon {
-  font-size: 48rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-right: 16rpx;
 }
 
@@ -1130,7 +1134,8 @@
 }
 
 .tip-icon {
-  font-size: 40rpx;
+  width: 40rpx;
+  height: 40rpx;
   margin-right: 16rpx;
   flex-shrink: 0;
 }
@@ -1191,7 +1196,8 @@
 }
 
 .location-option-icon {
-  font-size: 56rpx;
+  width: 56rpx;
+  height: 56rpx;
   margin-right: 20rpx;
 }
 
@@ -1250,7 +1256,8 @@
 }
 
 .address-item-icon {
-  font-size: 44rpx;
+  width: 44rpx;
+  height: 44rpx;
   margin-right: 16rpx;
 }
 
@@ -1296,7 +1303,8 @@
 }
 
 .manage-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   margin-right: 8rpx;
 }
 
@@ -1336,7 +1344,8 @@
 }
 
 .hint-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   margin-right: 12rpx;
 }
 
@@ -1473,7 +1482,8 @@
 }
 
 .date-icon {
-  font-size: 40rpx;
+  width: 40rpx;
+  height: 40rpx;
   margin-right: 16rpx;
 }
 
@@ -2069,7 +2079,14 @@
 }
 
 .store-item-location {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
   color: #6B7280;
+}
+
+.store-item-inline-icon {
+  flex-shrink: 0;
 }
 
 .store-item-rating {
@@ -2092,7 +2109,8 @@
 }
 
 .detail-icon {
-  font-size: 28rpx;
+  width: 28rpx;
+  height: 28rpx;
 }
 
 .detail-text {
@@ -2269,7 +2287,8 @@
 }
 
 .info-icon {
-  font-size: 28rpx;
+  width: 28rpx;
+  height: 28rpx;
   flex-shrink: 0;
 }
 
@@ -2331,9 +2350,10 @@
 }
 
 .no-reviews-icon {
-  font-size: 64rpx;
+  width: 64rpx;
+  height: 64rpx;
   display: block;
-  margin-bottom: 16rpx;
+  margin: 0 auto 16rpx;
 }
 
 .no-reviews-text {
@@ -2367,4 +2387,3 @@
   font-size: 32rpx;
   font-weight: 500;
 }
-

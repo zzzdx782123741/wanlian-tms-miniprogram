@@ -36,14 +36,14 @@
 
         <!-- 服务地址 -->
         <view class="location-info" wx:if="{{item.serviceLocation}}">
-          <text class="location-icon">📍</text>
+          <image class="location-icon svg-icon-md" src="/images/icons/location-pin.svg" mode="aspectFit" />
           <text class="location-text">{{item.serviceLocation.address}}</text>
         </view>
 
         <!-- 司机信息 -->
         <view class="reporter-info">
           <view class="reporter-header">
-            <text class="reporter-icon">👤</text>
+            <image class="reporter-icon svg-icon-sm" src="/images/icons/user.svg" mode="aspectFit" />
             <text class="reporter-label">提交人</text>
           </view>
           <view class="reporter-detail">
@@ -52,7 +52,6 @@
           </view>
           <!-- 联系按钮 -->
           <button class="call-reporter-btn" wx:if="{{item.reporterId.phone}}" catchtap="onCallReporter" data-phone="{{item.reporterId.phone}}">
-            <text class="btn-icon">📞</text>
             联系司机
           </button>
         </view>
@@ -74,7 +73,7 @@
 
     <!-- 空状态 -->
     <view wx:else class="empty-state">
-      <text class="empty-icon">📋</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/clipboard.svg" mode="aspectFit" />
       <text class="empty-text">暂无待审批订单</text>
     </view>
   </view>

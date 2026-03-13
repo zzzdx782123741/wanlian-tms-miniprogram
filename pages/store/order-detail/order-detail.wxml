@@ -7,12 +7,16 @@
         {{order.statusText}}
       </view>
       <text class="status-tip">{{order.statusTip}}</text>
+      <text class="order-type">{{order.typeText}}</text>
       <text class="order-time">{{order.createdAtAgo}} · {{order.createdAt}}</text>
     </view>
 
     <!-- 车辆信息 -->
     <view class="order-section">
-      <view class="section-title">🚛 车辆信息</view>
+      <view class="section-title">
+        <image class="section-title-icon svg-icon-md" src="/images/icons/truck.svg" mode="aspectFit" />
+        <text>车辆信息</text>
+      </view>
       <view class="vehicle-card">
         <view class="vehicle-plate">{{order.vehicleId.plateNumber}}</view>
         <view class="vehicle-details">
@@ -34,7 +38,10 @@
 
     <!-- 故障信息 -->
     <view class="order-section">
-      <view class="section-title">🔧 故障信息</view>
+      <view class="section-title">
+        <image class="section-title-icon svg-icon-md" src="/images/icons/wrench.svg" mode="aspectFit" />
+        <text>故障信息</text>
+      </view>
       <view class="fault-card">
         <view class="fault-description">{{order.faultDescription}}</view>
 
@@ -76,7 +83,10 @@
 
     <!-- 报修人信息 -->
     <view class="order-section">
-      <view class="section-title">👤 报修人信息</view>
+      <view class="section-title">
+        <image class="section-title-icon svg-icon-md" src="/images/icons/user.svg" mode="aspectFit" />
+        <text>报修人信息</text>
+      </view>
       <view class="info-card">
         <view class="info-row">
           <text class="info-label">姓名</text>
@@ -91,7 +101,10 @@
 
     <!-- 预约信息 -->
     <view class="order-section">
-      <view class="section-title">📅 预约信息</view>
+      <view class="section-title">
+        <image class="section-title-icon svg-icon-md" src="/images/icons/calendar.svg" mode="aspectFit" />
+        <text>预约信息</text>
+      </view>
       <view class="info-card">
         <view class="info-row" wx:if="{{order.appointment && order.appointment.expectedDate}}">
           <text class="info-label">期望到店时间</text>
@@ -111,7 +124,10 @@
     <!-- 接车检查信息（如果已填写） -->
     <block wx:if="{{order.receiveCheck}}">
       <view class="order-section">
-        <view class="section-title">📝 接车检查</view>
+        <view class="section-title">
+          <image class="section-title-icon svg-icon-md" src="/images/icons/search.svg" mode="aspectFit" />
+          <text>接车检查</text>
+        </view>
         <view class="check-card">
           <view class="check-item">
             <text class="check-label">确认里程</text>
@@ -146,7 +162,10 @@
     <!-- 报价信息（如果已报价） -->
     <block wx:if="{{order.quote}}">
       <view class="order-section">
-        <view class="section-title">💰 报价信息</view>
+        <view class="section-title">
+          <image class="section-title-icon svg-icon-md" src="/images/icons/money.svg" mode="aspectFit" />
+          <text>报价信息</text>
+        </view>
         <view class="quote-card">
           <view class="quote-items">
             <view class="quote-item" wx:for="{{order.quote.items}}" wx:key="index" wx:for-item="quoteItem">
@@ -186,7 +205,10 @@
     <!-- 维修日志 -->
     <block wx:if="{{order.logs && order.logs.length > 0}}">
       <view class="order-section">
-        <view class="section-title">📋 维修日志</view>
+        <view class="section-title">
+          <image class="section-title-icon svg-icon-md" src="/images/icons/note.svg" mode="aspectFit" />
+          <text>维修日志</text>
+        </view>
         <view class="logs-card">
           <view class="log-item" wx:for="{{order.logs}}" wx:key="index" wx:for-item="log">
             <view class="log-header">

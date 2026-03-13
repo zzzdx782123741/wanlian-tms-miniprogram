@@ -27,7 +27,9 @@
 
 .section-title .icon {
   margin-right: var(--spacing-xs);
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
 }
 
 .required-mark {
@@ -85,8 +87,10 @@
 }
 
 .hint-icon {
-  font-size: 28rpx;
+  width: 28rpx;
+  height: 28rpx;
   margin-right: var(--spacing-xs);
+  flex-shrink: 0;
 }
 
 .hint-text {
@@ -157,7 +161,8 @@
 }
 
 .upload-icon {
-  font-size: 48rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-bottom: var(--spacing-xs);
 }
 
@@ -249,10 +254,19 @@
 }
 
 .hint-title {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   color: #065F46;
   margin-bottom: var(--spacing-sm);
+}
+
+.hint-title-icon {
+  width: 28rpx;
+  height: 28rpx;
+  flex-shrink: 0;
 }
 
 .hint-steps {

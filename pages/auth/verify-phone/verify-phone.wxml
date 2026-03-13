@@ -53,7 +53,7 @@
 
     <!-- 提示信息 -->
     <view class="tips">
-      <text class="tip-icon">ℹ️</text>
+      <image class="tip-icon svg-icon-sm" src="/images/icons/info-circle.svg" mode="aspectFit" />
       <text class="tip-text">请输入系统登记的手机号，验证成功后将绑定当前微信</text>
     </view>
   </view>

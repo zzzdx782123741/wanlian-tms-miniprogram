@@ -1,5 +1,4 @@
 // pages/technician/notifications/notifications.js
-const app = getApp();
 const request = require('../../../utils/request');
 
 Page({
@@ -13,7 +12,6 @@ Page({
   },
 
   onLoad(options) {
-    // 如果有传入的tab参数，切换到对应tab
     if (options.tab) {
       this.setData({ activeTab: options.tab });
     }
@@ -23,9 +21,6 @@ Page({
     this.loadData();
   },
 
-  /**
-   * 加载数据
-   */
   async loadData() {
     try {
       wx.showLoading({ title: '加载中...' });
@@ -37,12 +32,11 @@ Page({
         this.setData({
           notifications,
           totalCount: notifications.length,
-          orderCount: notifications.filter(n => n.type === 'order').length,
-          systemCount: notifications.filter(n => n.type === 'system').length,
-          hasUnread: notifications.some(n => !n.read)
+          orderCount: notifications.filter((n) => n.type === 'order').length,
+          systemCount: notifications.filter((n) => n.type === 'system').length,
+          hasUnread: notifications.some((n) => !n.read)
         });
 
-        // 根据tab过滤
         this.filterNotifications();
       }
     } catch (error) {
@@ -56,16 +50,13 @@ Page({
     }
   },
 
-  /**
-   * 格式化通知数据
-   */
   formatNotifications(list) {
-    return list.map(item => {
+    return list.map((item) => {
       const type = item.category || 'order';
       return {
         id: item._id,
         type,
-        icon: this.getNotificationIcon(type, item.title),
+        icon: this.getNotificationIcon(type, item.title || ''),
         title: item.title,
         description: item.content,
         time: this.formatTime(item.createdAt),
@@ -76,54 +67,40 @@ Page({
     });
   },
 
-  /**
-   * 获取通知图标
-   */
   getNotificationIcon(type, title) {
     if (type === 'system') {
-      return '📢';
+      return '/images/icons/bell.svg';
     }
 
-    // 根据标题判断订单通知类型
-    if (title.includes('新订单')) return '📋';
-    if (title.includes('审批')) return '✅';
-    if (title.includes('增项')) return '📝';
-    if (title.includes('完工')) return '🔧';
-    if (title.includes('确认')) return '✓';
+    if (title.includes('新订单')) return '/images/icons/clipboard.svg';
+    if (title.includes('审批')) return '/images/icons/check-circle.svg';
+    if (title.includes('增项')) return '/images/icons/note.svg';
+    if (title.includes('完工')) return '/images/icons/wrench.svg';
+    if (title.includes('确认')) return '/images/icons/check-circle.svg';
 
-    return '🔔';
+    return '/images/icons/bell.svg';
   },
 
-  /**
-   * 过滤通知
-   */
   filterNotifications() {
     const { activeTab } = this.data;
     let filtered = this.data.notifications;
 
     if (activeTab !== 'all') {
-      filtered = filtered.filter(n => n.type === activeTab);
+      filtered = filtered.filter((n) => n.type === activeTab);
     }
 
     this.setData({ notifications: filtered });
   },
 
-  /**
-   * 切换tab
-   */
   switchTab(e) {
     const { tab } = e.currentTarget.dataset;
     this.setData({ activeTab: tab });
     this.loadData();
   },
 
-  /**
-   * 处理通知点击
-   */
   async handleNotification(e) {
     const { item } = e.currentTarget.dataset;
 
-    // 标记为已读
     if (!item.read) {
       try {
         await request.put(`/technician/notifications/${item.id}/read`);
@@ -134,7 +111,6 @@ Page({
       }
     }
 
-    // 如果是订单通知，跳转到订单详情
     if (item.type === 'order' && item.orderId) {
       wx.navigateTo({
         url: `/pages/order-detail/order-detail?id=${item.orderId}`
@@ -142,17 +118,13 @@ Page({
     }
   },
 
-  /**
-   * 全部标记为已读
-   */
   async markAllRead() {
     try {
       wx.showLoading({ title: '处理中...' });
 
       await request.put('/technician/notifications/read-all');
 
-      // 更新本地数据
-      const notifications = this.data.notifications.map(n => ({ ...n, read: true }));
+      const notifications = this.data.notifications.map((n) => ({ ...n, read: true }));
       this.setData({
         notifications,
         hasUnread: false
@@ -173,9 +145,6 @@ Page({
     }
   },
 
-  /**
-   * 格式化时间
-   */
   formatTime(time) {
     if (!time) return '';
 
@@ -183,13 +152,11 @@ Page({
     const now = new Date();
     const diff = now - date;
 
-    // 1小时内
     if (diff < 3600000) {
       const minutes = Math.floor(diff / 60000);
       return `${minutes}分钟前`;
     }
 
-    // 今天
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
@@ -199,7 +166,6 @@ Page({
       return `今天 ${hours}:${minutes}`;
     }
 
-    // 昨天
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
@@ -209,15 +175,11 @@ Page({
       return `昨天 ${hours}:${minutes}`;
     }
 
-    // 更早
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
     return `${month}-${day}`;
   },
 
-  /**
-   * 下拉刷新
-   */
   onPullDownRefresh() {
     this.loadData();
     setTimeout(() => {

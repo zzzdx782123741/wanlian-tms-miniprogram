@@ -190,8 +190,9 @@ page {
 }
 
 .status-icon {
-  font-size: 24rpx;
-  font-weight: 700;
+  width: 24rpx;
+  height: 24rpx;
+  flex-shrink: 0;
 }
 
 .status-text {
@@ -215,7 +216,8 @@ page {
 }
 
 .info-icon {
-  font-size: 24rpx;
+  width: 24rpx;
+  height: 24rpx;
   opacity: 0.6;
   flex-shrink: 0;
 }
@@ -280,7 +282,8 @@ page {
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   opacity: 0.3;
 }
 

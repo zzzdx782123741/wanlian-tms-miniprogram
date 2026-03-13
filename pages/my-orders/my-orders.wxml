@@ -49,7 +49,7 @@
   <view class="order-list">
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{!loading && orders.length === 0}}">
-      <text class="empty-icon">🔧</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/clipboard.svg" mode="aspectFit" />
       <text class="empty-text">暂无订单</text>
     </view>
 
@@ -74,7 +74,7 @@
 
       <!-- 车辆信息 -->
       <view class="order-vehicle">
-        <text class="vehicle-icon">🚚</text>
+        <image class="vehicle-icon svg-icon-lg" src="/images/icons/truck.svg" mode="aspectFit" />
         <view class="vehicle-info">
           <view class="vehicle-plate">{{item.vehicleId.plateNumber}}</view>
           <view class="vehicle-model">{{item.vehicleId.brand}} {{item.vehicleId.model}}</view>
@@ -95,7 +95,7 @@
 
       <!-- 进度提示 -->
       <view class="order-progress-hint" wx:if="{{item.nextAction}}">
-        <text class="hint-icon">💡</text>
+        <image class="hint-icon svg-icon-md" src="/images/icons/lightbulb.svg" mode="aspectFit" />
         <text class="hint-text">{{item.nextAction}}</text>
       </view>
     </view>

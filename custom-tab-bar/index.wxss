@@ -9,7 +9,7 @@
   display: flex;
   padding-bottom: env(safe-area-inset-bottom);
   box-shadow: 0 -2rpx 16rpx rgba(0, 0, 0, 0.08);
-  z-index: 9999;
+  z-index: 900;
 }
 
 .tab-bar-item {

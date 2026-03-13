@@ -173,7 +173,8 @@
 }
 
 .vehicle-icon {
-  font-size: 48rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-right: 16rpx;
 }
 
@@ -258,7 +259,8 @@
 }
 
 .hint-icon {
-  font-size: 32rpx;
+  width: 32rpx;
+  height: 32rpx;
   margin-right: 12rpx;
 }
 
@@ -282,7 +284,8 @@
 }
 
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   margin-bottom: 32rpx;
   opacity: 0.3;
 }

@@ -87,6 +87,7 @@ Page({
     showLocationPicker: false, // 位置选择弹窗
 
     // 期望到店时间（新字段：日期+时间段）
+    today: '',
     expectedDate: '', // 期望日期 YYYY-MM-DD
     expectedTimeSlot: '', // 期望时间段 08:00-10:00, 10:00-12:00, 14:00-16:00, 16:00-18:00, 18:00-20:00
     expectedTimeSlotIndex: -1, // 选中的时间段索引，-1表示未选择
@@ -101,6 +102,7 @@ Page({
       { label: '下午 16:00-18:00', value: '16:00-18:00' },
       { label: '晚上 18:00-20:00', value: '18:00-20:00' }
     ],
+    availableTimeSlotOptions: [],
 
     // 时间选择列表（半小时为单位，7:00-22:00）
     timeSlots: [],
@@ -160,10 +162,11 @@ Page({
       today: `${year}-${month}-${day}`,
       appointmentDate: `${year}-${month}-${day}`, // 默认选中今天
       expectedDate: `${year}-${month}-${day}`, // 默认期望日期为今天
-      expectedTimeSlot: '09:00-11:00', // 默认时间段
+      expectedTimeSlot: '',
       expectedTimeSlotIndex: -1, // 默认不选中任何卡片
       timeSlots: timeSlots
     });
+    this.syncExpectedTimeSlotOptions(`${year}-${month}-${day}`);
 
     this.loadVehicles();
     this.getCurrentLocation();
@@ -180,6 +183,84 @@ Page({
   onShow() {
     // 从地址管理页面返回时，重新加载常用地址
     this.loadSavedAddresses();
+  },
+
+  getTimeSlotStartMinutes(timeSlot) {
+    if (!timeSlot || typeof timeSlot !== 'string' || !timeSlot.includes('-')) {
+      return -1;
+    }
+
+    const [startTime] = timeSlot.split('-');
+    const [hour, minute] = startTime.split(':').map(Number);
+    if (!Number.isFinite(hour) || !Number.isFinite(minute)) {
+      return -1;
+    }
+
+    return hour * 60 + minute;
+  },
+
+  getCurrentMinutes() {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
+  },
+
+  syncExpectedTimeSlotOptions(targetDate, preferredValue = '') {
+    const todayValue = this.data.today || targetDate;
+    const isToday = targetDate === todayValue;
+    const currentMinutes = this.getCurrentMinutes();
+    const availableTimeSlotOptions = (this.data.timeSlotOptions || []).filter((item) => {
+      if (!isToday) {
+        return true;
+      }
+      return this.getTimeSlotStartMinutes(item.value) >= currentMinutes;
+    });
+
+    const selectedIndex = availableTimeSlotOptions.findIndex(item => item.value === preferredValue);
+    this.setData({
+      expectedDate: targetDate,
+      availableTimeSlotOptions,
+      expectedTimeSlot: selectedIndex >= 0 ? availableTimeSlotOptions[selectedIndex].value : '',
+      expectedTimeSlotIndex: selectedIndex
+    });
+    return availableTimeSlotOptions;
+  },
+
+  isExpectedTimeSlotValid() {
+    if (!this.data.expectedDate || !this.data.expectedTimeSlot) {
+      return false;
+    }
+
+    if (this.data.expectedDate !== this.data.today) {
+      return true;
+    }
+
+    return this.getTimeSlotStartMinutes(this.data.expectedTimeSlot) >= this.getCurrentMinutes();
+  },
+
+  getSubmitErrorTitle() {
+    return this.data.type === 'maintenance' ? '提交保养申请失败' : '创建订单失败';
+  },
+
+  getErrorMessage(error, fallback = '提交失败') {
+    if (!error) {
+      return fallback;
+    }
+
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    return error.message || error.error || error.msg || error.data?.message || fallback;
+  },
+
+  showSubmitError(error) {
+    const message = this.getErrorMessage(error, '提交失败');
+    wx.showModal({
+      title: this.getSubmitErrorTitle(),
+      content: message,
+      showCancel: false,
+      confirmText: '我知道了'
+    });
   },
 
   /**
@@ -784,7 +865,10 @@ Page({
    */
   onSelectTimeSlot(e) {
     const index = parseInt(e.currentTarget.dataset.index);
-    const timeSlot = this.data.timeSlotOptions[index];
+    const timeSlot = this.data.availableTimeSlotOptions[index];
+    if (!timeSlot) {
+      return;
+    }
     this.setData({
       expectedTimeSlot: timeSlot.value,
       expectedTimeSlotIndex: index
@@ -810,10 +894,15 @@ Page({
    * 选择期望日期
    */
   onExpectedDateChange(e) {
-    this.setData({
-      expectedDate: e.detail.value
-    });
-    console.log('选择期望日期:', e.detail.value);
+    const nextDate = e.detail.value;
+    const availableTimeSlotOptions = this.syncExpectedTimeSlotOptions(nextDate, this.data.expectedTimeSlot);
+    if (nextDate === this.data.today && availableTimeSlotOptions.length === 0) {
+      wx.showToast({
+        title: '今日可预约时段已过，请选择其他日期',
+        icon: 'none'
+      });
+    }
+    console.log('选择期望日期:', nextDate);
   },
 
   /**
@@ -1165,6 +1254,15 @@ Page({
       return;
     }
 
+    if (!this.isExpectedTimeSlotValid()) {
+      this.syncExpectedTimeSlotOptions(this.data.expectedDate, this.data.expectedTimeSlot);
+      wx.showToast({
+        title: '当前时间段已不可选，请重新选择',
+        icon: 'none'
+      });
+      return;
+    }
+
     // 验证当前里程（必填）
     if (!this.data.mileage) {
       wx.showToast({
@@ -1323,7 +1421,7 @@ Page({
         orderData.storeId = store._id;
       }
 
-      const orderResult = await request.post(apiUrl, orderData);
+      const orderResult = await request.post(apiUrl, orderData, { silentError: true });
 
       wx.showToast({
         title: '提交成功',
@@ -1352,10 +1450,7 @@ Page({
 
     } catch (error) {
       console.error('提交申请失败:', error);
-      wx.showToast({
-        title: error.message || '提交失败',
-        icon: 'none'
-      });
+      this.showSubmitError(error);
     } finally {
       this.setData({ submitting: false });
     }

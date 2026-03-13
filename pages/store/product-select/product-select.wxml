@@ -11,7 +11,7 @@
         confirm-type="search"
         bindconfirm="onSearchConfirm"
       />
-      <text class="search-icon">🔍</text>
+      <image class="search-icon svg-icon-md" src="/images/icons/search.svg" mode="aspectFit" />
     </view>
 
     <!-- 分类筛选 -->
@@ -73,7 +73,7 @@
         >
           <image
             class="product-image"
-            src="{{item.images && item.images.length > 0 ? item.images[0] : '/images/product-placeholder.png'}}"
+            src="{{item.images && item.images.length > 0 ? item.images[0] : '/images/default-goods-image.png'}}"
             mode="aspectFill"
           />
           <view class="image-hint">点击放大</view>
@@ -87,12 +87,12 @@
           </view>
 
           <view class="product-spec">
-            <text class="spec-item" wx:if="{{item.brand}}">🏷️ {{item.brand}}</text>
-            <text class="spec-item" wx:if="{{item.specText || item.spec}}">📐 {{item.specText || item.spec}}</text>
+            <text class="spec-item" wx:if="{{item.brand}}">品牌 {{item.brand}}</text>
+            <text class="spec-item" wx:if="{{item.specText || item.spec}}">规格 {{item.specText || item.spec}}</text>
           </view>
 
           <view class="product-models">
-            <text class="models-icon">🚗</text>
+            <image class="models-icon svg-icon-sm" src="/images/icons/car.svg" mode="aspectFit" />
             <text class="models-text">{{item.isUniversal ? '通用' : item.compatibleModels.join('、')}}</text>
           </view>
 
@@ -106,7 +106,7 @@
 
           <!-- 选择按钮 -->
           <view class="select-btn" bindtap="onSelectProduct" data-product="{{item}}">
-            <text class="select-icon">➕</text>
+            <text class="select-icon">+</text>
             <text class="select-text">添加</text>
           </view>
         </view>
@@ -115,7 +115,7 @@
 
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{!loading && products.length === 0}}">
-      <text class="empty-icon">📦</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/package-box.svg" mode="aspectFit" />
       <text class="empty-text">暂无商品</text>
       <text class="empty-hint">请尝试更换搜索关键词或分类</text>
     </view>

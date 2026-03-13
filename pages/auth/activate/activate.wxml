@@ -8,7 +8,7 @@
 
   <!-- 提示信息 -->
   <view class="tips-card glass-card">
-    <view class="tips-icon">ℹ️</view>
+    <image class="tips-icon svg-icon-lg" src="/images/icons/info-circle.svg" mode="aspectFit" />
     <view class="tips-content">
       <text class="tips-title">首次登录需要激活</text>
       <text class="tips-text">请输入车队管理员为您添加司机信息时使用的手机号</text>

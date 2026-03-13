@@ -8,14 +8,14 @@
       </view>
       <view class="page-title">订单中心</view>
       <view class="scan-btn" bindtap="scanCode">
-        <text class="scan-icon">🔲</text>
+        <image class="scan-icon svg-icon-md" src="/images/icons/scan.svg" mode="aspectFit" />
       </view>
     </view>
   </view>
 
   <!-- 搜索框 -->
   <view class="search-box">
-    <text class="search-icon">🔍</text>
+    <image class="search-icon svg-icon-md" src="/images/icons/search.svg" mode="aspectFit" />
     <input
       class="search-input"
       type="text"
@@ -72,15 +72,15 @@
       <!-- 订单信息 -->
       <view class="order-info">
         <view class="info-row">
-          <text class="info-icon">👤</text>
+          <image class="info-icon svg-icon-sm" src="/images/icons/user.svg" mode="aspectFit" />
           <text class="info-text">{{item.driverName}}</text>
         </view>
         <view class="info-row" wx:if="{{item.technicianName}}">
-          <text class="info-icon">🔧</text>
+          <image class="info-icon svg-icon-sm" src="/images/icons/wrench.svg" mode="aspectFit" />
           <text class="info-text">技师: {{item.technicianName}}</text>
         </view>
         <view class="info-row">
-          <text class="info-icon">⏰</text>
+          <image class="info-icon svg-icon-sm" src="/images/icons/clock.svg" mode="aspectFit" />
           <text class="info-text">{{item.appointmentTime}}</text>
         </view>
       </view>
@@ -97,7 +97,7 @@
 
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{orders.length === 0}}">
-      <text class="empty-icon">📋</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/clipboard.svg" mode="aspectFit" />
       <text class="empty-title">暂无订单</text>
       <text class="empty-desc" wx:if="{{searchQuery}}">未找到匹配的订单</text>
     </view>

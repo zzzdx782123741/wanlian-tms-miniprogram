@@ -1,0 +1,51 @@
+<view class="withdraw-page">
+  <view class="hero-card">
+    <view class="hero-label">当前可提现余额</view>
+    <view class="hero-amount">¥{{withdrawableBalance}}</view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">提现金额</view>
+    <view class="amount-input-row">
+      <text class="currency">¥</text>
+      <input
+        class="amount-input"
+        type="digit"
+        placeholder="请输入提现金额"
+        value="{{amount}}"
+        bindinput="onAmountInput"
+      />
+    </view>
+    <view class="quick-actions">
+      <view class="quick-btn" bindtap="fillAllAmount">全部提现</view>
+      <view class="quick-btn light" bindtap="clearAmount">清空</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">收款账户</view>
+    <view wx:if="{{bankAccountReady}}">
+      <view class="bank-title">{{bankAccount.bankName}}</view>
+      <view class="bank-sub">{{bankAccount.accountName}} {{maskedAccountNumber}}</view>
+      <view class="bank-sub" wx:if="{{bankAccount.branch}}">{{bankAccount.branch}}</view>
+    </view>
+    <view class="empty-hint" wx:else>请先在门店信息中完善收款账户信息</view>
+    <view class="link-btn" bindtap="goToStoreInfo">查看门店信息</view>
+  </view>
+
+  <view class="tips-card">
+    <view class="tips-title">提现说明</view>
+    <view class="tips-line">1. 提现申请提交后需要平台审核。</view>
+    <view class="tips-line">2. 待审核状态下可在详情页撤回申请。</view>
+    <view class="tips-line">3. 实际到账时间以银行处理时间为准。</view>
+  </view>
+
+  <button
+    class="submit-btn"
+    bindtap="submitWithdrawal"
+    loading="{{submitting}}"
+    disabled="{{submitting || !bankAccountReady}}"
+  >
+    确认申请
+  </button>
+</view>

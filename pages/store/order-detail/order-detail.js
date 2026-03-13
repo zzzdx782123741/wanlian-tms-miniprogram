@@ -116,6 +116,7 @@ Page({
 
     return {
       ...order,
+      typeText: order.type === 'maintenance' ? '保养订单' : '维修订单',
       statusText: statusInfo.text,
       statusType: statusInfo.type,
       statusTip: statusInfo.tip,

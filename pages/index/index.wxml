@@ -8,7 +8,10 @@
     <!-- 数据概览区域 -->
     <view class="stats-section">
       <view class="section-header-inline">
-        <view class="section-title">📊 数据概览</view>
+        <view class="section-title section-title-with-icon">
+          <image class="section-title-icon svg-icon-md" src="/images/icons/chart-bar.svg" mode="aspectFit" />
+          <text>数据概览</text>
+        </view>
       </view>
       <view class="stats-grid">
         <view class="stat-card" bindtap="goToVehicles">
@@ -33,7 +36,10 @@
     <!-- 待办事项区域 -->
     <view class="todo-section" wx:if="{{hasTodo}}">
       <view class="section-header-inline">
-        <view class="section-title">📋 待办事项</view>
+        <view class="section-title section-title-with-icon">
+          <image class="section-title-icon svg-icon-md" src="/images/icons/clipboard.svg" mode="aspectFit" />
+          <text>待办事项</text>
+        </view>
         <view class="more-link" bindtap="goToOrders" data-type="pending">查看全部 ›</view>
       </view>
 
@@ -50,6 +56,7 @@
             wx:key="orderId"
             bindtap="goToOrderDetail"
             data-id="{{item.orderId}}"
+            data-action="approve"
           >
             <view class="todo-item-left">
               <view class="todo-plate">{{item.plateNumber}}</view>
@@ -79,6 +86,7 @@
             wx:key="orderId"
             bindtap="goToOrderDetail"
             data-id="{{item.orderId}}"
+            data-action="approve"
           >
             <view class="todo-item-left">
               <view class="todo-plate">{{item.plateNumber}}</view>
@@ -124,14 +132,17 @@
 
     <!-- 空状态（无待办时显示） -->
     <view class="empty-todo" wx:else>
-      <text class="empty-icon">📋</text>
+      <image class="empty-icon svg-icon-xl" src="/images/icons/clipboard.svg" mode="aspectFit" />
       <text class="empty-text">暂无待办事项</text>
     </view>
 
     <!-- 最近动态区域（可选） -->
     <view class="activity-section" wx:if="{{recentActivities.length > 0}}">
       <view class="section-header-inline">
-        <view class="section-title">📊 最近动态</view>
+        <view class="section-title section-title-with-icon">
+          <image class="section-title-icon svg-icon-md" src="/images/icons/chart-bar.svg" mode="aspectFit" />
+          <text>最近动态</text>
+        </view>
       </view>
       <view class="activity-list">
         <view
@@ -141,7 +152,7 @@
           bindtap="goToOrderDetail"
           data-id="{{item.orderId}}"
         >
-          <text class="activity-icon">{{item.icon}}</text>
+          <image class="activity-icon svg-icon-md" src="{{item.icon}}" mode="aspectFit" />
           <text class="activity-desc">{{item.description}} · {{item.title}}</text>
           <text class="activity-time">{{item.time}}</text>
         </view>
@@ -167,7 +178,7 @@
         <view class="menu-card-bg" style="background: {{item.color}}"></view>
         <view class="menu-content-wrapper">
           <view class="menu-icon-wrapper">
-            <text class="menu-icon">{{item.icon}}</text>
+            <image class="menu-icon" src="{{item.icon}}" mode="aspectFit" />
           </view>
           <view class="menu-text">
             <view class="menu-title">{{item.title}}</view>

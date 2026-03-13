@@ -1,6 +1,4 @@
-<!--pages/manager/finance/finance.wxml-->
 <view class="finance-container">
-  <!-- 收入统计卡片 -->
   <view class="income-section">
     <view class="section-title">收入统计</view>
     <view class="income-cards">
@@ -15,47 +13,57 @@
     </view>
   </view>
 
-  <!-- 账户余额 -->
   <view class="section">
     <view class="section-title">账户余额</view>
     <view class="balance-card">
       <view class="balance-item">
         <view class="balance-label">可提现余额</view>
-        <view class="balance-value pending">¥{{pendingBalance}}</view>
+        <view class="balance-value pending">¥{{withdrawableBalance}}</view>
       </view>
       <view class="balance-item">
-        <view class="balance-label">已结算余额</view>
-        <view class="balance-value settled">¥{{settledBalance}}</view>
+        <view class="balance-label">已结算收入</view>
+        <view class="balance-value settled">¥{{settledIncome}}</view>
+      </view>
+      <view class="balance-item">
+        <view class="balance-label">待结算(D+1)</view>
+        <view class="balance-value pending">¥{{pendingSettlement}}</view>
       </view>
     </view>
   </view>
 
-  <!-- 提现操作 -->
   <view class="section">
     <view class="section-title">提现管理</view>
     <view class="withdraw-card">
-      <view class="withdraw-info">
-        <view class="withdraw-hint">当前可提现金额：¥{{pendingBalance}}</view>
-      </view>
+      <view class="withdraw-hint">当前可提现金额：¥{{withdrawableBalance}}</view>
       <button class="btn primary" bindtap="goToWithdraw">申请提现</button>
     </view>
   </view>
 
-  <!-- 提现记录 -->
   <view class="section">
     <view class="section-title">
       提现记录
-      <text class="more-btn" bindtap="goToWithdrawRecords">查看全部 ›</text>
+      <text class="more-btn" bindtap="goToWithdrawRecords">查看全部 ></text>
     </view>
+
     <view class="withdraw-list" wx:if="{{withdrawRecords.length > 0}}">
-      <view class="withdraw-item" wx:for="{{withdrawRecords}}" wx:key="_id" bindtap="viewWithdrawal" data-id="{{item._id}}">
-        <view class="withdraw-amount">-¥{{item.withdrawalAmountText}}</view>
+      <view
+        class="withdraw-item"
+        wx:for="{{withdrawRecords}}"
+        wx:key="_id"
+        bindtap="viewWithdrawal"
+        data-id="{{item._id}}"
+      >
+        <view>
+          <view class="withdraw-amount">¥{{item.withdrawalAmountText}}</view>
+          <view class="withdraw-no">{{item.withdrawalNo || '提现申请'}}</view>
+        </view>
         <view class="withdraw-info">
-          <view class="withdraw-status {{item.status}}">{{statusMap[item.status]}}</view>
-          <view class="withdraw-time">{{item.appliedAtText}}</view>
+          <view class="withdraw-status {{item.status}}">{{item.statusText || statusMap[item.status]}}</view>
+          <view class="withdraw-time">{{item.appliedAtShortText}}</view>
         </view>
       </view>
     </view>
+
     <view class="empty-state" wx:else>
       <view class="empty-text">暂无提现记录</view>
     </view>

@@ -4,7 +4,7 @@
     <!-- 订单信息 -->
     <view class="order-section glass-card">
       <view class="section-title">
-        <text class="icon">📋</text>
+        <image class="icon svg-icon-md" src="/images/icons/clipboard.svg" mode="aspectFit" />
         <text>订单信息</text>
       </view>
 
@@ -32,13 +32,13 @@
     <!-- 完工图片 -->
     <view class="form-section glass-card">
       <view class="section-title">
-        <text class="icon">📷</text>
+        <image class="icon svg-icon-md" src="/images/icons/camera.svg" mode="aspectFit" />
         <text>完工照片</text>
         <text class="required-mark">*</text>
       </view>
 
       <view class="photo-hint">
-        <text class="hint-icon">💡</text>
+        <image class="hint-icon svg-icon-sm" src="/images/icons/lightbulb.svg" mode="aspectFit" />
         <text class="hint-text">请拍摄维修完成后的车辆照片作为凭证，至少上传一张</text>
       </view>
 
@@ -60,7 +60,7 @@
         </block>
 
         <view class="upload-btn" wx:if="{{completionImages.length < 9}}" bindtap="chooseImage">
-          <text class="upload-icon">📷</text>
+          <image class="upload-icon svg-icon-lg" src="/images/icons/camera.svg" mode="aspectFit" />
           <text class="upload-text">添加照片</text>
           <text class="upload-count">({{completionImages.length}}/9)</text>
         </view>
@@ -70,12 +70,12 @@
     <!-- 完工视频 -->
     <view class="form-section glass-card">
       <view class="section-title">
-        <text class="icon">🎬</text>
+        <image class="icon svg-icon-md" src="/images/icons/video.svg" mode="aspectFit" />
         <text>完工视频（选填）</text>
       </view>
 
       <view class="video-hint">
-        <text class="hint-icon">💡</text>
+        <image class="hint-icon svg-icon-sm" src="/images/icons/lightbulb.svg" mode="aspectFit" />
         <text class="hint-text">可上传维修过程视频，最多 3 个，每个不超过 60 秒</text>
       </view>
 
@@ -94,7 +94,7 @@
       </view>
 
       <view class="upload-btn video-upload-btn" wx:if="{{completionVideos.length < 3}}" bindtap="chooseVideo">
-        <text class="upload-icon">🎥</text>
+        <image class="upload-icon svg-icon-lg" src="/images/icons/video.svg" mode="aspectFit" />
         <text class="upload-text">添加视频</text>
         <text class="upload-count">({{completionVideos.length}}/3)</text>
       </view>
@@ -103,7 +103,7 @@
     <!-- 完工描述 -->
     <view class="form-section glass-card">
       <view class="section-title">
-        <text class="icon">💬</text>
+        <image class="icon svg-icon-md" src="/images/icons/comment-bubble.svg" mode="aspectFit" />
         <text>完工说明</text>
       </view>
 
@@ -119,7 +119,10 @@
 
     <!-- 完工流程提示 -->
     <view class="process-hint">
-      <view class="hint-title">📢 完工流程</view>
+      <view class="hint-title">
+        <image class="hint-title-icon svg-icon-sm" src="/images/icons/megaphone.svg" mode="aspectFit" />
+        <text>完工流程</text>
+      </view>
       <view class="hint-steps">
         <view class="hint-step">
           <view class="step-number">1</view>

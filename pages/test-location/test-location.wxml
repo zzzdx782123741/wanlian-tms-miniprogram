@@ -1,13 +1,15 @@
-<!--pages/test-location/test-location.wxml - 位置功能测试页面-->
+<!--pages/test-location/test-location.wxml-->
 <view class="page">
   <view class="header">
-    <view class="header-title">📍 位置功能测试</view>
-    <view class="header-subtitle">测试腾讯地图API和位置服务</view>
+    <view class="header-title">
+      <image class="header-icon svg-icon-md" src="/images/icons/location-pin.svg" mode="aspectFit" />
+      <text>位置功能测试</text>
+    </view>
+    <view class="header-subtitle">测试腾讯地图 API 和位置服务</view>
   </view>
 
-  <!-- 位置信息卡片 -->
   <view class="location-card">
-    <view class="location-icon">📍</view>
+    <image class="location-icon svg-icon-xl" src="/images/icons/location-pin.svg" mode="aspectFit" />
     <view class="location-info">
       <view class="location-label">当前位置</view>
       <view class="location-address">{{location.address}}</view>
@@ -17,44 +19,47 @@
     </view>
   </view>
 
-  <!-- 测试按钮 -->
   <view class="test-buttons">
     <button class="test-btn primary" bindtap="testGetLocation">
-      <text class="btn-icon">🎯</text>
+      <image class="btn-icon svg-icon-sm" src="/images/icons/location-pin.svg" mode="aspectFit" />
       测试获取位置
     </button>
     <button class="test-btn success" bindtap="testChooseLocation">
-      <text class="btn-icon">🗺️</text>
+      <image class="btn-icon svg-icon-sm" src="/images/icons/location-pin.svg" mode="aspectFit" />
       地图选择位置
     </button>
     <button class="test-btn info" bindtap="testDefaultLocation">
-      <text class="btn-icon">🏢</text>
+      <image class="btn-icon svg-icon-sm" src="/images/icons/building.svg" mode="aspectFit" />
       使用默认地址
     </button>
     <button class="test-btn warning" bindtap="clearResults">
-      <text class="btn-icon">🗑️</text>
+      <image class="btn-icon svg-icon-sm" src="/images/icons/x-circle.svg" mode="aspectFit" />
       清空日志
     </button>
   </view>
 
-  <!-- 配置信息 -->
   <view class="config-card">
-    <view class="config-title">⚙️ 配置信息</view>
+    <view class="config-title">
+      <image class="config-title-icon svg-icon-sm" src="/images/icons/settings.svg" mode="aspectFit" />
+      <text>配置信息</text>
+    </view>
     <view class="config-item">
-      <text class="config-label">地图Key:</text>
+      <text class="config-label">地图 Key:</text>
       <text class="config-value">{{mapKey}}</text>
     </view>
     <view class="config-item">
       <text class="config-label">功能状态:</text>
       <text class="config-value {{mapEnabled ? 'success' : 'error'}}">
-        {{mapEnabled ? '✅ 已启用' : '❌ 未启用'}}
+        {{mapEnabled ? '已启用' : '未启用'}}
       </text>
     </view>
   </view>
 
-  <!-- 测试结果日志 -->
   <view class="log-card" wx:if="{{testResult.length > 0}}">
-    <view class="log-title">📋 测试日志</view>
+    <view class="log-title heading-with-icon">
+      <image class="log-title-icon svg-icon-sm" src="/images/icons/clipboard.svg" mode="aspectFit" />
+      <text>测试日志</text>
+    </view>
     <view class="log-list">
       <view class="log-item" wx:for="{{testResult}}" wx:key="index">
         <view class="log-time">{{item.timestamp}}</view>

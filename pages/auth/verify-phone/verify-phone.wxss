@@ -114,8 +114,10 @@
 }
 
 .tip-icon {
-  font-size: 28rpx;
   margin-right: 10rpx;
+  width: 28rpx;
+  height: 28rpx;
+  flex-shrink: 0;
 }
 
 .tip-text {

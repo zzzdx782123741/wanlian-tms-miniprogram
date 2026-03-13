@@ -1,6 +1,7 @@
 // index.js - 万联驿站2.0首页
 const app = getApp();
 const request = require('../../utils/request');
+const { getStatusText, normalizeOrderStatus } = require('../../utils/order-config');
 
 Page({
   data: {
@@ -162,7 +163,16 @@ Page({
         const data = res.data || {};
         const stats = data.stats || {};
         const todo = data.todo || {};
-        const recentActivities = data.recentActivities || [];
+        const recentActivities = (data.recentActivities || []).map(item => {
+          const title = this.localizeActivityText(item.title, '订单动态');
+          const description = this.localizeActivityText(item.description, '');
+          return {
+            ...item,
+            title,
+            description,
+            icon: this.getActivityIcon(title, description)
+          };
+        });
 
         // 计算是否有待办事项
         const hasTodo =
@@ -207,6 +217,38 @@ Page({
     return amount.toFixed(2);
   },
 
+  localizeActivityText(text, fallback = '') {
+    if (!text || typeof text !== 'string') {
+      return fallback;
+    }
+
+    const trimmed = text.trim();
+    const localizedStatus = getStatusText(normalizeOrderStatus(trimmed));
+    if (localizedStatus && localizedStatus !== '未知状态') {
+      return localizedStatus;
+    }
+
+    if (trimmed.includes('-')) {
+      const [prefix, ...rest] = trimmed.split('-');
+      const suffix = rest.join('-').trim();
+      const localizedSuffix = getStatusText(normalizeOrderStatus(suffix));
+      if (localizedSuffix && localizedSuffix !== '未知状态') {
+        return `${prefix.trim()} ${localizedSuffix}`;
+      }
+    }
+
+    return /[a-z]{3,}/i.test(trimmed) ? fallback : trimmed;
+  },
+
+  getActivityIcon(title = '', description = '') {
+    const text = `${title} ${description}`;
+    if (text.includes('增项')) return '/images/icons/warning-triangle.svg';
+    if (text.includes('完成') || text.includes('完工')) return '/images/icons/check-circle.svg';
+    if (text.includes('保养') || text.includes('维修')) return '/images/icons/wrench.svg';
+    if (text.includes('门店')) return '/images/icons/store.svg';
+    return '/images/icons/clipboard.svg';
+  },
+
   /**
    * 根据角色设置菜单
    */
@@ -219,7 +261,7 @@ Page({
           {
             id: 'report',
             title: '报修申请',
-            icon: '🔧',
+            icon: '/images/icons/warning-triangle.svg',
             description: '提交车辆报修申请',
             url: '/pages/report/report',
             color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
@@ -227,7 +269,7 @@ Page({
           {
             id: 'maintenance',
             title: '保养申请',
-            icon: '🧰',
+            icon: '/images/icons/oil-drop.svg',
             description: '提交车辆保养申请',
             url: '/pages/report/report?type=maintenance',
             color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
@@ -240,7 +282,7 @@ Page({
           {
             id: 'vehicles',
             title: '车队车辆',
-            icon: '🚛',
+            icon: '/images/icons/truck.svg',
             description: '查看车队全部车辆',
             url: '/pages/fleet-vehicles/fleet-vehicles',
             color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
@@ -248,7 +290,7 @@ Page({
           {
             id: 'orders',
             title: '维修订单',
-            icon: '📋',
+            icon: '/images/icons/clipboard.svg',
             description: '查看并处理维修订单',
             url: '/pages/orders/orders',
             color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
@@ -256,7 +298,7 @@ Page({
           {
             id: 'account',
             title: '账户余额',
-            icon: '💰',
+            icon: '/images/icons/money.svg',
             description: '查看余额与交易记录',
             url: '/pages/account/account',
             color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
@@ -269,7 +311,7 @@ Page({
           {
             id: 'store-orders',
             title: '门店订单',
-            icon: '🔧',
+            icon: '/images/icons/wrench.svg',
             description: '查看和管理维修订单',
             url: '/pages/orders/orders',
             color: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
@@ -282,7 +324,7 @@ Page({
           {
             id: 'store-orders',
             title: '门店订单',
-            icon: '📋',
+            icon: '/images/icons/clipboard.svg',
             description: '查看和管理门店订单',
             url: '/pages/orders/orders',
             color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
@@ -290,7 +332,7 @@ Page({
           {
             id: 'store-settings',
             title: '门店设置',
-            icon: '⚙️',
+            icon: '/images/icons/settings.svg',
             description: '管理门店信息和设置',
             url: '/pages/manager/store/store',
             color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
@@ -298,7 +340,7 @@ Page({
           {
             id: 'finance',
             title: '财务管理',
-            icon: '💰',
+            icon: '/images/icons/money.svg',
             description: '查看财务数据和提现',
             url: '/pages/manager/finance/finance',
             color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
@@ -306,7 +348,7 @@ Page({
           {
             id: 'analytics',
             title: '数据报表',
-            icon: '📊',
+            icon: '/images/icons/chart-bar.svg',
             description: '查看经营数据分析',
             url: '/pages/manager/analytics/analytics',
             color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
@@ -319,7 +361,7 @@ Page({
           {
             id: 'fleets',
             title: '车队管理',
-            icon: '🏢',
+            icon: '/images/icons/building.svg',
             description: '管理平台所有车队',
             url: '/pages/fleets/fleets',
             color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
@@ -327,7 +369,7 @@ Page({
           {
             id: 'stores',
             title: '门店管理',
-            icon: '🏪',
+            icon: '/images/icons/store.svg',
             description: '管理合作维修门店',
             url: '/pages/stores/stores',
             color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
@@ -335,7 +377,7 @@ Page({
           {
             id: 'orders',
             title: '订单监控',
-            icon: '📊',
+            icon: '/images/icons/chart-bar.svg',
             description: '监控全平台订单',
             url: '/pages/orders/orders',
             color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
@@ -343,7 +385,7 @@ Page({
           {
             id: 'users',
             title: '用户管理',
-            icon: '👥',
+            icon: '/images/icons/users-group.svg',
             description: '管理系统用户权限',
             url: '/pages/users/users',
             color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
@@ -359,9 +401,10 @@ Page({
    * 跳转到订单详情
    */
   goToOrderDetail(e) {
-    const { id } = e.currentTarget.dataset;
+    const { id, action } = e.currentTarget.dataset;
+    const actionQuery = action ? `&action=${action}` : '';
     wx.navigateTo({
-      url: `/pages/order-detail/order-detail?id=${id}`
+      url: `/pages/order-detail/order-detail?id=${id}${actionQuery}`
     });
   },
 

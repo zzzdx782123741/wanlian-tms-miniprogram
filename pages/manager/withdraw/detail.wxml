@@ -1,0 +1,88 @@
+<view class="detail-page" wx:if="{{detail}}">
+  <view class="hero-card">
+    <view class="status-badge {{detail.status}}">{{detail.statusText}}</view>
+    <view class="hero-amount">¥{{detail.withdrawalAmountText}}</view>
+    <view class="hero-no">{{detail.withdrawalNo}}</view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">申请信息</view>
+    <view class="info-row">
+      <text class="label">申请类型</text>
+      <text class="value">{{detail.applyTypeText}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">申请时间</text>
+      <text class="value">{{detail.appliedAtText}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">订单数量</text>
+      <text class="value">{{detail.orderCount || 0}} 单</text>
+    </view>
+    <view class="info-row">
+      <text class="label">提现金额</text>
+      <text class="value strong">¥{{detail.withdrawalAmountText}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">平台服务费</text>
+      <text class="value">¥{{detail.platformFeeText}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">备注</text>
+      <text class="value">{{detail.remark || '-'}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">收款账户</view>
+    <view class="bank-title">{{detail.bankAccount.bankName || '-'}}</view>
+    <view class="bank-sub">{{detail.bankAccount.accountName || '-'}}</view>
+    <view class="bank-sub">{{detail.maskedAccountNumber}}</view>
+    <view class="bank-sub" wx:if="{{detail.bankAccount.branch}}">{{detail.bankAccount.branch}}</view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">处理进度</view>
+    <view class="info-row">
+      <text class="label">当前状态</text>
+      <text class="value">{{detail.statusText}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">处理时间</text>
+      <text class="value">{{detail.processedAtText}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">拒绝原因</text>
+      <text class="value">{{detail.rejectReason || '-'}}</text>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{detail.paymentProofs && detail.paymentProofs.length > 0}}">
+    <view class="card-title">打款凭证</view>
+    <view class="proof-list">
+      <image
+        wx:for="{{detail.paymentProofs}}"
+        wx:key="*this"
+        class="proof-image"
+        src="{{item}}"
+        mode="aspectFill"
+        data-index="{{index}}"
+        bindtap="previewProof"
+      />
+    </view>
+  </view>
+
+  <button
+    wx:if="{{detail.canCancel}}"
+    class="cancel-btn"
+    bindtap="cancelWithdrawal"
+    loading="{{cancelling}}"
+    disabled="{{cancelling}}"
+  >
+    撤回申请
+  </button>
+</view>
+
+<view class="loading-state" wx:else>
+  <view class="loading-text">加载中...</view>
+</view>

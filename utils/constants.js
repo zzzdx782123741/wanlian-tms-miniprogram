@@ -1,81 +1,59 @@
 /**
  * 全局常量定义
- * 统一管理系统中使用的各种常量
  */
 
-/**
- * 用户角色类型
- */
 const USER_ROLE = {
-  DRIVER: 'DRIVER',                        // 司机
-  FLEET_MANAGER: 'FLEET_MANAGER',          // 车队管理员
-  STORE_TECHNICIAN: 'STORE_TECHNICIAN',    // 门店技师
-  STORE_MANAGER: 'STORE_MANAGER',          // 门店管理员
-  PLATFORM_OPERATOR: 'PLATFORM_OPERATOR'   // 平台运营者
+  DRIVER: 'DRIVER',
+  FLEET_MANAGER: 'FLEET_MANAGER',
+  STORE_TECHNICIAN: 'STORE_TECHNICIAN',
+  STORE_MANAGER: 'STORE_MANAGER',
+  PLATFORM_OPERATOR: 'PLATFORM_OPERATOR'
 };
 
-/**
- * 技师状态
- */
 const TECHNICIAN_STATUS = {
-  BUSY: 'busy',    // 工作中
-  IDLE: 'idle'     // 空闲
+  BUSY: 'busy',
+  IDLE: 'idle'
 };
 
-/**
- * 订单筛选类型
- */
 const ORDER_FILTER_TYPE = {
-  PENDING: 'pending',      // 待处理
-  PROCESSING: 'processing', // 维修中
-  COMPLETED: 'completed'    // 已完成
+  PENDING: 'pending',
+  PROCESSING: 'processing',
+  COMPLETED: 'completed'
 };
 
-/**
- * 时间范围类型
- */
 const TIME_RANGE = {
-  TODAY: 'today',     // 今天
-  WEEK: 'week',       // 本周
-  MONTH: 'month',     // 本月
-  ALL: 'all'          // 全部
+  TODAY: 'today',
+  WEEK: 'week',
+  MONTH: 'month',
+  ALL: 'all'
 };
 
-/**
- * 动态类型（用于门店管理台最近动态）
- */
 const ACTIVITY_TYPE = {
-  ORDER: 'order',         // 订单相关
-  ADDON: 'addon',         // 增项相关
-  STOCK: 'stock',         // 库存相关
-  COMPLETED: 'completed'  // 完成相关
+  ORDER: 'order',
+  ADDON: 'addon',
+  STOCK: 'stock',
+  COMPLETED: 'completed'
 };
 
-/**
- * 动态类型配置
- */
 const ACTIVITY_CONFIG = {
   [ACTIVITY_TYPE.ORDER]: {
-    icon: '📋',
+    icon: '/images/icons/clipboard.svg',
     label: '订单'
   },
   [ACTIVITY_TYPE.ADDON]: {
-    icon: '⚠️',
+    icon: '/images/icons/warning-triangle.svg',
     label: '增项'
   },
   [ACTIVITY_TYPE.STOCK]: {
-    icon: '📦',
+    icon: '/images/icons/package-box.svg',
     label: '库存'
   },
   [ACTIVITY_TYPE.COMPLETED]: {
-    icon: '✅',
+    icon: '/images/icons/check-circle.svg',
     label: '完成'
   }
 };
 
-/**
- * 订单状态（用于筛选）
- */
 const ORDER_STATUS_FILTER = {
   ALL: 'all',
   AWAITING_FLEET_APPROVAL: 'awaiting_fleet_approval',
@@ -88,29 +66,20 @@ const ORDER_STATUS_FILTER = {
   COMPLETED: 'completed'
 };
 
-/**
- * 技师权限类型
- */
 const TECHNICIAN_PERMISSION = {
-  RECEIVE_ORDER: 'receive_order',    // 接单
-  DIAGNOSIS: 'diagnosis',            // 诊断
-  QUOTE: 'quote',                    // 报价
-  REPAIR: 'repair',                  // 维修
-  COMPLETE: 'complete'               // 完工
+  RECEIVE_ORDER: 'receive_order',
+  DIAGNOSIS: 'diagnosis',
+  QUOTE: 'quote',
+  REPAIR: 'repair',
+  COMPLETE: 'complete'
 };
 
-/**
- * 默认分页配置
- */
 const PAGINATION = {
   DEFAULT_PAGE: 1,
   DEFAULT_LIMIT: 20,
   MAX_LIMIT: 100
 };
 
-/**
- * 缓存键名
- */
 const STORAGE_KEYS = {
   TOKEN: 'token',
   USER_INFO: 'userInfo',

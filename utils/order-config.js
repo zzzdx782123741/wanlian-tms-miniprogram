@@ -3,119 +3,124 @@
  * 统一管理订单状态的显示文本、图标和样式类型
  */
 
-/**
- * 订单状态常量
- */
 const ORDER_STATUS = {
-  AWAITING_FLEET_APPROVAL: 'awaiting_fleet_approval',      // 待车队审批
-  AWAITING_TIME_CONFIRMATION: 'awaiting_time_confirmation', // 待确认到店时间
-  PENDING_ASSESSMENT: 'pending_assessment',                 // 待接车检查
-  AWAITING_APPROVAL: 'awaiting_approval',                   // 待审批报价
-  IN_REPAIR: 'in_repair',                                   // 维修中/保养进行中
-  AWAITING_ADDON_APPROVAL: 'awaiting_addon_approval',       // 待审批增项
-  PENDING_CONFIRMATION: 'pending_confirmation',             // 待确认完工
-  COMPLETED: 'completed',                                   // 已完成
-  REJECTED: 'rejected',                                     // 已拒绝
-  REFUNDED: 'refunded'                                      // 已退款
+  AWAITING_FLEET_APPROVAL: 'awaiting_fleet_approval',
+  AWAITING_TIME_CONFIRMATION: 'awaiting_time_confirmation',
+  PENDING_ASSESSMENT: 'pending_assessment',
+  AWAITING_APPROVAL: 'awaiting_approval',
+  IN_REPAIR: 'in_repair',
+  AWAITING_ADDON_APPROVAL: 'awaiting_addon_approval',
+  PENDING_CONFIRMATION: 'pending_confirmation',
+  COMPLETED: 'completed',
+  REJECTED: 'rejected',
+  REFUNDED: 'refunded'
 };
 
-/**
- * 订单状态配置映射
- */
 const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.AWAITING_FLEET_APPROVAL]: {
     label: '待车队审批',
-    icon: '⏳',
+    icon: '/images/icons/warning-triangle.svg',
     type: 'warning'
   },
   [ORDER_STATUS.AWAITING_TIME_CONFIRMATION]: {
     label: '待确认到店时间',
-    icon: '⏰',
+    icon: '/images/icons/clock.svg',
     type: 'warning'
   },
   [ORDER_STATUS.PENDING_ASSESSMENT]: {
     label: '待接车检查',
-    icon: '🔍',
+    icon: '/images/icons/search.svg',
     type: 'warning'
   },
   [ORDER_STATUS.AWAITING_APPROVAL]: {
     label: '待审批报价',
-    icon: '📋',
+    icon: '/images/icons/clipboard.svg',
     type: 'info'
   },
   [ORDER_STATUS.IN_REPAIR]: {
     label: '维修中',
-    icon: '🔧',
+    icon: '/images/icons/wrench.svg',
     type: 'primary'
   },
   [ORDER_STATUS.AWAITING_ADDON_APPROVAL]: {
     label: '待审批增项',
-    icon: '⚠️',
+    icon: '/images/icons/warning-triangle.svg',
     type: 'warning'
   },
   [ORDER_STATUS.PENDING_CONFIRMATION]: {
     label: '待确认完工',
-    icon: '✅',
-    type: 'success'
+    icon: '/images/icons/check-circle.svg',
+    type: 'warning'
   },
   [ORDER_STATUS.COMPLETED]: {
     label: '已完成',
-    icon: '✅',
+    icon: '/images/icons/check-circle.svg',
     type: 'success'
   },
   [ORDER_STATUS.REJECTED]: {
     label: '已拒绝',
-    icon: '❌',
+    icon: '/images/icons/x-circle.svg',
     type: 'error'
   },
   [ORDER_STATUS.REFUNDED]: {
     label: '已退款',
-    icon: '💸',
+    icon: '/images/icons/money.svg',
     type: 'error'
   }
 };
 
-/**
- * 获取状态配置
- * @param {string} status - 订单状态
- * @returns {object} 状态配置对象
- */
-function getStatusConfig(status) {
-  return ORDER_STATUS_CONFIG[status] || { label: '未知状态', icon: '❓', type: 'default' };
+const ORDER_STATUS_ALIAS = {
+  pending: ORDER_STATUS.AWAITING_FLEET_APPROVAL,
+  processing: ORDER_STATUS.IN_REPAIR,
+  repairing: ORDER_STATUS.IN_REPAIR,
+  confirmed: ORDER_STATUS.COMPLETED,
+  cancelled: 'cancelled',
+  expired: 'expired'
+};
+
+const EXTRA_STATUS_CONFIG = {
+  cancelled: {
+    label: '已取消',
+    icon: '/images/icons/x-circle.svg',
+    type: 'error'
+  },
+  expired: {
+    label: '已超时关闭',
+    icon: '/images/icons/clock.svg',
+    type: 'error'
+  }
+};
+
+function normalizeOrderStatus(status) {
+  if (!status || typeof status !== 'string') {
+    return '';
+  }
+
+  const normalized = status.trim();
+  return ORDER_STATUS_ALIAS[normalized] || normalized;
 }
 
-/**
- * 获取状态文本
- * @param {string} status - 订单状态
- * @returns {string} 状态文本
- */
+function getStatusConfig(status) {
+  const normalizedStatus = normalizeOrderStatus(status);
+  return ORDER_STATUS_CONFIG[normalizedStatus] || EXTRA_STATUS_CONFIG[normalizedStatus] || {
+    label: '未知状态',
+    icon: '/images/icons/info-circle.svg',
+    type: 'default'
+  };
+}
+
 function getStatusText(status) {
   return getStatusConfig(status).label;
 }
 
-/**
- * 获取状态图标
- * @param {string} status - 订单状态
- * @returns {string} 状态图标（emoji）
- */
 function getStatusIcon(status) {
   return getStatusConfig(status).icon;
 }
 
-/**
- * 获取状态类型（用于样式）
- * @param {string} status - 订单状态
- * @returns {string} 状态类型
- */
 function getStatusType(status) {
   return getStatusConfig(status).type;
 }
 
-/**
- * 检查状态是否为终态（已完成、拒绝、退款）
- * @param {string} status - 订单状态
- * @returns {boolean} 是否为终态
- */
 function isTerminalStatus(status) {
   return [
     ORDER_STATUS.COMPLETED,
@@ -124,11 +129,6 @@ function isTerminalStatus(status) {
   ].includes(status);
 }
 
-/**
- * 检查状态是否为处理中状态
- * @param {string} status - 订单状态
- * @returns {boolean} 是否为处理中状态
- */
 function isProcessingStatus(status) {
   return [
     ORDER_STATUS.PENDING_ASSESSMENT,
@@ -141,6 +141,7 @@ function isProcessingStatus(status) {
 module.exports = {
   ORDER_STATUS,
   ORDER_STATUS_CONFIG,
+  normalizeOrderStatus,
   getStatusConfig,
   getStatusText,
   getStatusIcon,

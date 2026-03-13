@@ -11,7 +11,7 @@
     <!-- 订单信息 -->
     <view class="order-section glass-card">
       <view class="section-title">
-        <text class="icon">📋</text>
+        <image class="icon svg-icon-md" src="/images/icons/clipboard.svg" mode="aspectFit" />
         <text>订单信息</text>
       </view>
 
@@ -85,7 +85,7 @@
     <!-- 接车检查 -->
     <view class="form-section glass-card">
       <view class="section-title">
-        <text class="icon">🔍</text>
+        <image class="icon svg-icon-md" src="/images/icons/search.svg" mode="aspectFit" />
         <text>接车检查</text>
       </view>
 
@@ -111,7 +111,7 @@
       <view class="form-item">
         <text class="label required">接车照片</text>
         <view class="photo-hint">
-          <text class="hint-icon">💡</text>
+          <image class="hint-icon svg-icon-sm" src="/images/icons/lightbulb.svg" mode="aspectFit" />
           <text class="hint-text">请拍摄故障位置或更换零件位置作为凭证</text>
         </view>
         <view class="image-upload">
@@ -131,7 +131,7 @@
             </view>
           </block>
           <view class="upload-btn" wx:if="{{checkinPhotos.length < 9}}" bindtap="chooseCheckinPhoto">
-            <text class="upload-icon">📷</text>
+            <image class="upload-icon svg-icon-lg" src="/images/icons/camera.svg" mode="aspectFit" />
             <text class="upload-text">添加接车照片</text>
           </view>
         </view>
@@ -141,7 +141,7 @@
     <!-- 维修项目清单 -->
     <view class="form-section glass-card">
       <view class="section-title">
-        <text class="icon">📦</text>
+        <image class="icon svg-icon-md" src="/images/icons/package-box.svg" mode="aspectFit" />
         <text>维修项目清单</text>
       </view>
 
@@ -172,7 +172,7 @@
             </view>
             <view class="item-subtotal">¥{{utils.toFixed(item.price * item.quantity)}}</view>
             <view class="item-delete" bindtap="deleteItem" data-index="{{idx}}">
-              <text class="delete-icon">🗑️</text>
+              <image class="delete-icon svg-icon-md" src="/images/icons/x-circle.svg" mode="aspectFit" />
             </view>
           </view>
         </view>
@@ -180,14 +180,14 @@
 
       <!-- 空状态提示 -->
       <view class="empty-products" wx:if="{{selectedItems.length === 0}}">
-        <text class="empty-icon">📦</text>
+        <image class="empty-icon svg-icon-xl" src="/images/icons/package-box.svg" mode="aspectFit" />
           <text class="empty-text">尚未添加维修项目</text>
         <text class="empty-hint">点击下方按钮从项目库中选择</text>
       </view>
 
       <!-- 添加商品按钮 -->
       <view class="add-product-btn" bindtap="addProduct">
-        <text class="add-icon">➕</text>
+        <text class="add-icon">+</text>
         <text>添加维修项目</text>
       </view>
 
@@ -203,7 +203,7 @@
     <!-- 报价图片 -->
     <view class="form-section glass-card">
       <view class="section-title">
-        <text class="icon">📷</text>
+        <image class="icon svg-icon-md" src="/images/icons/camera.svg" mode="aspectFit" />
         <text>报价图片（选填）</text>
       </view>
 
@@ -224,7 +224,7 @@
         </block>
 
         <view class="upload-btn" wx:if="{{quoteImages.length < 9}}" bindtap="chooseImage">
-          <text class="upload-icon">📷</text>
+          <image class="upload-icon svg-icon-lg" src="/images/icons/camera.svg" mode="aspectFit" />
           <text class="upload-text">添加图片</text>
         </view>
       </view>
@@ -233,7 +233,7 @@
     <!-- 报价说明 -->
     <view class="form-section glass-card">
       <view class="section-title">
-        <text class="icon">💬</text>
+        <image class="icon svg-icon-md" src="/images/icons/comment-bubble.svg" mode="aspectFit" />
         <text>报价说明</text>
       </view>
 
@@ -248,7 +248,10 @@
 
     <!-- 审批流程提示 -->
     <view class="process-hint">
-      <view class="hint-title">📢 审批流程</view>
+      <view class="hint-title">
+        <image class="hint-title-icon svg-icon-sm" src="/images/icons/megaphone.svg" mode="aspectFit" />
+        <text>审批流程</text>
+      </view>
       <view class="hint-steps">
         <view class="hint-step">
           <view class="step-number">1</view>
